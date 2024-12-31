@@ -1,0 +1,173 @@
+### **React.memo** 
+
+`React.memo` is a higher-order component (HOC) in React that is used to optimize functional components by preventing unnecessary re-renders. It works similarly to `React.PureComponent` but is specifically designed for **functional components**.
+
+---
+
+### **What is React.memo?**
+
+- It wraps a functional component and enables shallow comparison of its props.
+- If the props remain the same, React skips rendering the component and reuses the last rendered output.
+- This is useful for improving performance, especially in components that are expensive to render.
+
+---
+
+### **How to Use React.memo**
+
+Here's a basic example:
+
+```jsx
+import React from "react";
+
+const MyComponent = React.memo(({ name }) => {
+  console.log("Rendered!");
+  return <h1>Hello, {name}!</h1>;
+});
+
+export default MyComponent;
+```
+
+### **Explanation**
+1. `React.memo` takes a functional component as an argument.
+2. If the props do not change, the component does not re-render.
+3. It uses **shallow comparison** to determine if re-rendering is necessary.
+
+---
+
+### **Purpose of React.memo**
+1. **Prevent Unnecessary Re-renders**:
+   - Avoids rendering components that don’t need to update.
+2. **Improve Performance**:
+   - Especially useful in apps with heavy computations or large UIs.
+
+---
+
+### **Without React.memo**
+Without `React.memo`, functional components re-render every time their parent re-renders, even if the props haven’t changed. This can lead to unnecessary re-renders and degraded performance.
+
+---
+
+### **Shallow Comparison in React.memo**
+
+- **Primitive types** (e.g., numbers, strings): Compared by value.
+- **Objects/Arrays**: Compared by reference.
+  - `{ a: 1 } === { a: 1 }` → `false`
+  - `const obj = { a: 1 }; obj === obj` → `true`
+
+---
+
+### **Custom Comparison with React.memo**
+By default, `React.memo` performs a shallow comparison of props. For more control, you can pass a custom comparison function as the second argument:
+
+```jsx
+const MyComponent = React.memo(
+  ({ name, details }) => {
+    console.log("Rendered!");
+    return <h1>{name}: {details.age}</h1>;
+  },
+  (prevProps, nextProps) => {
+    return prevProps.name === nextProps.name && prevProps.details.age === nextProps.details.age;
+  }
+);
+```
+
+### **Advantages of Custom Comparison**
+1. Allows deep comparison of complex objects or arrays.
+2. Prevents unnecessary renders in components with complex props.
+
+---
+
+### **React.memo vs PureComponent**
+| Feature                  | React.memo                       | PureComponent                   |
+|--------------------------|-----------------------------------|----------------------------------|
+| **Usage**                | Functional components            | Class components                |
+| **Comparison**           | Shallow comparison of props      | Shallow comparison of props & state |
+| **Custom Comparison**    | Supported via a custom function  | Not supported                   |
+
+---
+
+### **Advantages of React.memo**
+1. **Optimized Rendering**:
+   - Reduces unnecessary rendering for functional components.
+2. **Easy to Implement**:
+   - Wraps functional components directly.
+3. **Custom Comparisons**:
+   - Allows deep or custom comparison logic.
+4. **Works Well with Hooks**:
+   - Can be used alongside React hooks like `useState` and `useEffect`.
+
+---
+
+### **Disadvantages of React.memo**
+1. **Overhead**:
+   - Adds comparison logic, which might outweigh the benefits for simple components.
+2. **Shallow Comparison Limitation**:
+   - Default behavior only compares primitive values and references.
+3. **Not Always Necessary**:
+   - Might not improve performance in all scenarios (e.g., if the component is lightweight).
+
+---
+
+### **When to Use React.memo**
+1. **Components with Expensive Rendering**:
+   - Complex calculations or heavy DOM manipulations.
+2. **Static Props**:
+   - When props rarely change.
+3. **Large Lists**:
+   - Optimizing rendering of list items in components like `<ul>` or `<table>`.
+
+---
+
+### **When Not to Use React.memo**
+1. **Small Components**:
+   - For lightweight components, the overhead might not justify the use of `React.memo`.
+2. **Frequently Changing Props**:
+   - If props are changing often, the optimization may not yield any benefits.
+
+---
+
+### **Example with Parent-Child Communication**
+**Without React.memo**:
+```jsx
+const Child = ({ name }) => {
+  console.log("Child rendered!");
+  return <h1>Hello, {name}!</h1>;
+};
+
+const Parent = () => {
+  const [count, setCount] = React.useState(0);
+  return (
+    <div>
+      <Child name="Sadaqat" />
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+};
+```
+- The `Child` component re-renders unnecessarily when the button is clicked.
+
+**With React.memo**:
+```jsx
+const Child = React.memo(({ name }) => {
+  console.log("Child rendered!");
+  return <h1>Hello, {name}!</h1>;
+});
+
+const Parent = () => {
+  const [count, setCount] = React.useState(0);
+  return (
+    <div>
+      <Child name="Sadaqat" />
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+};
+```
+- The `Child` component does not re-render because its props haven’t changed.
+
+---
+
+### **Conclusion**
+- **React.memo** is an effective tool for optimizing functional components by skipping unnecessary renders.
+- It’s simple to use and works well for components with stable props.
+- However, it should be used selectively, as the added complexity might not always improve performance.
