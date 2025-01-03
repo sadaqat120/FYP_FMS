@@ -1,0 +1,50 @@
+/* ===== Hero Section ===== */
+.hero {
+    background-image: url('D:\MERN Stack Development\ReactJs Tutorial Complete\ReactJs Learning by Code Implementation\basic_learning\src\assets\main_page.jpeg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+    padding: 100px 20px;
+    position: relative;
+  }
+  
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity */
+    z-index: 1;
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .hero h1 {
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+  }
+  
+  .hero .button {
+    padding: 15px 30px;
+    background-color: #4caf50; /* Green button */
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .hero .button:hover {
+    background-color: #388e3c; /* Darker green */
+  }

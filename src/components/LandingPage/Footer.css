@@ -1,0 +1,38 @@
+/* ===== About Section ===== */
+.about-section {
+    background-color: rgba(120, 183, 111, 0.71); /* Light green background */
+    color: white;
+    padding: 50px 20px;
+    text-align: center;
+  }
+  
+  .about-section h2 {
+    font-size: 28px;
+    color: #2e7d32;
+    margin-bottom: 20px;
+  }
+  
+  .about-section .about-content {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-top: 10px;
+  }
+  
+  .about-section:hover {
+    background-color: rgba(120, 183, 111, 0.9); /* Slightly darker on hover */
+    transition: background-color 0.3s ease;
+  }
+  
+  /* ===== Footer ===== */
+  .footer {
+    background-color: #004d40; /* Dark green */
+    color: white;
+    padding: 30px;
+    text-align: center;
+  }
+  
+  .footer p {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+  

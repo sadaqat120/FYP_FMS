@@ -1,0 +1,30 @@
+.location {
+    padding: 20px;
+  }
+  
+  .location h2 {
+    margin-bottom: 20px;
+  }
+  
+  .location form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .location input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .location button {
+    padding: 10px 20px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
