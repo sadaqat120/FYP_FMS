@@ -1,3 +1,19 @@
+
+
+.section-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.placeholder-text {
+  text-align: center;
+  color: #757575;
+  font-size: 18px;
+  margin-top: 30px;
+}
+
 .crop-management {
   width: 100%;
   padding: 20px;
@@ -7,9 +23,10 @@
   text-align: center;
   font-size: 36px;
   color: #2e7d32;
+  margin-bottom: 20px;
 }
 
-.section-tabs {
+.tab-navigation {
   display: flex;
   justify-content: center;
   gap: 20px;
@@ -24,6 +41,7 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .tab-button.active {
@@ -32,11 +50,4 @@
 
 .tab-button:hover {
   background-color: #388e3c;
-}
-
-.placeholder-text {
-  text-align: center;
-  color: #757575;
-  font-size: 18px;
-  margin-top: 30px;
 }

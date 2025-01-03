@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import "./ResultSummary.css";
+import React, { useState, useEffect } from "react";
+import "./CropLandCostTrckingResultSummaryFarm.css";
 
 const ResultSummary = () => {
   const [formData, setFormData] = useState({
@@ -11,9 +11,16 @@ const ResultSummary = () => {
     notes: "",
     totalCost: "",
     sellRevenue: "",
-    netProfit: "",
+    netProfit: "", // Add netProfit to the state
     finalNotes: "",
   });
+
+  // Calculate net profit whenever sellRevenue or totalCost changes
+  useEffect(() => {
+    const netProfit =
+      parseFloat(formData.sellRevenue || 0) - parseFloat(formData.totalCost || 0);
+    setFormData((prevData) => ({ ...prevData, netProfit: netProfit.toFixed(2) }));
+  }, [formData.sellRevenue, formData.totalCost]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,9 +28,7 @@ const ResultSummary = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const netProfit =
-      parseFloat(formData.sellRevenue) - parseFloat(formData.totalCost);
-    alert(`Result Summary Saved Successfully! Net Profit: PKR ${netProfit}`);
+    alert("Result Summary Saved Successfully!");
   };
 
   return (
@@ -102,6 +107,14 @@ const ResultSummary = () => {
           value={formData.sellRevenue}
           onChange={handleChange}
           required
+        />
+        {/* Display net profit */}
+        <input
+          type="number"
+          name="netProfit"
+          placeholder="Net Profit"
+          value={formData.netProfit}
+          readOnly
         />
         <textarea
           name="finalNotes"

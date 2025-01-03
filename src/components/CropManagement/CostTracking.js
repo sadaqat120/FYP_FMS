@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./CostTracking.css"
+import "./CropLandCostTrckingResultSummaryFarm.css"
 const CostTracking = () => {
   const [selectedActivity, setSelectedActivity] = useState("");
   const [formData, setFormData] = useState({
