@@ -1,91 +1,137 @@
 .dashboard {
-    padding: 20px;
-  }
-  
-  .dashboard h2 {
-    text-align: center;
-    font-size: 32px;
-    color: #2e7d32;
-    margin-bottom: 20px;
-  }
-  
-  .dashboard-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  
-  .plot-details {
-    flex: 1 1 calc(60% - 20px);
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #e8f5e9;
-  }
-  
-  .plot-details h3 {
-    color: #004d40;
-  }
-  
-  .progress-bar-container {
-    background-color: #e0e0e0;
-    height: 10px;
-    border-radius: 5px;
-    overflow: hidden;
-    margin: 10px 0;
-  }
-  
-  .progress-bar {
-    background-color: #4caf50;
-    height: 100%;
-    width: 60%; /* Example width */
-  }
-  
-  .cost-overview {
-    flex: 1 1 calc(40% - 20px);
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f1f8e9;
-  }
-  
-  .notifications {
-    flex: 1 1 100%;
-    margin-top: 20px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #fff3e0;
-  }
-  
-  .notifications h3 {
-    margin: 0 0 10px 0;
-    color: #ef6c00;
-  }
-  
-  .notifications ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .notifications li {
-    margin: 10px 0;
-    color: #757575;
-  }
-  
-  .summary {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-top: 20px;
-  }
-  
-  .yield-summary,
-  .financial-outcome {
-    flex: 1 1 calc(50% - 20px);
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f9fbe7;
-  }
-  
+  padding: 20px;
+  border: 3px solid black;
+  border-radius: 20px
+}
+
+.dashboard_word{
+  text-align: center;
+  font-size: 32px;
+  color: #2e7d32;
+  margin-bottom: 20px;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.plot-box {
+  flex: 1 1 100%;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #e8f5e9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.plot-box h3 {
+  font-size: 24px;
+  color: #004d40;
+  margin-bottom: 10px;
+}
+
+.progress-section {
+  margin-top: 15px;
+}
+
+.progress-bar-container {
+  background-color: #e0e0e0;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background-color: #4caf50;
+  height: 100%;
+}
+
+.cost-overview {
+  flex: 1 1 calc(50% - 20px);
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f1f8e9;
+}
+
+.cost-overview h3 {
+  margin-bottom: 10px;
+}
+
+.cost-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cost-table th,
+.cost-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+.cost-table th {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.notifications {
+  flex: 1 1 100%;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fff3e0;
+}
+
+.notifications h3 {
+  margin-bottom: 10px;
+  color: #ef6c00;
+}
+
+.notifications ul {
+  list-style: none;
+  padding: 0;
+}
+
+.notifications li {
+  margin-bottom: 5px;
+  color: #757575;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.yield-summary,
+.financial-outcome {
+  flex: 1 1 calc(50% - 20px);
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9fbe7;
+}
+
+.satisfaction {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f1f8e9;
+  text-align: center;
+}
+
+.satisfaction h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: #1b5e20;
+}
+
+.rating {
+  font-size: 24px;
+  color: #ffb400; /* Gold color for stars */
+}

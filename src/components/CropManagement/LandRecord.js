@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./LandRecord.css";
+import "./CropLandCostTrckingResultSummaryFarm.css";
 
 const LandRecord = () => {
   const [formData, setFormData] = useState({
