@@ -1,0 +1,37 @@
+.plot-field-management {
+    padding: 20px;
+  }
+  
+  .plot-field-management h2 {
+    text-align: center;
+    font-size: 32px;
+    color: #2e7d32;
+  }
+  
+  .management-options {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+  }
+  
+  .management-options button {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .management-options button:hover {
+    background-color: #388e3c;
+  }
+  
+  .placeholder {
+    text-align: center;
+    color: #757575;
+    font-size: 18px;
+    margin-top: 30px;
+  }
+  

@@ -1,0 +1,37 @@
+.cost-tracking-form {
+    width: 100%;
+    padding: 20px;
+  }
+  
+  .cost-tracking-form h2 {
+    text-align: center;
+    color: #2e7d32;
+    margin-bottom: 20px;
+  }
+  
+  .cost-tracking-form input,
+  .cost-tracking-form textarea,
+  .cost-tracking-form select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .cost-tracking-form button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .cost-tracking-form button:hover {
+    background-color: #388e3c;
+  }
+  
