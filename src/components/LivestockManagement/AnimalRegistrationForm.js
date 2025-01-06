@@ -25,7 +25,7 @@ const AnimalRegistrationForm = ({ sex, setSex }) => {
         <input type="number" placeholder="Feed Quantity" className="w-full border rounded-lg p-2" required />
         <div>
           <input type="number" placeholder="Milking Quantity" className="w-full border rounded-lg p-2" disabled={sex === "male"} defaultValue={sex === "male" ? "0" : ""}/>
-          <input type="text" placeholder="Milking Quantity Unit (e.g., Liters)" className="w-full border rounded-lg p-2" defaultValue={sex === "male" ? "Liters" : ""}/>
+          <input type="text" placeholder="Milking Quantity Unit (e.g., Liters)" className="w-full border rounded-lg p-2" disabled={sex === "male"} defaultValue={sex === "male" ? "Liters" : ""}/>
         </div>
         <select className="w-full border rounded-lg p-2" required>
           <option value="">Status</option>
