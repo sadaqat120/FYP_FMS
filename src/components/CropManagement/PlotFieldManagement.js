@@ -10,7 +10,6 @@ const PlotFieldManagement = () => {
 
   return (
     <div className="plot-field-management">
-      <h2 className="section-heading">Plot/Field Management</h2>
       <div className="management-options">
         <button onClick={() => setActiveSection("landRecord")}>Land Record</button>
         <button onClick={() => setActiveSection("cropRecord")}>Crop Record</button>
