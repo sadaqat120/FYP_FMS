@@ -3,8 +3,6 @@ import "./Dashboard.css";
 
 const Dashboard = () => {
   return (
-    <div>
-      <h2 className="dashboard_word">Dashboard</h2>
     <div className="dashboard">
       <div className="dashboard-content">
         <div className="plot-box">
@@ -86,7 +84,6 @@ const Dashboard = () => {
           <span>⭐⭐⭐⭐☆</span>
         </div>
       </div>
-    </div>
     </div>
   );
 };

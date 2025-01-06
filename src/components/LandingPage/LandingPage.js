@@ -11,7 +11,13 @@ import "./Vision.css";
 import "./Services.css";
 import "./Footer.css";
 
-const LandingPage = ({ isLoggedIn, navigateToLogin, onReminderServiceClick, onCropManagementClick }) => {
+const LandingPage = ({
+  isLoggedIn,
+  navigateToLogin,
+  onReminderServiceClick,
+  onCropManagementClick,
+  onLivestockManagementClick,
+}) => {
   const handleGetStarted = () => {
     const servicesSection = document.getElementById("services-section");
     servicesSection.scrollIntoView({ behavior: "smooth" });
@@ -71,7 +77,16 @@ const LandingPage = ({ isLoggedIn, navigateToLogin, onReminderServiceClick, onCr
               efficiency.
             </p>
           </div>
-          <div className="service-item">
+          <div
+            className="service-item"
+            onClick={() => {
+              if (isLoggedIn) {
+                onLivestockManagementClick();
+              } else {
+                navigateToLogin();
+              }
+            }}
+          >
             <img src={service2} alt="Livestock Management" />
             <h3>Livestock Management</h3>
             <p>
@@ -96,10 +111,7 @@ const LandingPage = ({ isLoggedIn, navigateToLogin, onReminderServiceClick, onCr
               chatbot integrated with your farm's data.
             </p>
           </div>
-          <div
-            className="service-item"
-            onClick={onReminderServiceClick}
-          >
+          <div className="service-item" onClick={onReminderServiceClick}>
             <img src={service5} alt="Reminders Service" />
             <h3>Reminders Service</h3>
             <p>
