@@ -11,9 +11,27 @@ const Dashboard = () => {
   ];
 
   const costOverview = [
-    { id: 1, type: "Feed", cost: "5000 PKR", date: "01-04-2025", notes: "Purchased bulk feed for goats." },
-    { id: 2, type: "Veterinary", cost: "3000 PKR", date: "02-04-2025", notes: "Health checkup for cows." },
-    { id: 3, type: "Maintenance", cost: "4000 PKR", date: "03-04-2025", notes: "Fixed barn roof." },
+    {
+      id: 1,
+      type: "Feed",
+      cost: "5000 PKR",
+      date: "01-04-2025",
+      notes: "Purchased bulk feed for goats.",
+    },
+    {
+      id: 2,
+      type: "Veterinary",
+      cost: "3000 PKR",
+      date: "02-04-2025",
+      notes: "Health checkup for cows.",
+    },
+    {
+      id: 3,
+      type: "Maintenance",
+      cost: "4000 PKR",
+      date: "03-04-2025",
+      notes: "Fixed barn roof.",
+    },
   ];
 
   const categories = [

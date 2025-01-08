@@ -15,8 +15,8 @@ const EachAnimalDetails = ({ category }) => {
         healthStatus: "Healthy",
         livingStatus: "Alive",
         weight: "500 kg",
-        updatedDate: "2025-01-05"
-      }
+        updatedDate: "2025-01-05",
+      },
     },
     {
       id: 2,
@@ -31,26 +31,34 @@ const EachAnimalDetails = ({ category }) => {
         healthStatus: "Fit",
         livingStatus: "Alive",
         weight: "450 kg",
-        updatedDate: "2025-01-06"
-      }
-    }
+        updatedDate: "2025-01-06",
+      },
+    },
   ]);
 
+  const [editingId, setEditingId] = useState(null);
+  const [editData, setEditData] = useState(null);
+
   const handleEdit = (id) => {
-    const updatedAnimals = animals.map((animal) =>
-      animal.id === id
-        ? {
-            ...animal,
-            lastUpdated: {
-              ...animal.lastUpdated,
-              healthStatus: "Updated Health",
-              updatedDate: new Date().toISOString().split("T")[0]
-            }
-          }
-        : animal
+    const animal = animals.find((a) => a.id === id);
+    setEditingId(id);
+    setEditData(animal.lastUpdated);
+  };
+
+  const handleSave = () => {
+    setAnimals((prevAnimals) =>
+      prevAnimals.map((animal) =>
+        animal.id === editingId
+          ? { ...animal, lastUpdated: editData }
+          : animal
+      )
     );
-    setAnimals(updatedAnimals);
-    alert("Details updated successfully!");
+    setEditingId(null);
+    setEditData(null);
+  };
+
+  const handleChange = (field, value) => {
+    setEditData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -61,7 +69,6 @@ const EachAnimalDetails = ({ category }) => {
           key={animal.id}
           className="bg-white p-4 rounded-lg shadow-lg mb-4"
         >
-          {/* General Details */}
           <div className="mb-4">
             <h4 className="text-lg font-bold text-gray-700">General Details</h4>
             <ul className="list-disc ml-6">
@@ -74,20 +81,38 @@ const EachAnimalDetails = ({ category }) => {
             </ul>
           </div>
 
-          {/* Last Updated Details */}
           <div className="mb-4">
             <h4 className="text-lg font-bold text-gray-700">Last Updated Details</h4>
-            <ul className="list-disc ml-6">
-              <li>Feed Quantity: {animal.lastUpdated.feedQuantity}</li>
-              <li>Milking Quantity: {animal.lastUpdated.milkingQuantity}</li>
-              <li>Health Status: {animal.lastUpdated.healthStatus}</li>
-              <li>Living Status: {animal.lastUpdated.livingStatus}</li>
-              <li>Weight: {animal.lastUpdated.weight}</li>
-              <li>Updated Date: {animal.lastUpdated.updatedDate}</li>
-            </ul>
+            {editingId === animal.id ? (
+              <div className="grid grid-cols-2 gap-4">
+                {Object.keys(editData).map((key) => (
+                  <input
+                    key={key}
+                    type="text"
+                    value={editData[key]}
+                    onChange={(e) => handleChange(key, e.target.value)}
+                    placeholder={key}
+                    className="p-2 border rounded-lg"
+                  />
+                ))}
+                <button
+                  onClick={handleSave}
+                  className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
+                >
+                  Save
+                </button>
+              </div>
+            ) : (
+              <ul className="list-disc ml-6">
+                {Object.entries(animal.lastUpdated).map(([key, value]) => (
+                  <li key={key}>
+                    {key}: {value}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          {/* Edit Button */}
           <button
             onClick={() => handleEdit(animal.id)}
             className="bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700"
