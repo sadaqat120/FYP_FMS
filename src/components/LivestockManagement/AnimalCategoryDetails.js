@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+
 import EachAnimalDetails from "./EachAnimalDetails";
+
 import { Pie } from "react-chartjs-2";
+
 import {
   Chart as ChartJS,
   ArcElement,
@@ -13,7 +16,6 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const AnimalCategoryDetails = ({ category, total }) => {
   const [showEachAnimal, setShowEachAnimal] = useState(false);
 
-  // Chart data configurations
   const pieDataConfigs = {
     Sex: {
       labels: ["Male", "Female"],
@@ -62,33 +64,49 @@ const AnimalCategoryDetails = ({ category, total }) => {
 
       {/* Pie Charts Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-        {Object.entries(pieDataConfigs).map(([key, { labels, data, backgroundColor }], index) => (
-          <div
-            key={index}
-            className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center"
-            style={{ height: "250px", maxWidth: "100%" }}
-          >
-            <h4 className="text-center text-lg font-bold mb-4">{key}</h4>
-            <Pie
-              data={{
-                labels,
-                datasets: [
-                  {
-                    data,
-                    backgroundColor,
-                    hoverBackgroundColor: backgroundColor,
-                  },
-                ],
+        {Object.entries(pieDataConfigs).map(
+          ([key, { labels, data, backgroundColor }], index) => (
+            <div
+              key={index}
+              className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center"
+              style={{
+                height: "320px", // Reduced height for better fit
+                overflow: "hidden", // Prevent overflow
               }}
-              options={{
-                maintainAspectRatio: true,
-                responsive: true,
-              }}
-              height={100}
-              width={100}
-            />
-          </div>
-        ))}
+            >
+              <h4 className="text-center text-lg font-bold mb-4">{key}</h4>
+              <div
+                style={{
+                  width: "100%", // Ensure the chart fits within the container
+                  maxWidth: "240px", // Set a max width to avoid overflow
+                  height: "240px", // Fixed height for uniformity
+                }}
+              >
+                <Pie
+                  data={{
+                    labels,
+                    datasets: [
+                      {
+                        data,
+                        backgroundColor,
+                        hoverBackgroundColor: backgroundColor,
+                      },
+                    ],
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false, // Allow for flexible resizing
+                    plugins: {
+                      legend: {
+                        position: "bottom",
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </div>
+          )
+        )}
       </div>
 
       {/* Show Each Animal Details */}
