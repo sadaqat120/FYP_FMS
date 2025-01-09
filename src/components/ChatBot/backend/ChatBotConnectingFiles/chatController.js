@@ -12,7 +12,7 @@ const {
 } = require("@google/generative-ai");
 const { GoogleAIFileManager } = require("@google/generative-ai/server");
 
-const apiKey = "AIzaSyAPHWEsdZs3wUqbqktGWEjeGAruyN9sY1Q";
+const apiKey = "api key";
 const genAI = new GoogleGenerativeAI(apiKey);
 const fileManager = new GoogleAIFileManager(apiKey);
 
