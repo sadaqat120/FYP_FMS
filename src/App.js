@@ -7,6 +7,7 @@ import Profile from "./components/profile/Profile";
 import ServiceReminders from "./components/ServiceReminders/ServiceReminders";
 import CropManagement from "./components/CropManagement/CropManagement";
 import LivestockManagement from "./components/LivestockManagement/LivestockManagement";
+import MainChatBot from "./components/ChatBot/frontend/MainChatBot";
 
 const App = () => {
   const [isSignUpOpen, setSignUpOpen] = useState(false);
@@ -16,7 +17,7 @@ const App = () => {
   const [showServiceReminders, setShowServiceReminders] = useState(false);
   const [showCropManagement, setShowCropManagement] = useState(false);
   const [showLivestockManagement, setShowLivestockManagement] = useState(false);
-
+  const [showChatBot, setShowChatBot] = useState(false);
   const handleLoginSuccess = () => {
     setLoggedIn(true);
     setLoginOpen(false);
@@ -33,6 +34,7 @@ const App = () => {
     setShowServiceReminders(false);
     setShowCropManagement(false);
     setShowLivestockManagement(false);
+    setShowChatBot(false)
   };
 
   const handleServiceReminderClick = () => {
@@ -59,6 +61,14 @@ const App = () => {
     }
   };
 
+  const handleChatBotClick = () => {
+    if (!isLoggedIn) {
+      setLoginOpen(true);
+    } else {
+      setShowChatBot(true);
+    }
+  };
+
   return (
     <>
       <Navbar
@@ -76,6 +86,8 @@ const App = () => {
         <CropManagement onBackToLanding={navigateToLanding} />
       ) : showLivestockManagement ? (
         <LivestockManagement onBackToLanding={navigateToLanding} />
+      ) : showChatBot ? (
+        <MainChatBot onBackToLanding={navigateToLanding} />
       ) : (
         <LandingPage
           isLoggedIn={isLoggedIn}
@@ -83,6 +95,7 @@ const App = () => {
           onReminderServiceClick={handleServiceReminderClick}
           onCropManagementClick={handleCropManagementClick}
           onLivestockManagementClick={handleLivestockManagementClick}
+          onChatBotClick={handleChatBotClick}
         />
       )}
       <SignUpModal
