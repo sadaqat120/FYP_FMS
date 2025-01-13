@@ -26,7 +26,7 @@ function MainChatBot() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-200 h-[89vh]">
+    <div className="flex justify-center items-center h-screen bg-gray-200 h-[88vh]">
       <div className="flex flex-col h-[85vh] w-full max-w-[600px] bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden">
         {/* Header Section */}
         <header className="bg-green-600 text-white p-4 text-center font-bold text-lg">

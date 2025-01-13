@@ -12,7 +12,7 @@ const {
 } = require("@google/generative-ai");
 const { GoogleAIFileManager } = require("@google/generative-ai/server");
 
-const apiKey = "api key";
+const apiKey = "AIzaSyAPHWEsdZs3wUqbqktGWEjeGAruyN9sY1Q";
 const genAI = new GoogleGenerativeAI(apiKey);
 const fileManager = new GoogleAIFileManager(apiKey);
 
@@ -27,7 +27,6 @@ async function uploadToGemini(filePath, mimeType) {
     displayName: path.basename(filePath),
   });
   const file = uploadResult.file;
-  // console.log(`Uploaded file ${file.displayName} as: ${file.name}`);
   return file;
 }
 
@@ -35,7 +34,6 @@ async function uploadToGemini(filePath, mimeType) {
  * Waits for the given files to be active.
  */
 async function waitForFilesActive(files) {
-  // console.log("Waiting for file processing...");
   for (const name of files.map((file) => file.name)) {
     let file = await fileManager.getFile(name);
     while (file.state === "PROCESSING") {
@@ -47,7 +45,6 @@ async function waitForFilesActive(files) {
       throw Error(`File ${file.name} failed to process`);
     }
   }
-  // console.log("...all files ready\n");
 }
 
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -63,7 +60,15 @@ const generationConfig = {
 const sendMessage = async (req, res) => {
   const { userMessage, lang } = req.body;
 
-  // const folderPath = FolderPathImported
+  // Prepend language-specific instruction to the runtime message only
+  let runtimeMessage;
+  if (lang === "urdu") {
+    runtimeMessage = `Answer in Urdu: ${userMessage}`;
+  } else if (lang === "english") {
+    runtimeMessage = `Answer in English: ${userMessage}`;
+  } else {
+    return res.status(400).json({ error: "Invalid language selection" });
+  }
 
   // Get all files in the directory
   const filesInFolder = fs.readdirSync(folderPath);
@@ -84,7 +89,6 @@ const sendMessage = async (req, res) => {
     }
     
     // Upload file and add to list
-    // console.log("ChatBot Thinking...");
     const uploadedFile = await uploadToGemini(filePath, mimeType);
     files.push(uploadedFile);
   }
@@ -107,7 +111,7 @@ const sendMessage = async (req, res) => {
       ],
     });
 
-    const result = await chatSession.sendMessage(userMessage);
+    const result = await chatSession.sendMessage(runtimeMessage);
 
     let response = result.response.text();
     if (lang === "urdu") response = "اردو میں جواب: " + response;
