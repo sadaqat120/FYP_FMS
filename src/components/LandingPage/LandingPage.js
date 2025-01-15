@@ -17,7 +17,8 @@ const LandingPage = ({
   onReminderServiceClick,
   onCropManagementClick,
   onLivestockManagementClick,
-  onChatBotClick
+  onResourceManagementClick,
+  onChatBotClick,
 }) => {
   const handleGetStarted = () => {
     const servicesSection = document.getElementById("services-section");
@@ -96,7 +97,16 @@ const LandingPage = ({
               animals.
             </p>
           </div>
-          <div className="service-item">
+          <div
+            className="service-item"
+            onClick={() => {
+              if (isLoggedIn) {
+                onResourceManagementClick();
+              } else {
+                navigateToLogin();
+              }
+            }}
+          >
             <img src={service3} alt="Resource Management" />
             <h3>Resource Management</h3>
             <p>
