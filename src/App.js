@@ -7,6 +7,7 @@ import Profile from "./components/profile/Profile";
 import ServiceReminders from "./components/ServiceReminders/ServiceReminders";
 import CropManagement from "./components/CropManagement/CropManagement";
 import LivestockManagement from "./components/LivestockManagement/LivestockManagement";
+import ResourceManagement from "./components/ResourceManagement/ManageResources";
 import MainChatBot from "./components/ChatBot/frontend/MainChatBot";
 
 const App = () => {
@@ -17,7 +18,9 @@ const App = () => {
   const [showServiceReminders, setShowServiceReminders] = useState(false);
   const [showCropManagement, setShowCropManagement] = useState(false);
   const [showLivestockManagement, setShowLivestockManagement] = useState(false);
+  const [showResourceManagement, setShowResourceManagement] = useState(false);
   const [showChatBot, setShowChatBot] = useState(false);
+
   const handleLoginSuccess = () => {
     setLoggedIn(true);
     setLoginOpen(false);
@@ -34,7 +37,8 @@ const App = () => {
     setShowServiceReminders(false);
     setShowCropManagement(false);
     setShowLivestockManagement(false);
-    setShowChatBot(false)
+    setShowResourceManagement(false);
+    setShowChatBot(false);
   };
 
   const handleServiceReminderClick = () => {
@@ -58,6 +62,14 @@ const App = () => {
       setLoginOpen(true);
     } else {
       setShowLivestockManagement(true);
+    }
+  };
+
+  const handleResourceManagementClick = () => {
+    if (!isLoggedIn) {
+      setLoginOpen(true);
+    } else {
+      setShowResourceManagement(true);
     }
   };
 
@@ -86,6 +98,8 @@ const App = () => {
         <CropManagement onBackToLanding={navigateToLanding} />
       ) : showLivestockManagement ? (
         <LivestockManagement onBackToLanding={navigateToLanding} />
+      ) : showResourceManagement ? (
+        <ResourceManagement onBackToLanding={navigateToLanding} />
       ) : showChatBot ? (
         <MainChatBot onBackToLanding={navigateToLanding} />
       ) : (
@@ -95,6 +109,7 @@ const App = () => {
           onReminderServiceClick={handleServiceReminderClick}
           onCropManagementClick={handleCropManagementClick}
           onLivestockManagementClick={handleLivestockManagementClick}
+          onResourceManagementClick={handleResourceManagementClick}
           onChatBotClick={handleChatBotClick}
         />
       )}
