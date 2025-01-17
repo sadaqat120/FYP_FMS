@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import ResourceDetails from "./ResourceDetails"; // Now integrated into the component
 
 const Dashboard = ({ storeName }) => {
   const [expandedSections, setExpandedSections] = useState({
@@ -11,66 +10,115 @@ const Dashboard = ({ storeName }) => {
   const resourceDetails = {
     humanResource: [
       {
-        id: "01",
-        workerName: "John Doe",
-        role: "Field Worker",
+        id: 1,
+        name: "John Doe",
+        position: "Field Worker",
         dateEnrolled: "2024-12-15",
         notes: "Excellent worker",
-        payouts: [
+        payments: [
           {
-            workerId: "01",
-            workerName: "John Doe",
+            workerId: 1,
+            name: "John Doe",
             startDate: "2024-12-15",
             endDate: "2025-01-10",
             payment: "$1000",
-            notes: "On-time payment",
             paymentDate: "2025-01-11",
+            notes: "On-time payment",
+          },
+        ],
+      },
+      {
+        id: 2,
+        name: "Jane Smith",
+        position: "Veterinarian",
+        dateEnrolled: "2023-02-15",
+        notes: "Specialist in livestock health",
+        payments: [
+          {
+            workerId: 2,
+            name: "Jane Smith",
+            startDate: "2024-01-01",
+            endDate: "2024-01-31",
+            payment: "$2000",
+            paymentDate: "2024-02-01",
+            notes: "Monthly consultation fee",
           },
         ],
       },
     ],
     unitResource: [
       {
-        resourceId: "101",
-        type: "Fertilizer",
-        name: "Nitrogen Fertilizer",
-        uniqueId: "101",
-        quantity: "50 kg",
-        costPerUnit: "$5",
-        totalCost: "$250",
-        dateAdded: "2024-12-10",
-        notes: "Use for winter crops",
+        resourceId: 1,
+        type: "Seed",
+        name: "Corn Seeds",
+        uniqueId: "U001",
+        quantity: 50,
+        unit: "kg",
+        costPerUnit: 200,
+        totalCost: 10000,
+        notes: "For spring planting",
+        dateAdded: "2024-01-05",
         usage: [
           {
-            resourceId: "101",
-            quantityUsed: "10 kg",
-            remainingQuantity: "40 kg",
-            usagePurpose: "Planting",
-            usageDate: "2025-01-01",
-            notes: "Winter crop sowing",
+            resourceId: 1,
+            quantityUsed: 10,
+            purpose: "Planting",
+            date: "2024-02-01",
+            notes: "Used for corn planting",
+          },
+        ],
+      },
+      {
+        resourceId: 2,
+        type: "Fertilizer",
+        name: "Urea",
+        uniqueId: "U002",
+        quantity: 100,
+        unit: "kg",
+        costPerUnit: 50,
+        totalCost: 5000,
+        notes: "To boost crop yield",
+        dateAdded: "2024-01-20",
+        usage: [
+          {
+            resourceId: 2,
+            quantityUsed: 20,
+            purpose: "Fertilizing corn",
+            date: "2024-02-15",
+            notes: "For spring crops",
           },
         ],
       },
     ],
     itemResource: [
       {
-        resourceId: "201",
-        type: "Tractor",
-        name: "John Deere 5050",
-        uniqueId: "201",
-        numberOfItems: "1",
-        costPerItem: "$25,000",
-        totalCost: "$25,000",
+        resourceId: 1,
+        type: "Equipment",
+        name: "Tractor",
+        uniqueId: "I001",
+        numberOfItems: 1,
+        costPerItem: 500000,
+        totalCost: 500000,
         condition: "New",
-        dateAdded: "2024-11-20",
-        notes: "Used for field plowing",
-        repairs: [
+        dateAdded: "2024-01-01",
+        notes: "Purchased for farm operations",
+        maintenance: [
           {
-            resourceId: "201",
-            maintenanceType: "Repair",
-            cost: "$500",
-            date: "2025-01-05",
-            notes: "Oil leakage repair",
+            resourceId: 1,
+            maintenanceType: "Servicing",
+            cost: 5000,
+            date: "2024-02-10",
+            notes: "Routine servicing",
+          },
+        ],
+        sales: [
+          {
+            resourceId: 1,
+            itemsSold: 1,
+            salePricePerUnit: 600000,
+            totalSalePrice: 600000,
+            date: "2024-03-01",
+            notes: "Sold for profit",
           },
         ],
       },
@@ -96,7 +144,7 @@ const Dashboard = ({ storeName }) => {
         <ul className="list-disc ml-6">
           <li>Reminder: Update resource records.</li>
           <li>Alert: Scheduled maintenance for tractor on 2025-01-20.</li>
-          <li>New hire: John Doe joined as Field Worker.</li>
+          <li> New hire: John Doe joined as Field Worker.</li>
         </ul>
       </div>
 
@@ -115,10 +163,140 @@ const Dashboard = ({ storeName }) => {
             </button>
           </div>
           {expandedSections[resourceType] && (
-            <ResourceDetails
-              resourceType={resourceType}
-              resourceData={resourceDetails[resourceType]}
-            />
+            <div className="p-4">
+              {resourceDetails[resourceType].map((resource) => (
+                <div key={resource.id || resource.resourceId} className="mb-6 border-8 p-4 rounded-lg">
+                  <h3 className="text-lg font-bold">
+                    {resourceType === "humanResource" ? `ID #${resource.id}: ${resource.name}` : `ID #${resource.resourceId}: ${resource.name}`}
+                  </h3>
+                  <ul className="list-disc ml-6 mb-4">
+                    {resourceType === "humanResource" ? (
+                      <>
+                        <li>Position: {resource.position}</li>
+                        <li>Date Enrolled: {resource.dateEnrolled}</li>
+                        <li>Notes: {resource.notes}</li>
+                      </>
+                    ) : (
+                      <>
+                        <li>Type: {resource.type}</li>
+                        <li>Quantity: {resource.quantity} {resource.unit}</li>
+                        <li>Cost per Unit: {resource.costPerUnit}</li>
+                        <li>Total Cost: {resource.totalCost}</li>
+                        <li>Notes: {resource.notes}</li>
+                        <li>Date Added: {resource.dateAdded}</li>
+                      </>
+                    )}
+                  </ul>
+                  {resourceType === "humanResource" && (
+                    <table className="table-auto w-full text-left border">
+                      <thead className="bg-gray-200">
+                        <tr>
+                          <th className="p-2">Worker ID</th>
+                          <th className="p-2">Name</th>
+                          <th className="p-2">Start Date</th>
+                          <th className="p-2">End Date</th>
+                          <th className="p-2">Payment</th>
+                          <th className="p-2">Payment Date</th>
+                          <th className="p-2">Notes</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {resource.payments.map((payment, idx) => (
+                          <tr key={idx} className="border-t">
+                            <td className="p-2">{payment.workerId}</td>
+                            <td className="p-2">{payment.name}</td>
+                            <td className="p-2">{payment.startDate}</td>
+                            <td className="p-2">{payment.endDate}</td>
+                            <td className="p-2">{payment.payment}</td>
+                            <td className="p-2">{payment.paymentDate}</td>
+                            <td className="p-2">{payment.notes}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                  {resourceType === "unitResource" && (
+                    <table className="table-auto w-full text-left border">
+                      <thead className="bg-gray-200">
+                        <tr>
+                          <th className="p-2">Resource ID</th>
+                          <th className="p-2">Quantity Used</th>
+                          <th className="p-2">Remaining Quantity</th>
+                          <th className="p-2">Purpose</th>
+                          <th className="p-2">Date</th>
+                          <th className="p-2">Notes</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {resource.usage.map((use, idx) => (
+                          <tr key={idx} className="border-t">
+                            <td className="p-2">{use.resourceId}</td>
+                            <td className="p-2">{use.quantityUsed} {resource.unit}</td>
+                            <td className="p-2">{resource.quantity - use.quantityUsed} {resource.unit}</td>
+                            <td className="p-2">{use.purpose}</td>
+                            <td className="p-2">{ use.date}</td>
+                            <td className="p-2">{use.notes}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                  {resourceType === "itemResource" && (
+                    <>
+                      <h4 className="font-bold mb-2">Maintenance Records</h4>
+                      <table className="table-auto w-full text-left border">
+                        <thead className="bg-gray-200">
+                          <tr>
+                            <th className="p-2">Resource ID</th>
+                            <th className="p-2">Maintenance Type</th>
+                            <th className="p-2">Cost</th>
+                            <th className="p-2">Date</th>
+                            <th className="p-2">Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {resource.maintenance.map((maintain, idx) => (
+                            <tr key={idx} className="border-t">
+                              <td className="p-2">{maintain.resourceId}</td>
+                              <td className="p-2">{maintain.maintenanceType}</td>
+                              <td className="p-2">{maintain.cost}</td>
+                              <td className="p-2">{maintain.date}</td>
+                              <td className="p-2">{maintain.notes}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+
+                      <h4 className="font-bold mb-2 mt-4">Sales Records</h4>
+                      <table className="table-auto w-full text-left border">
+                        <thead className="bg-gray-200">
+                          <tr>
+                            <th className="p-2">Resource ID</th>
+                            <th className="p-2">Items Sold</th>
+                            <th className="p-2">Sale Price per Unit</th>
+                            <th className="p-2">Total Sale Price</th>
+                            <th className="p-2">Date</th>
+                            <th className="p-2">Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {resource.sales.map((sale, idx) => (
+                            <tr key={idx} className="border-t">
+                              <td className="p-2">{sale.resourceId}</td>
+                              <td className="p-2">{sale.itemsSold}</td>
+                              <td className="p-2">{sale.salePricePerUnit}</td>
+                              <td className="p-2">{sale.totalSalePrice}</td>
+                              <td className="p-2">{sale.date}</td>
+                              <td className="p-2">{sale.notes}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
       ))}
