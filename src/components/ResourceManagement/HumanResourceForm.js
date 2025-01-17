@@ -124,13 +124,14 @@ const HumanResourceForm = () => {
               onChange={(e) => handleInputChange("workerId", e.target.value)}
               className="p-2 border rounded-lg"
             />
-            <input
+ <input
               type="text"
               placeholder="Worker Name"
               value={formData.workerName || ""}
               onChange={(e) => handleInputChange("workerName", e.target.value)}
               className="p-2 border rounded-lg"
             />
+            <label className="block text-gray-700">Work Start Date</label>
             <input
               type="date"
               placeholder="Work Start Date"
@@ -140,6 +141,7 @@ const HumanResourceForm = () => {
               }
               className="p-2 border rounded-lg"
             />
+            <label className="block text-gray-700">Work End Date</label>
             <input
               type="date"
               placeholder="Work End Date"
