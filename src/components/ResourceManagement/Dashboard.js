@@ -134,9 +134,9 @@ const Dashboard = ({ storeName }) => {
 
   return (
     <div className="p-4">
-      <h1 className="text-3xl font-bold text-green-600 mb-6 text-center">
+      {/* <h1 className="text-3xl font-bold text-green-600 mb-6 text-center">
         {storeName} - Dashboard
-      </h1>
+      </h1> */}
 
       {/* Notifications Section */}
       <div className="bg-gray-100 p-4 rounded-lg shadow-lg mb-6">
