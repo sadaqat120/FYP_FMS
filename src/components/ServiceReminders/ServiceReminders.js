@@ -20,15 +20,15 @@ const ServiceReminders = ({ goBack }) => {
     }
   };
 
-  const handleBackToServices = () => {
-    const servicesSection = document.getElementById("services-section");
-    if (servicesSection) {
-      servicesSection.scrollIntoView({ behavior: "smooth" });
-    }
-    else{
-      alert("Button needs to fix!")
-    }
-  };
+  // const handleBackToServices = () => {
+  //   const servicesSection = document.getElementById("services-section");
+  //   if (servicesSection) {
+  //     servicesSection.scrollIntoView({ behavior: "smooth" });
+  //   }
+  //   else{
+  //     alert("Button needs to fix!")
+  //   }
+  // };
 
   return (
     <div className="service-reminders">
@@ -54,12 +54,12 @@ const ServiceReminders = ({ goBack }) => {
               Resource Management
             </button>
           </div>
-          <button
+          {/* <button
             onClick={handleBackToServices}
             className="button-secondary"
           >
             Back
-          </button>
+          </button> */}
         </div>
       )}
     </div>

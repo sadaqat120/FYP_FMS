@@ -9,6 +9,7 @@ import CropManagement from "./components/CropManagement/CropManagement";
 import LivestockManagement from "./components/LivestockManagement/LivestockManagement";
 import ResourceManagement from "./components/ResourceManagement/ResourceManagement";
 import MainChatBot from "./components/ChatBot/frontend/MainChatBot";
+import ReportGeneration from "./components/ReportGeneration/ReportGeneration";
 
 const App = () => {
   const [isSignUpOpen, setSignUpOpen] = useState(false);
@@ -19,6 +20,7 @@ const App = () => {
   const [showCropManagement, setShowCropManagement] = useState(false);
   const [showLivestockManagement, setShowLivestockManagement] = useState(false);
   const [showResourceManagement, setShowResourceManagement] = useState(false);
+  const [showReportGeneration, setShowReportGeneration] = useState(false);
   const [showChatBot, setShowChatBot] = useState(false);
 
   const handleLoginSuccess = () => {
@@ -38,6 +40,7 @@ const App = () => {
     setShowCropManagement(false);
     setShowLivestockManagement(false);
     setShowResourceManagement(false);
+    setShowReportGeneration(false);
     setShowChatBot(false);
   };
 
@@ -73,6 +76,14 @@ const App = () => {
     }
   };
 
+  const handleReportGenerationClick = () => {
+    if (!isLoggedIn) {
+      setLoginOpen(true);
+    } else {
+      setShowReportGeneration(true);
+    }
+  };
+
   const handleChatBotClick = () => {
     if (!isLoggedIn) {
       setLoginOpen(true);
@@ -100,6 +111,8 @@ const App = () => {
         <LivestockManagement onBackToLanding={navigateToLanding} />
       ) : showResourceManagement ? (
         <ResourceManagement onBackToLanding={navigateToLanding} />
+      ) : showReportGeneration ? (
+        <ReportGeneration onBackToLanding={navigateToLanding} />
       ) : showChatBot ? (
         <MainChatBot onBackToLanding={navigateToLanding} />
       ) : (
@@ -111,6 +124,7 @@ const App = () => {
           onLivestockManagementClick={handleLivestockManagementClick}
           onResourceManagementClick={handleResourceManagementClick}
           onChatBotClick={handleChatBotClick}
+          onReportGenerationClick={handleReportGenerationClick}
         />
       )}
       <SignUpModal
