@@ -4,11 +4,9 @@ import ResourceReport from "./ResourceReport";
 
 const ReportGeneration = ({ onBackToLanding }) => {
   const [selectedOption, setSelectedOption] = useState("");
-  const [isReportGenerated, setIsReportGenerated] = useState(false);
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
-    setIsReportGenerated(false);
   };
 
   const renderSelectedReport = () => {
@@ -39,7 +37,7 @@ const ReportGeneration = ({ onBackToLanding }) => {
               Crop Management Report
             </button>
             <button
-              className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+              className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
               onClick={() => handleOptionSelect("Resource Management Report")}
             >
               Resource Management Report
