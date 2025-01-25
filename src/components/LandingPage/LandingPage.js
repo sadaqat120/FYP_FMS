@@ -1,4 +1,5 @@
 import React from "react";
+import HeroSectionImage from "../../assets/main_page.jpeg"
 import visionImage from "../../assets/vision.jpg";
 import service1 from "../../assets/service1.jpg";
 import service2 from "../../assets/service2.jpg";
@@ -28,7 +29,11 @@ const LandingPage = ({
 
   return (
     <div>
-      <section className="hero" id="hero-section">
+      <section className="hero" id="hero-section" style={
+        {
+          backgroundImage: `url(${HeroSectionImage})`
+        }
+      }>
         <div className="hero-overlay"></div>
         <div className="hero-content">
           <h1>Smart Farming, Managed Together!</h1>

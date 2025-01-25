@@ -1,6 +1,5 @@
 /* ===== Hero Section ===== */
 .hero {
-    background-image: url('D:\MERN Stack Development\ReactJs Tutorial Complete\ReactJs Learning by Code Implementation\basic_learning\src\assets\main_page.jpeg');
     background-size: cover;
     background-position: center;
     color: white;
