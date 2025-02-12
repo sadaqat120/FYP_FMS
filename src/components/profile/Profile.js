@@ -46,7 +46,7 @@ const Profile = ({ onClose }) => {
         <ul className="profile-menu">
           <li onClick={() => setActiveTab("changeProfile")}>Change Profile</li>
           <li onClick={() => setActiveTab("notifications")}>Notifications</li>
-          <li onClick={() => setActiveTab("languages")}>Languages</li>
+          {/* <li onClick={() => setActiveTab("languages")}>Languages</li> */}
           <li onClick={() => setActiveTab("changePassword")}>Change Password</li>
           <li onClick={() => setActiveTab("location")}>Location</li>
           <li onClick={() => setActiveTab("logout")}>Logout</li>
