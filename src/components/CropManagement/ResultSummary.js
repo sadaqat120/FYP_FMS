@@ -3,6 +3,7 @@ import "./CropLandCostTrckingResultSummaryFarm.css";
 
 const ResultSummary = () => {
   const [formData, setFormData] = useState({
+    plotName: "", // Added Plot Name/ID field
     totalYield: "",
     yieldGrade: "",
     expectedYield: "",
@@ -11,7 +12,7 @@ const ResultSummary = () => {
     notes: "",
     totalCost: "",
     sellRevenue: "",
-    netProfit: "", // Add netProfit to the state
+    netProfit: "",
     finalNotes: "",
   });
 
@@ -35,6 +36,16 @@ const ResultSummary = () => {
     <div className="form-container">
       <h2>Result Summary</h2>
       <form onSubmit={handleSubmit}>
+        {/* New Plot Name/ID Field */}
+        <input
+          type="text"
+          name="plotName"
+          placeholder="Plot Name/ID"
+          value={formData.plotName}
+          onChange={handleChange}
+          required
+        />
+
         <input
           type="number"
           name="totalYield"

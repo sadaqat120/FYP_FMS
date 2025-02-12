@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import "./CropLandCostTrckingResultSummaryFarm.css"
+import "./CropLandCostTrckingResultSummaryFarm.css";
+
 const CostTracking = () => {
   const [selectedActivity, setSelectedActivity] = useState("");
   const [formData, setFormData] = useState({
+    plotName: "",  // Added Plot Name/ID field
     equipmentCost: "",
     materialCost: "",
     laborCost: "",
@@ -15,6 +17,7 @@ const CostTracking = () => {
   const handleActivityChange = (e) => {
     setSelectedActivity(e.target.value);
     setFormData({
+      ...formData, // Keep the plot name when changing activity
       equipmentCost: "",
       materialCost: "",
       laborCost: "",
@@ -38,6 +41,17 @@ const CostTracking = () => {
     <div className="form-container">
       <h2>Cost Tracking</h2>
       <form onSubmit={handleSubmit}>
+        {/* New Plot Name/ID Field */}
+        <input
+          type="text"
+          name="plotName"
+          placeholder="Plot Name/ID"
+          value={formData.plotName}
+          onChange={handleChange}
+          required
+        />
+
+        {/* Activity Selection */}
         <select
           name="activity"
           value={selectedActivity}
@@ -55,6 +69,7 @@ const CostTracking = () => {
           <option value="postHarvesting">Post-Harvesting</option>
         </select>
 
+        {/* Conditional Fields Based on Activity Selection */}
         {selectedActivity && (
           <>
             <input
