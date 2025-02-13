@@ -29,7 +29,9 @@ const App = () => {
   };
 
   const handleSignUpSuccess = () => {
+    alert("User Registered Successfully")
     setSignUpOpen(false);
+    setLoggedIn(true);
   };
 
   const toggleProfile = () => setShowProfile(!showProfile);
