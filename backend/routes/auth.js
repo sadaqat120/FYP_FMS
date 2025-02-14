@@ -46,23 +46,32 @@ router.post("/signup", async (req, res) => {
 });
 
 
-// Login Route
+// Login Route (Supports Email & Phone)
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { emailOrPhone, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    // Find user by email OR phone
+    const user = await User.findOne({
+      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }]
+    });
+
     if (!user) return res.status(400).json({ message: "Invalid email or password." });
 
+    // Compare hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid email or password." });
 
+    // Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.json({ token: `Bearer ${token}`, user: { id: user._id, firstName: user.firstName, lastName: user.lastName, email: user.email } });
+
+    res.json({
+      token: `Bearer ${token}`,
+      user: { id: user._id, firstName: user.firstName, lastName: user.lastName, email: user.email }
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error.", error: err.message });
   }
 });
 
 module.exports = router;
-
