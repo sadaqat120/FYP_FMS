@@ -28,11 +28,12 @@ const App = () => {
     setLoginOpen(false);
   };
 
-  const handleSignUpSuccess = () => {
-    alert("User Registered Successfully")
+  const handleSignUpSuccess = (email, password) => {
     setSignUpOpen(false);
     setLoggedIn(true);
+    // handleLogin({ emailOrPhone: email, password });
   };
+  
 
   const toggleProfile = () => setShowProfile(!showProfile);
 
