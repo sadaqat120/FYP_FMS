@@ -1,11 +1,11 @@
 import React from "react";
 import "./Navbar.css";
-import profileImage from "../assets/sadaqat.jpg";
 
 const Navbar = ({
   onSignUpClick,
   onLoginClick,
   isLoggedIn,
+  userDetails,
   onProfileClick,
   onNavigateToLanding,
 }) => {
@@ -17,6 +17,13 @@ const Navbar = ({
         section.scrollIntoView({ behavior: "smooth" });
       }
     }, 0);
+  };
+
+  // Extract initials from userDetails
+  const getInitials = (user) => {
+    if (!user) return "";
+    const { firstName = "", lastName = "" } = user;
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
   return (
@@ -38,12 +45,9 @@ const Navbar = ({
       </div>
       <div className="nav-auth">
         {isLoggedIn ? (
-          <img
-            src={profileImage}
-            alt="Profile"
-            className="profile-icon"
-            onClick={onProfileClick}
-          />
+          <div className="profile-initials" onClick={onProfileClick}>
+            {getInitials(userDetails)}
+          </div>
         ) : (
           <>
             <button onClick={onSignUpClick} className="button">

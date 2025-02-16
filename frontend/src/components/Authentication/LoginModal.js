@@ -28,7 +28,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
       const response = await fetch("http://localhost:5000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ emailOrPhone, password }) // Sending as "emailOrPhone"
+        body: JSON.stringify({ emailOrPhone, password }) // Sending email or phone for login
       });
 
       const data = await response.json();
@@ -39,9 +39,12 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
       }
 
       setSuccess("Login successful!");
+
+      // Pass firstName and lastName to onLoginSuccess
       setTimeout(() => {
-        onLoginSuccess(data);
-        onClose();
+        const { firstName, lastName } = data.user; // Extract user details
+        onLoginSuccess(firstName, lastName); // Call with required data
+        onClose(); // Close modal
       }, 1000);
     } catch (err) {
       setError("Something went wrong. Please try again.");

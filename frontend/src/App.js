@@ -22,16 +22,18 @@ const App = () => {
   const [showResourceManagement, setShowResourceManagement] = useState(false);
   const [showReportGeneration, setShowReportGeneration] = useState(false);
   const [showChatBot, setShowChatBot] = useState(false);
+  const [userDetails, setUserDetails] = useState(null); // Store user details (firstName, lastName)
 
-  const handleLoginSuccess = () => {
-    setLoggedIn(true);
+  const handleLoginSuccess = (firstName, lastName) => {
     setLoginOpen(false);
+    setUserDetails({ firstName, lastName });
+    setLoggedIn(true);
   };
 
-  const handleSignUpSuccess = (email, password) => {
+  const handleSignUpSuccess = (firstName, lastName) => {
     setSignUpOpen(false);
+    setUserDetails({ firstName, lastName });
     setLoggedIn(true);
-    // handleLogin({ emailOrPhone: email, password });
   };
   
 
@@ -101,6 +103,7 @@ const App = () => {
         onSignUpClick={() => setSignUpOpen(true)}
         onLoginClick={() => setLoginOpen(true)}
         isLoggedIn={isLoggedIn}
+        userDetails={userDetails} // Pass user details to Navbar
         onProfileClick={toggleProfile}
         onNavigateToLanding={navigateToLanding}
       />
