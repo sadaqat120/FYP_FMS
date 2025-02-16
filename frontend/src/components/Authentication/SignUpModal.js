@@ -27,7 +27,7 @@ const SignUpModal = ({ isOpen, onClose, onSignUpSuccess }) => {
       if (response.status === 201) {
         alert("User Registered Successfully")
         // onSignUpSuccess();
-        onSignUpSuccess(formData.firstName, formData.lastName);
+        onSignUpSuccess(formData.firstName, formData.lastName, formData.email);
         onClose();
       }
     } catch (err) {

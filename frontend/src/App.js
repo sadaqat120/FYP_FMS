@@ -24,15 +24,15 @@ const App = () => {
   const [showChatBot, setShowChatBot] = useState(false);
   const [userDetails, setUserDetails] = useState(null); // Store user details (firstName, lastName)
 
-  const handleLoginSuccess = (firstName, lastName) => {
+  const handleLoginSuccess = (firstName, lastName, email) => {
     setLoginOpen(false);
-    setUserDetails({ firstName, lastName });
+    setUserDetails({ firstName, lastName, email});
     setLoggedIn(true);
   };
 
-  const handleSignUpSuccess = (firstName, lastName) => {
+  const handleSignUpSuccess = (firstName, lastName, email) => {
     setSignUpOpen(false);
-    setUserDetails({ firstName, lastName });
+    setUserDetails({ firstName, lastName, email });
     setLoggedIn(true);
   };
   
@@ -108,7 +108,7 @@ const App = () => {
         onNavigateToLanding={navigateToLanding}
       />
       {showProfile ? (
-        <Profile onClose={toggleProfile} />
+        <Profile onClose={toggleProfile} userDetails={userDetails}/>
       ) : showServiceReminders ? (
         <ServiceReminders onBackToLanding={navigateToLanding} />
       ) : showCropManagement ? (

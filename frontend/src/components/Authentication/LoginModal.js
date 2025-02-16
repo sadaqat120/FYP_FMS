@@ -42,8 +42,8 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
       // Pass firstName and lastName to onLoginSuccess
       setTimeout(() => {
-        const { firstName, lastName } = data.user; // Extract user details
-        onLoginSuccess(firstName, lastName); // Call with required data
+        const { firstName, lastName, email } = data.user; // Extract user details
+        onLoginSuccess(firstName, lastName, email); // Call with required data
         onClose(); // Close modal
       }, 1000);
     } catch (err) {
