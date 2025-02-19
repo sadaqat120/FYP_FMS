@@ -25,8 +25,7 @@ const SignUpModal = ({ isOpen, onClose, onSignUpSuccess }) => {
     try {
       const response = await axios.post("http://localhost:5000/auth/signup", formData);
       if (response.status === 201) {
-        alert("User Registered Successfully")
-        // onSignUpSuccess();
+        alert("User  Registered Successfully");
         onSignUpSuccess(formData.firstName, formData.lastName, formData.email);
         onClose();
       }

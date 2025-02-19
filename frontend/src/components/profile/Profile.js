@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./Profile.css";
 import ChangeProfile from "./ChangeProfile";
 import Notifications from "./Notifications";
@@ -6,13 +7,43 @@ import Languages from "./Languages";
 import ChangePassword from "./ChangePassword";
 import LogoutPrompt from "./LogoutPrompt";
 import Location from "./Location";
-import profile_picture from "../../assets/sadaqat.jpg";
 
 const Profile = ({ onClose, userDetails }) => {
   const [activeTab, setActiveTab] = useState("");
+  const [profilePicture, setProfilePicture] = useState(null);
 
-  // Extract firstName, lastName, and email from userDetails prop
   const { firstName, lastName, email } = userDetails || {};
+
+  useEffect(() => {
+    if (userDetails?.profilePicture) {
+      setProfilePicture(`/uploads/profilePictures/${userDetails.profilePicture}`);
+    }
+  }, [userDetails]);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("profilePicture", file);
+    console.log(file)
+
+    try {
+      console.log(formData)
+      const response = await axios.post("http://localhost:5000/profilePictureUpload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (response.data.imagePath) {
+        
+        const imageUrl = `http://localhost:5000/uploads/profilePictures/${response.data.imagePath}`;
+        console.log(imageUrl)
+        setProfilePicture(imageUrl);
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -40,9 +71,27 @@ const Profile = ({ onClose, userDetails }) => {
   return (
     <div className="profile-page">
       <div className="profile-left">
-        <img src={profile_picture} alt="Profile" className="profile-picture" />
+        <div className="profile-picture-wrapper">
+          {profilePicture ? (
+            <img src={profilePicture} alt="Profile" className="profile-picture" />
+          ) : (
+            <div className="profile-placeholder">
+              {firstName?.[0]}{lastName?.[0]}
+            </div>
+          )}
 
-        {/* Display user's actual name and email */}
+          <label htmlFor="file-upload" className="upload-icon">
+            <span style={{ fontSize: "26px" }}>📷</span>
+            <span>Add photo</span>
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            style={{ display: "none" }}
+            onChange={handleImageUpload}
+          />
+        </div>
+
         <h3>{firstName} {lastName}</h3>
         <p>{email}</p>
 

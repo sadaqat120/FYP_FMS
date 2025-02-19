@@ -28,7 +28,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
       const response = await fetch("http://localhost:5000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ emailOrPhone, password }) // Sending email or phone for login
+        body: JSON.stringify({ emailOrPhone, password }), // Sending email or phone for login
       });
 
       const data = await response.json();
@@ -38,6 +38,8 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         return;
       }
 
+      // Store the token in localStorage
+      localStorage.setItem("token", data.token);
       setSuccess("Login successful!");
 
       // Pass firstName and lastName to onLoginSuccess
