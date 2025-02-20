@@ -1,3 +1,4 @@
+// Updated SignUpModal.js (Auto-login after Sign-up)
 import React, { useState } from "react";
 import axios from "axios";
 import "./Models.css";
@@ -18,19 +19,41 @@ const SignUpModal = ({ isOpen, onClose, onSignUpSuccess }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Decode JWT token (helper function)
+  const decodeToken = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload;
+    } catch (err) {
+      console.error("Invalid token format:", err);
+      return null;
+    }
+  };
+
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setError("");
 
     try {
       const response = await axios.post("http://localhost:5000/auth/signup", formData);
       if (response.status === 201) {
-        alert("User  Registered Successfully");
-        onSignUpSuccess(formData.firstName, formData.lastName, formData.email);
-        onClose();
+        const { token } = response.data;
+
+        // Store the token in localStorage
+        localStorage.setItem("token", token);
+
+        // Decode token and auto-login
+        const payload = decodeToken(token);
+        if (payload?.firstName && payload?.lastName && payload?.email) {
+          onSignUpSuccess(payload.firstName, payload.lastName, payload.email);
+          alert("User Registered Successfully!");
+          onClose();
+        } else {
+          setError("Failed to retrieve user information.");
+        }
       }
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
         setError("An error occurred. Please try again.");

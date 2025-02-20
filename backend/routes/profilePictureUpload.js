@@ -27,7 +27,6 @@ router.post("/", profilePictureUpload.single("profilePicture"), (req, res) => {
   }
 
   const imagePath = req.file.filename;
-  console.log(imagePath)
   res.json({ imagePath });
 });
 

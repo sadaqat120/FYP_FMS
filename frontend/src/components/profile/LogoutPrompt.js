@@ -1,9 +1,11 @@
+// Updated LogoutPrompt.js
 import React from "react";
 import "./LogoutPrompt.css";
 
 const LogoutPrompt = ({ onClose }) => {
   const handleLogout = () => {
-    window.location.reload(); // Simulate logging out by reloading
+    localStorage.removeItem("token"); // Clear the stored token
+    window.location.reload(); // Reload to reset application state
   };
 
   return (

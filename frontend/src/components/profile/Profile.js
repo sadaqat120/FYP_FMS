@@ -26,10 +26,8 @@ const Profile = ({ onClose, userDetails }) => {
 
     const formData = new FormData();
     formData.append("profilePicture", file);
-    console.log(file)
 
     try {
-      console.log(formData)
       const response = await axios.post("http://localhost:5000/profilePictureUpload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -37,7 +35,6 @@ const Profile = ({ onClose, userDetails }) => {
       if (response.data.imagePath) {
         
         const imageUrl = `http://localhost:5000/uploads/profilePictures/${response.data.imagePath}`;
-        console.log(imageUrl)
         setProfilePicture(imageUrl);
       }
     } catch (error) {
