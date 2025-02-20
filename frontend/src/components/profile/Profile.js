@@ -1,3 +1,4 @@
+// Profile.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Profile.css";
@@ -20,27 +21,31 @@ const Profile = ({ onClose, userDetails }) => {
     }
   }, [userDetails]);
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+// Profile.js
+const handleImageUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const formData = new FormData();
-    formData.append("profilePicture", file);
+  const formData = new FormData();
+  formData.append("profilePicture", file);
 
-    try {
-      const response = await axios.post("http://localhost:5000/profilePictureUpload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+  try {
+    const token = localStorage.getItem("token"); // Assuming you store the token in localStorage
+    const response = await axios.post("http://localhost:5000/profilePictureUpload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "Authorization": token, // Include the token in the request
+      },
+    });
 
-      if (response.data.imagePath) {
-        
-        const imageUrl = `http://localhost:5000/uploads/profilePictures/${response.data.imagePath}`;
-        setProfilePicture(imageUrl);
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error);
+    if (response.data.imagePath) {
+      const imageUrl = `http://localhost:5000/uploads/profilePictures/${response.data.imagePath}`;
+      setProfilePicture(imageUrl);
     }
-  };
+  } catch (error) {
+    console.error("Error uploading image:", error);
+  }
+};
 
   const renderContent = () => {
     switch (activeTab) {
@@ -90,7 +95,7 @@ const Profile = ({ onClose, userDetails }) => {
         </div>
 
         <h3>{firstName} {lastName}</h3>
-        <p>{email}</p>
+ <p>{email}</p>
 
         <ul className="profile-menu">
           <li onClick={() => setActiveTab("changeProfile")}>Change Profile</li>
