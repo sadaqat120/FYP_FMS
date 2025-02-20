@@ -1,0 +1,129 @@
+### Pure Components in React
+
+A **Pure Component** is a special type of React component that provides performance optimization by implementing a shallow comparison of its props and state. It automatically prevents unnecessary re-renders if the props or state haven’t changed.
+
+---
+
+### **What is a Pure Component?**
+- It’s a version of a class component.
+- Extends `React.PureComponent` instead of `React.Component`.
+- Automatically implements a shallow comparison in the `shouldComponentUpdate()` lifecycle method.
+
+---
+
+### **Key Features**
+1. **Shallow Comparison**:
+   - Compares primitive types (e.g., numbers, strings) by value.
+   - Compares objects and arrays by reference.
+2. **Prevents Re-renders**:
+   - If the props or state are the same (shallow comparison), the component won’t re-render, saving computational resources.
+
+---
+
+### **How to Use Pure Components**
+```jsx
+import React, { PureComponent } from "react";
+
+class MyComponent extends PureComponent {
+  render() {
+    console.log("Rendered!");
+    return (
+      <div>
+        <h1>Hello, {this.props.name}!</h1>
+      </div>
+    );
+  }
+}
+
+export default MyComponent;
+```
+
+---
+
+### **Purpose of Pure Components**
+1. **Performance Optimization**:
+   - Reduces the number of re-renders in your app.
+   - Improves the performance of applications with large UI updates or heavy data handling.
+2. **Readability and Maintainability**:
+   - Automatically handles re-rendering logic, reducing the need for manual optimizations.
+
+---
+
+### **Without Pure Components**
+- Regular components (`React.Component`) re-render every time the parent re-renders, even if their props/state haven’t changed.
+- To prevent this, you must manually implement the `shouldComponentUpdate()` lifecycle method.
+
+---
+
+### **Shallow Comparison Explained**
+- **Primitives** (e.g., numbers, strings): Compared by value.
+  - `5 === 5` → `true`
+- **Objects/Arrays**: Compared by reference.
+  - `{a: 1} === {a: 1}` → `false`
+  - `const obj = {a: 1}; obj === obj` → `true`
+
+This means that if you pass new object/array references (even with the same content), the Pure Component will consider them as "different" and re-render.
+
+---
+
+### **Advantages of Pure Components**
+1. **Performance Boost**:
+   - Reduces unnecessary re-renders.
+   - Efficient for large, complex UIs.
+2. **Simplified Optimization**:
+   - Removes the need to write custom `shouldComponentUpdate()` methods.
+
+---
+
+### **Disadvantages of Pure Components**
+1. **Shallow Comparison Limitations**:
+   - Doesn’t detect deep changes in objects or arrays.
+   - For example:
+     ```jsx
+     const obj1 = { a: 1 };
+     const obj2 = { a: 1 };
+
+     // PureComponent treats obj1 and obj2 as different, even though their content is the same.
+     ```
+   - You may need to use **immutability** or libraries like `lodash.isequal` for deep comparison if needed.
+2. **Not Suitable for All Cases**:
+   - If your component relies on deeply nested data or frequently changes, a Pure Component may not provide significant benefits.
+3. **Overhead for Small Components**:
+   - If the component is small and simple, the overhead of using a Pure Component might outweigh its benefits.
+
+---
+
+### **When to Use Pure Components**
+1. When you have components with **frequent re-renders** due to props or state updates.
+2. When props/state changes are mostly shallow and not deeply nested.
+3. When you aim for better performance in large applications.
+
+---
+
+### **Alternatives to Pure Components**
+1. **Functional Components with `React.memo`**:
+   - `React.memo` is used to wrap functional components and achieve similar optimization:
+     ```jsx
+     const MyFunctionalComponent = React.memo(({ name }) => {
+       console.log("Rendered!");
+       return <h1>Hello, {name}!</h1>;
+     });
+     ```
+2. **Custom `shouldComponentUpdate()`**:
+   - For fine-grained control, you can write your own comparison logic:
+     ```jsx
+     class MyComponent extends React.Component {
+       shouldComponentUpdate(nextProps, nextState) {
+         return nextProps.value !== this.props.value;
+       }
+     }
+     ```
+
+---
+
+### **Summary**
+- **Pure Components** optimize rendering by comparing props and state shallowly.
+- They save computational resources by avoiding unnecessary renders.
+- Use them when props/state changes are shallow or frequent.
+- Be cautious with deeply nested objects/arrays.
+- For functional components, use `React.memo` as an equivalent optimization technique.

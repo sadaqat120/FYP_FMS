@@ -1,0 +1,58 @@
+/* ===== Services Section ===== */
+.services {
+    background-color: #388e3c; /* Green background */
+    color: white;
+    padding: 50px 20px;
+  }
+  
+  .services h2 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  
+  .services .service-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+  }
+  
+  .services .service-item {
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.1); /* Light white background */
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .services .service-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .services .service-item img {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .services .service-item h3 {
+    margin-top: 10px;
+    font-size: 20px;
+    color: white;
+  }
+  
+  .services .service-item p {
+    line-height: 1.6;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .service-item:hover img {
+    transform: scale(1.2);
+    transition: transform 0.3s ease;
+  }
+  
+  

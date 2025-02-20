@@ -1,0 +1,66 @@
+/* ===== Navbar ===== */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #004d40; /* Dark green */
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .navbar h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .navbar .nav-center {
+    font-weight: bold;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .navbar .nav-center a {
+    color: white;
+    padding: 5px 10px;
+    transition: color 0.3s ease, background 0.3s ease;
+  }
+  
+  .navbar .nav-center a:hover {
+    color: #004d40;
+    background: white;
+    border-radius: 5px;
+  }
+  .nav-auth {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .nav-auth a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .nav-auth a:hover {
+    text-decoration: underline;
+  }
+  
+  .profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+    transition: transform 0.3s ease;
+  }
+  
+  .profile-icon:hover {
+    transform: scale(1.1);
+  }
+  
+
+  
