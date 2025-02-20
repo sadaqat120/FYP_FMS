@@ -24,15 +24,15 @@ const App = () => {
   const [showChatBot, setShowChatBot] = useState(false);
   const [userDetails, setUserDetails] = useState(null); // Store user details (firstName, lastName)
 
-  const handleLoginSuccess = (firstName, lastName, email) => {
+  const handleLoginSuccess = (firstName, lastName, email, profilePicture) => {
     setLoginOpen(false);
-    setUserDetails({ firstName, lastName, email});
+    setUserDetails({ firstName, lastName, email, profilePicture});
     setLoggedIn(true);
   };
 
-  const handleSignUpSuccess = (firstName, lastName, email) => {
+  const handleSignUpSuccess = (firstName, lastName, email, profilePicture) => {
     setSignUpOpen(false);
-    setUserDetails({ firstName, lastName, email });
+    setUserDetails({ firstName, lastName, email, profilePicture});
     setLoggedIn(true);
   };
   

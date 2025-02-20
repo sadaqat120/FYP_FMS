@@ -28,7 +28,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     if (token) {
       const payload = decodeToken(token);
       if (payload?.firstName && payload?.lastName && payload?.email) {
-        onLoginSuccess(payload.firstName, payload.lastName, payload.email);
+        onLoginSuccess(payload.firstName, payload.lastName, payload.email, payload.profilePicture);
       } else {
         localStorage.removeItem("token"); // Clean up invalid token
       }

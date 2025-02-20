@@ -17,7 +17,7 @@ const Profile = ({ onClose, userDetails }) => {
 
   useEffect(() => {
     if (userDetails?.profilePicture) {
-      setProfilePicture(`/uploads/profilePictures/${userDetails.profilePicture}`);
+      setProfilePicture(`http://localhost:5000/uploads/profilePictures/${userDetails.profilePicture}`);
     }
   }, [userDetails]);
 

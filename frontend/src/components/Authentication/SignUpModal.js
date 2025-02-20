@@ -45,7 +45,7 @@ const SignUpModal = ({ isOpen, onClose, onSignUpSuccess }) => {
         // Decode token and auto-login
         const payload = decodeToken(token);
         if (payload?.firstName && payload?.lastName && payload?.email) {
-          onSignUpSuccess(payload.firstName, payload.lastName, payload.email);
+          onSignUpSuccess(payload.firstName, payload.lastName, payload.email, payload.profilePicture);
           alert("User Registered Successfully!");
           onClose();
         } else {
