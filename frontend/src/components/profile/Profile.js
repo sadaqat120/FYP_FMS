@@ -9,43 +9,64 @@ import ChangePassword from "./ChangePassword";
 import LogoutPrompt from "./LogoutPrompt";
 import Location from "./Location";
 
-const Profile = ({ onClose, userDetails }) => {
+const Profile = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState("");
+  const [userDetails, setUserDetails] = useState({}); // Store user details
   const [profilePicture, setProfilePicture] = useState(null);
 
-  const { firstName, lastName, email } = userDetails || {};
-
   useEffect(() => {
-    if (userDetails?.profilePicture) {
-      setProfilePicture(`http://localhost:5000/uploads/profilePictures/${userDetails.profilePicture}`);
+    const fetchUserDetails = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await axios.get("http://localhost:5000/auth/user", {
+            headers: {
+              Authorization: token,
+            },
+          });
+          setUserDetails(response.data);
+          if (response.data.profilePicture) {
+            setProfilePicture(`http://localhost:5000/uploads/profilePictures/${response.data.profilePicture}`);
+          }
+        } catch (error) {
+          console.error("Error fetching user details:", error);
+        }
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("profilePicture", file);
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post("http://localhost:5000/profilePictureUpload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Authorization": token,
+        },
+      });
+
+      if (response.data.imagePath) {
+        const imageUrl = `http://localhost:5000/uploads/profilePictures/${response.data.imagePath}`;
+        setProfilePicture(imageUrl);
+
+        // Update user details with the new profile picture
+        setUserDetails((prevDetails) => ({
+          ...prevDetails,
+          profilePicture: response.data.imagePath,
+        }));
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
     }
-  }, [userDetails]);
-
-// Profile.js
-const handleImageUpload = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const formData = new FormData();
-  formData.append("profilePicture", file);
-
-  try {
-    const token = localStorage.getItem("token"); // Assuming you store the token in localStorage
-    const response = await axios.post("http://localhost:5000/profilePictureUpload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        "Authorization": token, // Include the token in the request
-      },
-    });
-
-    if (response.data.imagePath) {
-      const imageUrl = `http://localhost:5000/uploads/profilePictures/${response.data.imagePath}`;
-      setProfilePicture(imageUrl);
-    }
-  } catch (error) {
-    console.error("Error uploading image:", error);
-  }
-};
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -78,7 +99,7 @@ const handleImageUpload = async (e) => {
             <img src={profilePicture} alt="Profile" className="profile-picture" />
           ) : (
             <div className="profile-placeholder">
-              {firstName?.[0]}{lastName?.[0]}
+              {userDetails.firstName?.[0]}{userDetails.lastName?.[0]}
             </div>
           )}
 
@@ -94,8 +115,8 @@ const handleImageUpload = async (e) => {
           />
         </div>
 
-        <h3>{firstName} {lastName}</h3>
- <p>{email}</p>
+        <h3>{userDetails.firstName} {userDetails.lastName}</h3>
+        <p>{userDetails.email}</p>
 
         <ul className="profile-menu">
           <li onClick={() => setActiveTab("changeProfile")}>Change Profile</li>

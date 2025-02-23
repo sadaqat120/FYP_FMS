@@ -2,6 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
@@ -87,6 +88,18 @@ router.post("/login", async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: "Server error.", error: err.message });
+  }
+});
+
+// Fetch user details route
+router.get("/user", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id; // Get user ID from the token
+    const user = await User.findById(userId).select("firstName lastName email profilePicture"); // Select only necessary fields
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    res.status(500).json({ error: "Failed to fetch user details" });
   }
 });
 
