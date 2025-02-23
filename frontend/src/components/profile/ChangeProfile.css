@@ -1,30 +1,34 @@
 .change-profile {
-    padding: 20px;
-  }
-  
-  .change-profile h2 {
-    margin-bottom: 20px;
-  }
-  
-  .change-profile form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .change-profile input {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .change-profile button {
-    padding: 10px 20px;
-    background: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
+  padding: 20px;
+}
+
+.change-profile h2 {
+  margin-bottom: 20px;
+}
+
+.change-profile form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.change-profile input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.change-profile button {
+  padding: 10px 20px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}

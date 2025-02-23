@@ -95,12 +95,27 @@ router.post("/login", async (req, res) => {
 router.get("/user", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id; // Get user ID from the token
-    const user = await User.findById(userId).select("firstName lastName email profilePicture"); // Select only necessary fields
+    const user = await User.findById(userId).select("firstName lastName email phone profilePicture"); // Select only necessary fields
     res.json(user);
   } catch (error) {
     console.error("Error fetching user details:", error);
     res.status(500).json({ error: "Failed to fetch user details" });
   }
 });
+
+// Update user details route
+router.put("/user", authMiddleware, async (req, res) => {
+  const { firstName, lastName, email, phone } = req.body;
+
+  try {
+    const userId = req.user.id; // Get user ID from the token
+    await User.findByIdAndUpdate(userId, { firstName, lastName, email, phone });
+    res.json({ message: "User  details updated successfully." });
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    res.status(500).json({ error: "Failed to update user details" });
+  }
+});
+
 
 module.exports = router;
