@@ -117,5 +117,30 @@ router.put("/user", authMiddleware, async (req, res) => {
   }
 });
 
+// Change password route
+router.post("/change-password", authMiddleware, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  try {
+    const userId = req.user.id; // Get user ID from the token
+    const user = await User.findById(userId);
+
+    // Check if the current password matches
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Current password is incorrect." });
+    }
+
+    // Hash the new password and update it
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    await User.findByIdAndUpdate(userId, { password: hashedNewPassword });
+
+    res.json({ message: "Password changed successfully." });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ error: "Failed to change password." });
+  }
+});
+
 
 module.exports = router;
