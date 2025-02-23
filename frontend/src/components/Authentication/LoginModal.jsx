@@ -43,7 +43,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         // Store token in localStorage
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
-        
         setLoading(false);
         onLoginSuccess(response.data.user);
         onClose();

@@ -1,4 +1,6 @@
+// Updated frontend component
 import React, { useState } from "react";
+import axios from "axios";
 import "./CropLandCostTrckingResultSummaryFarm.css";
 
 const LandRecord = () => {
@@ -9,21 +11,63 @@ const LandRecord = () => {
     soilType: "",
     landType: "",
     landSuitability: "",
-    notes: "",
+    additionalNotes: "",
+    farmFormId: "" // You'll need to provide this from your farm form context/state
   });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Land Record Saved Successfully!");
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Get token from localStorage or your auth state management
+      const token = localStorage.getItem('token');
+      
+      const response = await axios.post(
+        'http://localhost:5000/api/records/create',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.data.success) {
+        alert('Land Record Saved Successfully!');
+        // Clear form
+        setFormData({
+          plotName: "",
+          area: "",
+          location: "",
+          soilType: "",
+          landType: "",
+          landSuitability: "",
+          additionalNotes: "",
+          farmFormId: ""
+        });
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || 'Error saving land record');
+      alert(error.response?.data?.message || 'Error saving land record');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="form-container">
       <h2>Land Record</h2>
+      {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -74,13 +118,13 @@ const LandRecord = () => {
           onChange={handleChange}
         ></textarea>
         <textarea
-          name="notes"
+          name="additionalNotes"
           placeholder="Additional Notes"
-          value={formData.notes}
+          value={formData.additionalNotes}
           onChange={handleChange}
         ></textarea>
-        <button type="submit" className="button">
-          Save
+        <button type="submit" className="button" disabled={loading}>
+          {loading ? 'Saving...' : 'Save'}
         </button>
       </form>
     </div>

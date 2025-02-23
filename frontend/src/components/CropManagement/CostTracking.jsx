@@ -1,5 +1,8 @@
+// Updated frontend component
 import React, { useState } from "react";
-import "./CropLandCostTrckingResultSummaryFarm.css"
+import axios from "axios";
+import "./CropLandCostTrckingResultSummaryFarm.css";
+
 const CostTracking = () => {
   const [selectedActivity, setSelectedActivity] = useState("");
   const [formData, setFormData] = useState({
@@ -12,6 +15,10 @@ const CostTracking = () => {
     notes: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+
   const handleActivityChange = (e) => {
     setSelectedActivity(e.target.value);
     setFormData({
@@ -23,20 +30,74 @@ const CostTracking = () => {
       date: "",
       notes: "",
     });
+    setError(null);
+    setSuccessMessage("");
   };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError(null);
+    setSuccessMessage("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Cost Tracking Saved Successfully!");
+    setLoading(true);
+    setError(null);
+    setSuccessMessage("");
+
+    // // Validate farmId
+    // if (!farmId) {
+    //   setError("Farm ID is missing. Please ensure you're in a valid farm context.");
+    //   setLoading(false);
+    //   return;
+    // }
+
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await axios.post(
+        'http://localhost:5000/api/cost-tracking/create',
+        {
+          activity: selectedActivity,
+          ...formData,
+          // farmFormId: farmId
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.data.success) {
+        setSuccessMessage('Cost Tracking Record Saved Successfully!');
+        // Reset form
+        setSelectedActivity("");
+        setFormData({
+          equipmentCost: "",
+          materialCost: "",
+          laborCost: "",
+          transportCost: "",
+          miscCost: "",
+          date: "",
+          notes: "",
+        });
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || 'Error saving cost tracking record');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="form-container">
       <h2>Cost Tracking</h2>
+      {error && <div className="error-message">{error}</div>}
+      {successMessage && <div className="success-message">{successMessage}</div>}
+      
       <form onSubmit={handleSubmit}>
         <select
           name="activity"
@@ -64,6 +125,7 @@ const CostTracking = () => {
               value={formData.equipmentCost}
               onChange={handleChange}
               required
+              min="0"
             />
             <input
               type="number"
@@ -71,6 +133,8 @@ const CostTracking = () => {
               placeholder="Material Cost"
               value={formData.materialCost}
               onChange={handleChange}
+              required
+              min="0"
             />
             <input
               type="number"
@@ -78,6 +142,8 @@ const CostTracking = () => {
               placeholder="Labor Cost"
               value={formData.laborCost}
               onChange={handleChange}
+              required
+              min="0"
             />
             <input
               type="number"
@@ -85,6 +151,8 @@ const CostTracking = () => {
               placeholder="Transport Cost"
               value={formData.transportCost}
               onChange={handleChange}
+              required
+              min="0"
             />
             <input
               type="number"
@@ -92,6 +160,8 @@ const CostTracking = () => {
               placeholder="Miscellaneous Cost"
               value={formData.miscCost}
               onChange={handleChange}
+              required
+              min="0"
             />
             <input
               type="date"
@@ -108,8 +178,12 @@ const CostTracking = () => {
             ></textarea>
           </>
         )}
-        <button type="submit" className="button">
-          Save
+        <button 
+          type="submit" 
+          className="button"
+          disabled={loading  || !selectedActivity}
+        >
+          {loading ? 'Saving...' : 'Save'}
         </button>
       </form>
     </div>

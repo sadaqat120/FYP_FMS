@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./CropLandCostTrckingResultSummaryFarm.css";
+import axios from "axios";
 
 const ResultSummary = () => {
+  // Define API URL at the component level
+  const API_URL = 'http://localhost:5000/api/result-summaries';
+
   const [formData, setFormData] = useState({
     totalYield: "",
     yieldGrade: "",
@@ -11,29 +15,96 @@ const ResultSummary = () => {
     notes: "",
     totalCost: "",
     sellRevenue: "",
-    netProfit: "", // Add netProfit to the state
+    netProfit: "",
     finalNotes: "",
   });
 
-  // Calculate net profit whenever sellRevenue or totalCost changes
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     const netProfit =
       parseFloat(formData.sellRevenue || 0) - parseFloat(formData.totalCost || 0);
     setFormData((prevData) => ({ ...prevData, netProfit: netProfit.toFixed(2) }));
   }, [formData.sellRevenue, formData.totalCost]);
 
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Result Summary Saved Successfully!");
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      console.log('Token:', token ? 'Present' : 'Missing');
+      
+      if (!token) {
+        throw new Error('Please login to save result summary');
+      }
+
+      console.log('Sending request to:', API_URL);
+      console.log('Request payload:', formData);
+
+      const response = await axios.post(
+        API_URL,
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('Response:', response);
+
+      if (response.data.success) {
+        alert('Result Summary Saved Successfully!');
+        setFormData({
+          totalYield: "",
+          yieldGrade: "",
+          expectedYield: "",
+          unit: "",
+          satisfaction: "",
+          notes: "",
+          totalCost: "",
+          sellRevenue: "",
+          netProfit: "",
+          finalNotes: "",
+        });
+      }
+    } catch (err) {
+      console.error('Full error:', err);
+      console.error('Error response:', err.response);
+      
+      // More detailed error handling
+      let errorMessage = 'An error occurred while saving the result summary.';
+      if (err.response) {
+        // Server responded with an error
+        errorMessage = err.response.data?.message || errorMessage;
+      } else if (err.request) {
+        // Request was made but no response received
+        errorMessage = 'No response received from server. Please check your connection.';
+      } else {
+        // Error in request setup
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
+      alert(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="form-container">
       <h2>Result Summary</h2>
+      {error && <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
       <form onSubmit={handleSubmit}>
         <input
           type="number"
@@ -108,7 +179,6 @@ const ResultSummary = () => {
           onChange={handleChange}
           required
         />
-        {/* Display net profit */}
         <input
           type="number"
           name="netProfit"
@@ -122,8 +192,13 @@ const ResultSummary = () => {
           value={formData.finalNotes}
           onChange={handleChange}
         ></textarea>
-        <button type="submit" className="button">
-          Save
+        <button 
+          type="submit" 
+          className="button" 
+          disabled={loading}
+          style={{ opacity: loading ? 0.7 : 1 }}
+        >
+          {loading ? 'Saving...' : 'Save'}
         </button>
       </form>
     </div>
