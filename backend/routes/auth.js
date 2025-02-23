@@ -9,7 +9,7 @@ const router = express.Router();
 // Updated Sign-up Route (Generates JWT Token)
 router.post("/signup", async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, password, profilePicture = null } = req.body; // Allow profilePicture to be null
+    const { firstName, lastName, email, phone, password, profilePicture = null, location = null } = req.body; // Allow profilePicture to be null
 
     // Check if either email or phone already exists
     const existingUser  = await User.findOne({
@@ -37,6 +37,7 @@ router.post("/signup", async (req, res) => {
       phone,
       password: hashedPassword,
       profilePicture, // Store the profile picture (null or path)
+      location,
     });
 
     await newUser .save();
@@ -95,7 +96,7 @@ router.post("/login", async (req, res) => {
 router.get("/user", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id; // Get user ID from the token
-    const user = await User.findById(userId).select("firstName lastName email phone profilePicture"); // Select only necessary fields
+    const user = await User.findById(userId).select("firstName lastName email phone profilePicture location"); // Select only necessary fields
     res.json(user);
   } catch (error) {
     console.error("Error fetching user details:", error);
@@ -142,5 +143,18 @@ router.post("/change-password", authMiddleware, async (req, res) => {
   }
 });
 
+// Update user location route
+router.put("/user/location", authMiddleware, async (req, res) => {
+  const { location } = req.body;
+
+  try {
+    const userId = req.user.id; // Get user ID from the token
+    await User.findByIdAndUpdate(userId, { location });
+    res.json({ message: "Location updated successfully." });
+  } catch (error) {
+    console.error("Error updating location:", error);
+    res.status(500).json({ error: "Failed to update location." });
+  }
+});
 
 module.exports = router;

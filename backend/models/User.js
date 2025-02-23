@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   phone: { type: String, required: true },
   profilePicture: { type: String }, // URL of the profile picture
+  location: { type: String }, // New field for user location
 });
 
 // Hash the password before saving
