@@ -1,4 +1,3 @@
-// LivestockManagement.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Dashboard from "./Dashboard";
@@ -54,7 +53,7 @@ const LivestockManagement = ({ onBackToLanding }) => {
 
   const handleEditFarm = async (farmId) => {
     try {
-      const response = await axios.put(`http://localhost:5000/farms/${farmId}`, { name: editFarmName }, {
+      const response = await axios.put(`http://localhost:5000/farms/nameEditing/${farmId}`, { name: editFarmName }, {
         headers: {
           Authorization: localStorage.getItem("token"),
         },
@@ -120,7 +119,7 @@ const LivestockManagement = ({ onBackToLanding }) => {
           {activeTab === "dashboard" ? (
             <Dashboard />
           ) : (
-            <ManageLivestock />
+            <ManageLivestock activeFarmId={activeFarm._id} />
           )}
         </>
       ) : (
@@ -142,7 +141,7 @@ const LivestockManagement = ({ onBackToLanding }) => {
                     <button
                       onClick={() => {
                         setEditFarmName(farm.name);
-                        setActiveFarm(farm._id);
+                        setActiveFarm(farm);
                         setEditDialogOpen(true);
                       }}
                       className="bg-blue-500 text-white py-1 px-2 rounded-lg mr-2"
@@ -216,7 +215,7 @@ const LivestockManagement = ({ onBackToLanding }) => {
               required
             />
             <button
-              onClick={() => handleEditFarm(activeFarm)}
+              onClick={() => handleEditFarm(activeFarm._id)}
               className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
             >
               Save Changes

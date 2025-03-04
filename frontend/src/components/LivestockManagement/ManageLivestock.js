@@ -4,14 +4,14 @@ import AnimalRegistrationForm from "./AnimalRegistrationForm";
 import ExpensesForm from "./ExpensesForm";
 import ProductionForm from "./ProductionForm";
 
-const ManageLivestock = () => {
+const ManageLivestock = ({ activeFarmId }) => {
   const [activeSection, setActiveSection] = useState("");
   const [sex, setSex] = useState("");
 
   const renderActiveSection = () => {
     switch (activeSection) {
       case "farmRecord":
-        return <FarmRecordForm />;
+        return <FarmRecordForm farmId={activeFarmId} />;
       case "registration":
         return <AnimalRegistrationForm sex={sex} setSex={setSex} />;
       case "expenses":
