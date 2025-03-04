@@ -37,29 +37,13 @@ router.get("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// Edit a farm details like the livestock and count
+// Edit a farm details
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const { location, totalLivestockCount } = req.body; // Include new fields
+    const { name, location, totalLivestockCount } = req.body; // Include new fields
     const updatedFarm = await Farm.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },
-      { location, totalLivestockCount }, // Update new fields
-      { new: true }
-    );
-    if (!updatedFarm) return res.status(404).json({ message: "Farm not found" });
-    res.status(200).json(updatedFarm);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating farm", error });
-  }
-});
-
-// Edit a farm name
-router.put("/nameEditing/:id", authMiddleware, async (req, res) => {
-  try {
-    const { name } = req.body;
-    const updatedFarm = await Farm.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user.id },
-      { name },
+      { name, location, totalLivestockCount }, // Update new fields
       { new: true }
     );
     if (!updatedFarm) return res.status(404).json({ message: "Farm not found" });

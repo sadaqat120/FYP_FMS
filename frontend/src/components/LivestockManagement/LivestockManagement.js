@@ -53,7 +53,7 @@ const LivestockManagement = ({ onBackToLanding }) => {
 
   const handleEditFarm = async (farmId) => {
     try {
-      const response = await axios.put(`http://localhost:5000/farms/nameEditing/${farmId}`, { name: editFarmName }, {
+      const response = await axios.put(`http://localhost:5000/farms/${farmId}`, { name: editFarmName }, {
         headers: {
           Authorization: localStorage.getItem("token"),
         },
