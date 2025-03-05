@@ -14,6 +14,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/auth", require("./routes/auth"));
 app.use("/profilePictureUpload", require("./routes/profilePictureUpload"));
 app.use("/farms", require("./routes/farmRoutes")); // Add this line
+app.use("/animals", require("./routes/animalRoutes")); // Animal routes
 
 
 const PORT = process.env.PORT || 5000;
