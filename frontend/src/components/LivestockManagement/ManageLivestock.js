@@ -13,7 +13,7 @@ const ManageLivestock = ({ activeFarmId }) => {
       case "registration":
         return <AnimalRegistrationForm farmId={activeFarmId} />;
       case "expenses":
-        return <ExpensesForm />;
+        return <ExpensesForm farmId={activeFarmId} />;
       case "production":
         return <ProductionForm />;
       default:
