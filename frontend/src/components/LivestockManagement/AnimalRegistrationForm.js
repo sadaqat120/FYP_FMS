@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const AnimalRegistrationForm = ({ farmId, sex, setSex }) => {
+const AnimalRegistrationForm = ({ farmId }) => {
+  const [sex, setSex] = useState("");
   const [animalId, setAnimalId] = useState("");
   const [animalCategory, setAnimalCategory] = useState("");
   const [otherCategory, setOtherCategory] = useState("");

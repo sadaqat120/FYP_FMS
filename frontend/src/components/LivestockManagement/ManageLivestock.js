@@ -6,14 +6,12 @@ import ProductionForm from "./ProductionForm";
 
 const ManageLivestock = ({ activeFarmId }) => {
   const [activeSection, setActiveSection] = useState("");
-  const [sex, setSex] = useState("");
-
   const renderActiveSection = () => {
     switch (activeSection) {
       case "farmRecord":
         return <FarmRecordForm farmId={activeFarmId} />;
       case "registration":
-        return <AnimalRegistrationForm farmId={activeFarmId} sex={sex} setSex={setSex} />;
+        return <AnimalRegistrationForm farmId={activeFarmId} />;
       case "expenses":
         return <ExpensesForm />;
       case "production":
