@@ -68,12 +68,14 @@ const AnimalRegistrationForm = ({ farmId, sex, setSex }) => {
           Authorization: localStorage.getItem("token"),
         },
       });
-      console.log("Animal data saved:", response.data);
+      console.log("Animal data saved:", response);
       alert("Data Saved Successfully!");
     } catch (error) {
       console.error("Error saving animal data:", error);
       if (error.response && error.response.status === 400) {
-        setErrors({ animalId: "Animal ID must be unique." });
+        setErrors({ animalId: error.response.data.message }); // Use the message from the backend
+      } else {
+        setErrors({ general: "An unexpected error occurred. Please try again." });
       }
     }
   };
@@ -266,6 +268,7 @@ const AnimalRegistrationForm = ({ farmId, sex, setSex }) => {
         >
           Save
         </button>
+        {errors.general && <p className="text-red-500 text-sm">{errors.general}</p>}
       </form>
     </div>
   );
