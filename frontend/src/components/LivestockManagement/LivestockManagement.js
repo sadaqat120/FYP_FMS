@@ -117,7 +117,7 @@ const LivestockManagement = ({ onBackToLanding }) => {
           </div>
 
           {activeTab === "dashboard" ? (
-            <Dashboard />
+            <Dashboard activeFarmId={activeFarm._id}/>
           ) : (
             <ManageLivestock activeFarmId={activeFarm._id} />
           )}
