@@ -156,7 +156,7 @@ const AnimalCategoryDetails = ({ category, farmId }) => {
         {showEachAnimal ? "Hide Each Animal Details" : "Show Each Animal Details"}
       </button>
 
-      {showEachAnimal && <EachAnimalDetails category={category} />}
+      {showEachAnimal && <EachAnimalDetails category={category}  farmId={farmId} />}
     </div>
   );
 };
