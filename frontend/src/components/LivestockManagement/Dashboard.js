@@ -183,7 +183,7 @@ const Dashboard = ({ activeFarmId }) => {
                 </button>
               </div>
               {selectedCategory === category && (
-                <AnimalCategoryDetails category={category} total={farmData.totalLivestockCount} />
+                <AnimalCategoryDetails category={category} farmId={activeFarmId} /> /* Pass farmId here */
               )}
             </div>
           ))
