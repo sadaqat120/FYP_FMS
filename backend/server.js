@@ -17,6 +17,7 @@ app.use("/farms", require("./routes/farmRoutes")); // Add this line
 app.use("/animals", require("./routes/animalRoutes")); // Animal routes
 app.use("/expenses", require("./routes/expenseRoutes")); // Expense routes
 app.use("/productions", require("./routes/productionRoutes")); // Production routes
+app.use("/stores", require("./routes/storeRoutes")); // New store routes
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
