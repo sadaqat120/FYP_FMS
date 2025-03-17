@@ -3,7 +3,7 @@ import HumanResourceForm from "./HumanResourceForm";
 import UnitResourceForm from "./UnitResourceForm";
 import ItemResourceForm from "./ItemResourceForm";
 
-const ManageResources = () => {
+const ManageResources = ({ storeId }) => {
   const [activeSection, setActiveSection] = useState("");
 
   const handleSectionClick = (section) => {
@@ -12,10 +12,6 @@ const ManageResources = () => {
 
   return (
     <div className="p-4">
-      {/* <h1 className="text-3xl font-bold text-green-600 mb-6 text-center">
-        Manage Resources
-      </h1> */}
-
       {/* Section Selector */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <button
@@ -53,28 +49,19 @@ const ManageResources = () => {
       {/* Render Sections Dynamically */}
       {activeSection === "humanResource" && (
         <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-          {/* <h2 className="text-xl font-bold text-blue-600 mb-4">
-            Human Resource
-          </h2> */}
-          <HumanResourceForm />
+          <HumanResourceForm storeId={storeId} />
         </div>
       )}
 
       {activeSection === "unitResource" && (
         <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-          {/* <h2 className="text-xl font-bold text-blue-600 mb-4">
-            Unit-Based Resource
-          </h2> */}
-          <UnitResourceForm />
+          <UnitResourceForm storeId={storeId} />
         </div>
       )}
 
       {activeSection === "itemResource" && (
         <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-          {/* <h2 className="text-xl font-bold text-blue-600 mb-4">
-            Item-Based Resource
-          </h2> */}
-          <ItemResourceForm />
+          <ItemResourceForm storeId={storeId} />
         </div>
       )}
     </div>

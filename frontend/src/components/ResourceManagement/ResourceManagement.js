@@ -117,9 +117,9 @@ const ResourceManagement = ({ onBackToLanding }) => {
           </div>
 
           {activeTab === "dashboard" ? (
-            <Dashboard storeName={activeStore.name} />
+            <Dashboard storeName={activeStore.name} storeId={activeStore._id}/>
           ) : (
-            <ManageResources />
+            <ManageResources storeId={activeStore._id} />
           )}
         </>
       ) : (
