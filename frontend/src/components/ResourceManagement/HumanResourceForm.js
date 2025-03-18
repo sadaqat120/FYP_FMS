@@ -68,7 +68,7 @@ const HumanResourceForm = ({ storeId }) => {
       }
 
       try {
-        const response = await axios.post("http://localhost:5000/human-resources", {
+        await axios.post("http://localhost:5000/human-resources", {
           ...formData,
           storeId,
         }, {
@@ -89,7 +89,7 @@ const HumanResourceForm = ({ storeId }) => {
       }
 
       try {
-        const response = await axios.post(`http://localhost:5000/human-resources/${storeId}/${formData.workerId}/payments`, {
+        await axios.post(`http://localhost:5000/human-resources/${storeId}/${encodeURIComponent(formData.workerId)}/payments`, {
           paymentAmount: formData.payment,
           workStartDate: formData.workStartDate,
           workEndDate: formData.workEndDate,
