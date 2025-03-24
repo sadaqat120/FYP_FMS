@@ -21,6 +21,7 @@ app.use("/stores", require("./routes/storeRoutes")); // New store routes
 app.use("/human-resources", require("./routes/humanResourceRoutes")); // New human resource routes
 app.use("/unit-resources", require("./routes/unitResourceRoutes")); // Unit resource routes
 app.use("/item-resources", require("./routes/itemResourceRoutes")); // Item resource routes
+app.use("/resource-dashboard", require("./routes/resource_dashboard")); // Include the new router
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
