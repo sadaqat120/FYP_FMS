@@ -3,6 +3,12 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const authRoutes = require("./routes/auth.routes");
+const farmRoutes = require("./routes/farmForm.routes");
+const recordRoutes = require('./routes/record.routes');
+const cropRecordRoutes = require('./routes/cropRecord.routes');
+const costTrackingRoutes = require('./routes/costTracking.routes');
+const resultSummaryRoutes = require('./routes/resultSummary.routes');
+const dashboard = require('./routes/dashboard.routes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,6 +37,17 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/auth", authRoutes);
+// Add this line after other route declarations
+app.use("/api/farms", farmRoutes);
+app.use('/api/records', recordRoutes);
+app.use('/api/crop-records', cropRecordRoutes);
+app.use('/api/cost-tracking', costTrackingRoutes);
+// Update your route registration with debugging
+app.use('/api/result-summaries', (req, res, next) => {
+  console.log('Request received at /api/result-summaries');
+  next();
+}, resultSummaryRoutes);
+app.use('/api/dashboard', dashboard);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
