@@ -8,7 +8,7 @@ const router = express.Router();
 // Create a new unit-based resource
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { storeId, resourceType, resourceName, uniqueId, quantity, unit, costPerUnit, totalCost, notes } = req.body;
+    const { storeId, resourceType, resourceName, uniqueId, quantity, unit, costPerUnit, totalCost, dateAdded, notes } = req.body;
 
     // Check if the unique ID already exists
     const existingResource = await UnitResource.findOne({ uniqueId, storeId });
@@ -16,7 +16,7 @@ router.post("/", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "Resource ID already exists. Please use a unique ID." });
     }
 
-    const newResource = new UnitResource({ storeId, resourceType, resourceName, uniqueId, quantity, unit, costPerUnit, totalCost, notes });
+    const newResource = new UnitResource({ storeId, resourceType, resourceName, uniqueId, quantity, unit, costPerUnit, totalCost, dateAdded, notes });
     await newResource.save();
     res.status(201).json(newResource);
   } catch (error) {
