@@ -30,7 +30,9 @@ const Dashboard = ({ storeId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/resource-dashboard/${storeId}`);
+        const response = await axios.get(
+          `http://localhost:5000/resource-dashboard/${storeId}`
+        );
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -65,8 +67,8 @@ const Dashboard = ({ storeId }) => {
     }
 
     const resourceList = data[`${resourceType}s`];
-    const foundResource = resourceList.find((resource) => 
-      resource.id === searchId || resource.uniqueId === searchId
+    const foundResource = resourceList.find(
+      (resource) => resource.id === searchId || resource.uniqueId === searchId
     );
 
     if (!foundResource) {
@@ -92,7 +94,10 @@ const Dashboard = ({ storeId }) => {
       <div className="bg-white p-4 rounded-lg shadow-lg mb-6">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-800">Human Resources</h2>
-          <button onClick={() => toggleSection("humanResource")} className="text-blue-600 hover:underline">
+          <button
+            onClick={() => toggleSection("humanResource")}
+            className="text-blue-600 hover:underline"
+          >
             {expandedSections.humanResource ? "Hide Details" : "Show Details"}
           </button>
         </div>
@@ -106,20 +111,33 @@ const Dashboard = ({ storeId }) => {
                 className="border p-2 flex-grow"
                 onChange={() => handleSearch("humanResource")} // Call search on change
               />
-              <button onClick={() => handleSearch("humanResource")} className="bg-blue-500 text-white p-2 rounded ml-2">
+              <button
+                onClick={() => handleSearch("humanResource")}
+                className="bg-blue-500 text-white p-2 rounded ml-2"
+              >
                 Search
               </button>
               <span className="ml-2 self-center">
                 Total Human Resources: {data.humanResources.length}
               </span>
             </div>
-            {errors.humanResource && <p className="text-red-500">{errors.humanResource}</p>}
+            {errors.humanResource && (
+              <p className="text-red-500">{errors.humanResource}</p>
+            )}
             {foundResources.humanResource && (
               <div className="border-2 p-4 rounded-lg mb-4">
-                <h3 className="text-lg font-bold">Found Resource: ID #{foundResources.humanResource.id}: {foundResources.humanResource.workerName}</h3>
+                <h3 className="text-lg font-bold">
+                  Found Resource: ID {foundResources.humanResource.id}:{" "}
+                  {foundResources.humanResource.workerName}
+                </h3>
                 <ul className="list-disc ml-6 mb-4">
                   <li>Position: {foundResources.humanResource.role}</li>
-                  <li>Date Enrolled: {new Date(foundResources.humanResource.dateEnrolled).toLocaleDateString()}</li>
+                  <li>
+                    Date Enrolled:{" "}
+                    {new Date(
+                      foundResources.humanResource.dateEnrolled
+                    ).toLocaleDateString()}
+                  </li>
                   <li>Notes: {foundResources.humanResource.notes}</li>
                 </ul>
                 <table className="table-auto w-full text-left border">
@@ -134,54 +152,78 @@ const Dashboard = ({ storeId }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {foundResources.humanResource.payments.map((payment, idx) => (
-                      <tr key={idx} className="border-t">
-                        <td className="p-2">{idx + 1}</td>
-                        <td className="p-2">{new Date(payment.workStartDate).toLocaleDateString()}</td>
-                        <td className="p-2">{new Date(payment.workEndDate).toLocaleDateString()}</td>
-                        <td className="p-2">${payment.paymentAmount}</td>
-                        <td className="p-2">{new Date(payment.paymentDate).toLocaleDateString()}</td>
-                        <td className="p-2">{payment.notes}</td>
-                      </tr>
-                    ))}
+                    {foundResources.humanResource.payments.map(
+                      (payment, idx) => (
+                        <tr key={idx} className="border-t">
+                          <td className="p-2">{idx + 1}</td>
+                          <td className="p-2">
+                            {new Date(
+                              payment.workStartDate
+                            ).toLocaleDateString()}
+                          </td>
+                          <td className="p-2">
+                            {new Date(payment.workEndDate).toLocaleDateString()}
+                          </td>
+                          <td className="p-2">${payment.paymentAmount}</td>
+                          <td className="p-2">
+                            {new Date(payment.paymentDate).toLocaleDateString()}
+                          </td>
+                          <td className="p-2">{payment.notes}</td>
+                        </tr>
+                      )
+                    )}
                   </tbody>
                 </table>
               </div>
             )}
-            {!foundResources.humanResource && data.humanResources.map((resource) => (
-              <div key={resource.id} className="mb-6 border-8 p-4 rounded-lg">
-                <h3 className="text-lg font-bold">ID #{resource.id}: {resource.workerName}</h3>
-                <ul className="list-disc ml-6 mb-4">
-                  <li>Position: {resource.role}</li>
-                  <li>Date Enrolled: {new Date(resource.dateEnrolled).toLocaleDateString()}</li>
-                  <li>Notes: {resource.notes}</li>
-                </ul>
-                <table className="table-auto w-full text-left border">
-                  <thead className="bg-gray-200">
-                    <tr>
-                      <th className="p-2">#</th>
-                      <th className="p-2">Start Date</th>
-                      <th className="p-2">End Date</th>
-                      <th className="p-2">Payment</th>
-                      <th className="p-2">Payment Date</th>
-                      <th className="p-2">Notes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {resource.payments.map((payment, idx) => (
-                      <tr key={idx} className="border-t">
-                        <td className="p-2">{idx + 1}</td>
-                        <td className="p-2">{new Date(payment.workStartDate).toLocaleDateString()}</td>
-                        <td className="p-2">{new Date(payment.workEndDate).toLocaleDateString()}</td>
-                        <td className="p-2">${payment.paymentAmount}</td>
-                        <td className="p-2">{new Date(payment.paymentDate).toLocaleDateString()}</td>
-                        <td className="p-2">{payment.notes}</td>
+            {!foundResources.humanResource &&
+              data.humanResources.map((resource) => (
+                <div key={resource.id} className="mb-6 border-8 p-4 rounded-lg">
+                  <h3 className="text-lg font-bold">
+                    ID {resource.id}: {resource.workerName}
+                  </h3>
+                  <ul className="list-disc ml-6 mb-4">
+                    <li>Position: {resource.role}</li>
+                    <li>
+                      Date Enrolled:{" "}
+                      {new Date(resource.dateEnrolled).toLocaleDateString()}
+                    </li>
+                    <li>Notes: {resource.notes}</li>
+                  </ul>
+                  <table className="table-auto w-full text-left border">
+                    <thead className="bg-gray-200">
+                      <tr>
+                        <th className="p-2">#</th>
+                        <th className="p-2">Start Date</th>
+                        <th className="p-2">End Date</th>
+                        <th className="p-2">Payment</th>
+                        <th className="p-2">Payment Date</th>
+                        <th className="p-2">Notes</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))}
+                    </thead>
+                    <tbody>
+                      {resource.payments.map((payment, idx) => (
+                        <tr key={idx} className="border-t">
+                          <td className="p-2">{idx + 1}</td>
+                          <td className="p-2">
+                            {new Date(
+                              payment.workStartDate
+                            ).toLocaleDateString()}
+                          </td>
+                          <td className="p-2">
+                            {new Date(payment.workEndDate).toLocaleDateString()}
+                          </td>
+                          <td className="p-2">${payment.paymentAmount}</td>
+                          <td className="p-2">
+                            {new Date(payment.paymentDate).toLocaleDateString()}
+                          </td>
+                          <td className="p-2">{payment.notes}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
           </div>
         )}
       </div>
@@ -190,7 +232,10 @@ const Dashboard = ({ storeId }) => {
       <div className="bg-white p-4 rounded-lg shadow-lg mb-6">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-800">Unit Resources</h2>
-          <button onClick={() => toggleSection("unitResource")} className="text-blue-600 hover:underline">
+          <button
+            onClick={() => toggleSection("unitResource")}
+            className="text-blue-600 hover:underline"
+          >
             {expandedSections.unitResource ? "Hide Details" : "Show Details"}
           </button>
         </div>
@@ -202,42 +247,142 @@ const Dashboard = ({ storeId }) => {
                 placeholder="Search by Unique ID"
                 ref={unitResourceInputRef}
                 className="border p-2 flex-grow"
-                onChange={() => handleSearch("unitResource")} // Call search on change
+                onChange={() => handleSearch("unitResource")}
               />
-              <button onClick={() => handleSearch("unitResource")} className="bg-blue-500 text-white p-2 rounded ml-2">
+              <button
+                onClick={() => handleSearch("unitResource")}
+                className="bg-blue-500 text-white p-2 rounded ml-2"
+              >
                 Search
               </button>
               <span className="ml-2 self-center">
                 Total Unit Resources: {data.unitResources.length}
               </span>
             </div>
-            {errors.unitResource && <p className="text-red-500">{errors.unitResource}</p>}
+            {errors.unitResource && (
+              <p className="text-red-500">{errors.unitResource}</p>
+            )}
+
             {foundResources.unitResource && (
               <div className="border-2 p-4 rounded-lg mb-4">
-                <h3 className="text-lg font-bold">Found Resource: ID #{foundResources.unitResource.uniqueId}: {foundResources.unitResource.resourceName}</h3>
+                <h3 className="text-lg font-bold">
+                  Found Resource: ID {foundResources.unitResource.uniqueId}:{" "}
+                  {foundResources.unitResource.resourceName}
+                </h3>
                 <ul className="list-disc ml-6 mb-4">
                   <li>Type: {foundResources.unitResource.resourceType}</li>
-                  <li>Quantity: {foundResources.unitResource.quantity} {foundResources.unitResource.unit}</li>
-                  <li>Cost per Unit: ${foundResources.unitResource.costPerUnit}</li>
+                  <li>
+                    Quantity: {foundResources.unitResource.quantity}{" "}
+                    {foundResources.unitResource.unit}
+                  </li>
+                  <li>
+                    Cost per Unit: ${foundResources.unitResource.costPerUnit}
+                  </li>
                   <li>Total Cost: ${foundResources.unitResource.totalCost}</li>
                   <li>Notes: {foundResources.unitResource.notes}</li>
-                  <li>Date Added: {new Date(foundResources.unitResource.dateAdded).toLocaleDateString()}</li>
+                  <li>
+                    Date Added:{" "}
+                    {new Date(
+                      foundResources.unitResource.dateAdded
+                    ).toLocaleDateString()}
+                  </li>
                 </ul>
+
+                {/* ✅ Usage Table for Found Resource */}
+                {foundResources.unitResource.usage &&
+                  foundResources.unitResource.usage.length > 0 && (
+                    <>
+                      <h4 className="font-bold mb-2 mt-4">Usage Records</h4>
+                      <table className="table-auto w-full text-left border">
+                        <thead className="bg-gray-200">
+                          <tr>
+                            <th className="p-2">#</th>
+                            <th className="p-2">Quantity Used</th>
+                            <th className="p-2">Purpose</th>
+                            <th className="p-2">Date of Usage</th>
+                            <th className="p-2">Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {foundResources.unitResource.usage.map(
+                            (usage, idx) => (
+                              <tr key={idx} className="border-t">
+                                <td className="p-2">{idx + 1}</td>
+                                <td className="p-2">{usage.quantityUsed}</td>
+                                <td className="p-2">{usage.usagePurpose}</td>
+                                <td className="p-2">
+                                  {new Date(
+                                    usage.dateOfUsage
+                                  ).toLocaleDateString()}
+                                </td>
+                                <td className="p-2">{usage.notes}</td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
               </div>
             )}
-            {!foundResources.unitResource && data.unitResources.map((resource) => (
-              <div key={resource.uniqueId} className="mb-6 border-8 p-4 rounded-lg">
-                <h3 className="text-lg font-bold">ID #{resource.uniqueId}: {resource.resourceName}</h3>
-                <ul className="list-disc ml-6 mb-4">
-                  <li>Type: {resource.resourceType}</li>
-                  <li>Quantity: {resource.quantity} {resource.unit}</li>
-                  <li>Cost per Unit: ${resource.costPerUnit}</li>
-                  <li>Total Cost: ${resource.totalCost}</li>
-                  <li>Notes: {resource.notes}</li>
-                  <li>Date Added: {new Date(resource.dateAdded).toLocaleDateString()}</li>
-                </ul>
-              </div>
-            ))}
+
+            {!foundResources.unitResource &&
+              data.unitResources.map((resource) => (
+                <div
+                  key={resource.uniqueId}
+                  className="mb-6 border-8 p-4 rounded-lg"
+                >
+                  <h3 className="text-lg font-bold">
+                    ID {resource.uniqueId}: {resource.resourceName}
+                  </h3>
+                  <ul className="list-disc ml-6 mb-4">
+                    <li>Type: {resource.resourceType}</li>
+                    <li>
+                      Quantity: {resource.quantity} {resource.unit}
+                    </li>
+                    <li>Cost per Unit: ${resource.costPerUnit}</li>
+                    <li>Total Cost: ${resource.totalCost}</li>
+                    <li>Notes: {resource.notes}</li>
+                    <li>
+                      Date Added:{" "}
+                      {new Date(resource.dateAdded).toLocaleDateString()}
+                    </li>
+                  </ul>
+
+                  {/* ✅ Usage Table */}
+                  {resource.usage && resource.usage.length > 0 && (
+                    <>
+                      <h4 className="font-bold mb-2 mt-4">Usage Records</h4>
+                      <table className="table-auto w-full text-left border">
+                        <thead className="bg-gray-200">
+                          <tr>
+                            <th className="p-2">#</th>
+                            <th className="p-2">Quantity Used</th>
+                            <th className="p-2">Purpose</th>
+                            <th className="p-2">Date of Usage</th>
+                            <th className="p-2">Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {resource.usage.map((usage, idx) => (
+                            <tr key={idx} className="border-t">
+                              <td className="p-2">{idx + 1}</td>
+                              <td className="p-2">{usage.quantityUsed}</td>
+                              <td className="p-2">{usage.usagePurpose}</td>
+                              <td className="p-2">
+                                {new Date(
+                                  usage.dateOfUsage
+                                ).toLocaleDateString()}
+                              </td>
+                              <td className="p-2">{usage.notes}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
+                </div>
+              ))}
           </div>
         )}
       </div>
@@ -246,7 +391,10 @@ const Dashboard = ({ storeId }) => {
       <div className="bg-white p-4 rounded-lg shadow-lg mb-6">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-800">Item Resources</h2>
-          <button onClick={() => toggleSection("itemResource")} className="text-blue-600 hover:underline">
+          <button
+            onClick={() => toggleSection("itemResource")}
+            className="text-blue-600 hover:underline"
+          >
             {expandedSections.itemResource ? "Hide Details" : "Show Details"}
           </button>
         </div>
@@ -260,25 +408,40 @@ const Dashboard = ({ storeId }) => {
                 className="border p-2 flex-grow"
                 onChange={() => handleSearch("itemResource")} // Call search on change
               />
-              <button onClick={() => handleSearch("itemResource")} className="bg-blue-500 text-white p-2 rounded ml-2">
+              <button
+                onClick={() => handleSearch("itemResource")}
+                className="bg-blue-500 text-white p-2 rounded ml-2"
+              >
                 Search
               </button>
               <span className="ml-2 self-center">
                 Total Item Resources: {data.itemResources.length}
               </span>
             </div>
-            {errors.itemResource && <p className="text-red-500">{errors.itemResource}</p>}
+            {errors.itemResource && (
+              <p className="text-red-500">{errors.itemResource}</p>
+            )}
             {foundResources.itemResource && (
               <div className="border-2 p-4 rounded-lg mb-4">
-                <h3 className="text-lg font-bold">Found Resource: ID #{foundResources.itemResource.uniqueId}: {foundResources.itemResource.resourceName}</h3>
+                <h3 className="text-lg font-bold">
+                  Found Resource: ID {foundResources.itemResource.uniqueId}:{" "}
+                  {foundResources.itemResource.resourceName}
+                </h3>
                 <ul className="list-disc ml-6 mb-4">
                   <li>Type: {foundResources.itemResource.resourceType}</li>
                   <li>Quantity: {foundResources.itemResource.quantity}</li>
-                  <li>Cost per Item: ${foundResources.itemResource.costPerItem}</li>
+                  <li>
+                    Cost per Item: ${foundResources.itemResource.costPerItem}
+                  </li>
                   <li>Total Cost: ${foundResources.itemResource.totalCost}</li>
                   <li>Condition: {foundResources.itemResource.condition}</li>
                   <li>Notes: {foundResources.itemResource.notes}</li>
-                  <li>Date Added: {new Date(foundResources.itemResource.dateAdded).toLocaleDateString()}</li>
+                  <li>
+                    Date Added:{" "}
+                    {new Date(
+                      foundResources.itemResource.dateAdded
+                    ).toLocaleDateString()}
+                  </li>
                 </ul>
                 <h4 className="font-bold mb-2">Maintenance Records</h4>
                 <table className="table-auto w-full text-left border">
@@ -292,15 +455,21 @@ const Dashboard = ({ storeId }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {foundResources.itemResource.maintenance.map((maintain, idx) => (
-                      <tr key={idx} className="border-t">
-                        <td className="p-2">{idx + 1}</td>
-                        <td className="p-2">{maintain.maintenanceType}</td>
-                        <td className="p-2">${maintain.maintenanceCost}</td>
-                        <td className="p-2">{new Date(maintain.dateOfMaintenance).toLocaleDateString()}</td>
-                        <td className="p-2">{maintain.notes}</td>
-                      </tr>
-                    ))}
+                    {foundResources.itemResource.maintenance.map(
+                      (maintain, idx) => (
+                        <tr key={idx} className="border-t">
+                          <td className="p-2">{idx + 1}</td>
+                          <td className="p-2">{maintain.maintenanceType}</td>
+                          <td className="p-2">${maintain.maintenanceCost}</td>
+                          <td className="p-2">
+                            {new Date(
+                              maintain.dateOfMaintenance
+                            ).toLocaleDateString()}
+                          </td>
+                          <td className="p-2">{maintain.notes}</td>
+                        </tr>
+                      )
+                    )}
                   </tbody>
                 </table>
 
@@ -323,7 +492,9 @@ const Dashboard = ({ storeId }) => {
                         <td className="p-2">{sale.itemsSold}</td>
                         <td className="p-2">${sale.salePricePerUnit}</td>
                         <td className="p-2">${sale.totalSalePrice}</td>
-                        <td className="p-2">{new Date(sale.dateOfSale).toLocaleDateString()}</td>
+                        <td className="p-2">
+                          {new Date(sale.dateOfSale).toLocaleDateString()}
+                        </td>
                         <td className="p-2">{sale.notes}</td>
                       </tr>
                     ))}
@@ -331,69 +502,84 @@ const Dashboard = ({ storeId }) => {
                 </table>
               </div>
             )}
-            {!foundResources.itemResource && data.itemResources.map((resource) => (
-              <div key={resource.uniqueId} className="mb-6 border-8 p-4 rounded-lg">
-                <h3 className="text-lg font-bold">ID #{resource.uniqueId}: {resource.resourceName}</h3>
-                <ul className="list-disc ml-6 mb-4">
-                  <li>Type: {resource.resourceType}</li>
-                  <li>Quantity: {resource.quantity}</li>
-                  <li>Cost per Item: ${resource.costPerItem}</li>
-                  <li>Total Cost: ${resource.totalCost}</li>
-                  <li>Condition: {resource.condition}</li>
-                  <li>Notes: {resource.notes}</li>
-                  <li>Date Added: {new Date(resource.dateAdded).toLocaleDateString()}</li>
-                </ul>
-                <h4 className="font-bold mb-2">Maintenance Records</h4>
-                <table className="table-auto w-full text-left border">
-                  <thead className="bg-gray-200">
-                    <tr>
-                      <th className="p-2">#</th>
-                      <th className="p-2">Maintenance Type</th>
-                      <th className="p-2">Cost</th>
-                      <th className="p-2">Date</th>
-                      <th className="p-2">Notes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {resource.maintenance.map((maintain, idx) => (
-                      <tr key={idx} className="border-t">
-                        <td className="p-2">{idx + 1}</td>
-                        <td className="p-2">{maintain.maintenanceType}</td>
-                        <td className="p-2">${maintain.maintenanceCost}</td>
-                        <td className="p-2">{new Date(maintain.dateOfMaintenance).toLocaleDateString()}</td>
-                        <td className="p-2">{maintain.notes}</td>
+            {!foundResources.itemResource &&
+              data.itemResources.map((resource) => (
+                <div
+                  key={resource.uniqueId}
+                  className="mb-6 border-8 p-4 rounded-lg"
+                >
+                  <h3 className="text-lg font-bold">
+                    ID {resource.uniqueId}: {resource.resourceName}
+                  </h3>
+                  <ul className="list-disc ml-6 mb-4">
+                    <li>Type: {resource.resourceType}</li>
+                    <li>Quantity: {resource.quantity}</li>
+                    <li>Cost per Item: ${resource.costPerItem}</li>
+                    <li>Total Cost: ${resource.totalCost}</li>
+                    <li>Condition: {resource.condition}</li>
+                    <li>Notes: {resource.notes}</li>
+                    <li>
+                      Date Added:{" "}
+                      {new Date(resource.dateAdded).toLocaleDateString()}
+                    </li>
+                  </ul>
+                  <h4 className="font-bold mb-2">Maintenance Records</h4>
+                  <table className="table-auto w-full text-left border">
+                    <thead className="bg-gray-200">
+                      <tr>
+                        <th className="p-2">#</th>
+                        <th className="p-2">Maintenance Type</th>
+                        <th className="p-2">Cost</th>
+                        <th className="p-2">Date</th>
+                        <th className="p-2">Notes</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {resource.maintenance.map((maintain, idx) => (
+                        <tr key={idx} className="border-t">
+                          <td className="p-2">{idx + 1}</td>
+                          <td className="p-2">{maintain.maintenanceType}</td>
+                          <td className="p-2">${maintain.maintenanceCost}</td>
+                          <td className="p-2">
+                            {new Date(
+                              maintain.dateOfMaintenance
+                            ).toLocaleDateString()}
+                          </td>
+                          <td className="p-2">{maintain.notes}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
 
-                <h4 className="font-bold mb-2 mt-4">Sales Records</h4>
-                <table className="table-auto w-full text-left border">
-                  <thead className="bg-gray-200">
-                    <tr>
-                      <th className="p-2">#</th>
-                      <th className="p-2">Items Sold</th>
-                      <th className="p-2">Sale Price per Unit</th>
-                      <th className="p-2">Total Sale Price</th>
-                      <th className="p-2">Date</th>
-                      <th className="p-2">Notes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {resource.sales.map((sale, idx) => (
-                      <tr key={idx} className="border-t">
-                        <td className="p-2">{idx + 1}</td>
-                        <td className="p-2">{sale.itemsSold}</td>
-                        <td className="p-2">${sale.salePricePerUnit}</td>
-                        <td className="p-2">${sale.totalSalePrice}</td>
-                        <td className="p-2">{new Date(sale.dateOfSale).toLocaleDateString()}</td>
-                        <td className="p-2">{sale.notes}</td>
+                  <h4 className="font-bold mb-2 mt-4">Sales Records</h4>
+                  <table className="table-auto w-full text-left border">
+                    <thead className="bg-gray-200">
+                      <tr>
+                        <th className="p-2">#</th>
+                        <th className="p-2">Items Sold</th>
+                        <th className="p-2">Sale Price per Unit</th>
+                        <th className="p-2">Total Sale Price</th>
+                        <th className="p-2">Date</th>
+                        <th className="p-2">Notes</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))}
+                    </thead>
+                    <tbody>
+                      {resource.sales.map((sale, idx) => (
+                        <tr key={idx} className="border-t">
+                          <td className="p-2">{idx + 1}</td>
+                          <td className="p-2">{sale.itemsSold}</td>
+                          <td className="p-2">${sale.salePricePerUnit}</td>
+                          <td className="p-2">${sale.totalSalePrice}</td>
+                          <td className="p-2">
+                            {new Date(sale.dateOfSale).toLocaleDateString()}
+                          </td>
+                          <td className="p-2">{sale.notes}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
           </div>
         )}
       </div>
