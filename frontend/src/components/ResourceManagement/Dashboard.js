@@ -81,14 +81,14 @@ const Dashboard = ({ storeId }) => {
 
   return (
     <div className="p-4">
-      <div className="bg-gray-100 p-4 rounded-lg shadow-lg mb-6">
+      {/* <div className="bg-gray-100 p-4 rounded-lg shadow-lg mb-6">
         <h2 className="text-xl font-bold text-blue-600 mb-4">Notifications</h2>
         <ul className="list-disc ml-6">
           <li>Reminder: Update resource records.</li>
           <li>Alert: Scheduled maintenance for tractor on 2025-01-20.</li>
           <li>New hire: John Doe joined as Field Worker.</li>
         </ul>
-      </div>
+      </div> */}
 
       {/* Human Resources Section */}
       <div className="bg-white p-4 rounded-lg shadow-lg mb-6">

@@ -52,13 +52,13 @@ const Dashboard = () => {
           </table>
         </div>
 
-        <div className="notifications">
+        {/* <div className="notifications">
           <h3>Upcoming Notifications</h3>
           <ul>
             <li>Irrigation needed on 25th Jan 2025</li>
             <li>Fertilization due on 30th Jan 2025</li>
           </ul>
-        </div>
+        </div> */}
       </div>
 
       <div className="summary">

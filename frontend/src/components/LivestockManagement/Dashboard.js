@@ -15,11 +15,11 @@ const Dashboard = ({ activeFarmId }) => {
   const [sellingAnimalRevenue, setSellingAnimalRevenue] = useState(0); // State for selling animal revenue
   const [feedTypes, setFeedTypes] = useState([]);
   const [animalCategories, setAnimalCategories] = useState([]); // State for animal categories
-  const [notifications] = useState([
-    "Vaccination due for cows on 01-05-2025",
-    "Goat feed stock running low, replenish by 01-07-2025",
-    "Health checkup scheduled for 03-05-2025",
-  ]);
+  // const [notifications] = useState([
+  //   "Vaccination due for cows on 01-05-2025",
+  //   "Goat feed stock running low, replenish by 01-07-2025",
+  //   "Health checkup scheduled for 03-05-2025",
+  // ]);
 
   useEffect(() => {
     const fetchFarmData = async () => {
@@ -158,14 +158,14 @@ const Dashboard = ({ activeFarmId }) => {
       </div>
 
       {/* Notifications Section */}
-      <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+      {/* <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
         <h3 className="text-xl font-bold text-green-600 mb-4">Upcoming Notifications (7 Days)</h3>
         <ul className="list-disc ml-6">
           {notifications.map((notification, index) => (
             <li key={index}>{notification}</li>
           ))}
         </ul>
-      </div>
+      </div> */}
 
       {/* Livestock Details */}
       <div className="bg-white p-6 rounded-lg shadow-lg">
