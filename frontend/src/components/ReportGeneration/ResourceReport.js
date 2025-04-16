@@ -1,214 +1,280 @@
-import React from "react";
+// src/components/ResourceReport.js
+
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
 const ResourceReport = () => {
-  const resourceData = {
-    storeName: "Main Resource Store",
-    humanResources: [
-      {
-        id: "HR01",
-        name: "John Doe",
-        role: "Field Worker",
-        joiningDate: "2024-01-15",
-        notes: "Good at maintaining crops.",
-        payments: [
-          {
-            startDate: "2024-02-01",
-            endDate: "2024-02-28",
-            paymentDate: "2024-03-01",
-            amount: "1000",
-            notes: "Monthly salary.",
-          },
-        ],
-      },
-    ],
-    unitResources: [
-      {
-        id: "UR01",
-        type: "Fertilizer",
-        name: "Nitrogen",
-        quantity: "50 kg",
-        costPerUnit: "5",
-        totalCost: "250",
-        dateAdded: "2024-01-10",
-        notes: "For spring planting.",
-        usage: [
-          {
-            date: "2024-02-01",
-            quantityUsed: "10 kg",
-            remainingQuantity: "40 kg",
-            purpose: "Planting.",
-            notes: "Used for winter crops.",
-          },
-        ],
-      },
-    ],
-    itemResources: [
-      {
-        id: "IT01",
-        type: "Tractor",
-        name: "John Deere 5050",
-        quantity: 1,
-        costPerUnit: "25000",
-        totalCost: "25000",
-        dateAdded: "2024-01-05",
-        notes: "Purchased for plowing fields.",
-        maintenance: [
-          {
-            date: "2024-02-01",
-            type: "Repair",
-            cost: "500",
-            notes: "Oil change.",
-          },
-        ],
-        sales: [
-          {
-            date: "2024-03-01",
-            itemsSold: 1,
-            pricePerUnit: "30000",
-            total: "30000",
-            notes: "Sold at a profit.",
-          },
-        ],
-      },
-    ],
+  const [stores, setStores] = useState([]);
+  const [selectedStoreId, setSelectedStoreId] = useState(null);
+  const [selectedStoreName, setSelectedStoreName] = useState("");
+  const [resourceData, setResourceData] = useState(null);
+
+  const token = localStorage.getItem("token")?.replace("Bearer ", "");
+
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/stores", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setStores(res.data);
+      } catch (error) {
+        console.error("Error fetching stores:", error.message);
+      }
+    };
+    fetchStores();
+  }, [token]);
+
+  const handleStoreSelect = async (store) => {
+    setSelectedStoreId(store._id);
+    setSelectedStoreName(store.name);
+    try {
+      const res = await axios.get(`http://localhost:5000/resource-dashboard/${store._id}`);
+      setResourceData(res.data);
+    } catch (err) {
+      console.error("Error fetching resource data:", err.message);
+    }
   };
 
-  const handleGeneratePDF = () => {
+  const generatePDF = () => {
     const doc = new jsPDF();
-
-    doc.setFont("times", "bold");
-    doc.setFontSize(16);
-    doc.text("Farm Management System", 105, 10, null, null, "center");
-    doc.setFontSize(14);
-    doc.text(`Store Name: ${resourceData.storeName}`, 10, 20);
-    doc.text(`Generated Date: ${new Date().toLocaleDateString()}`, 170, 20, null, null, "right");
-
-    let yPosition = 30;
-
-    // Human Resources Section
-    doc.setFontSize(14);
-    doc.text("Human Resources", 10, yPosition);
-    yPosition += 10;
-
-    resourceData.humanResources.forEach((hr) => {
+    const pageHeight = doc.internal.pageSize.height;
+    const bottomMargin = 20;
+    let y = 15;
+  
+    const safeAddPage = () => {
+      if (y > pageHeight - bottomMargin) {
+        doc.addPage();
+        y = 15;
+        addHeader();
+      }
+    };
+  
+    const addHeader = () => {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.setTextColor(34, 139, 34); // green
+      doc.text("Farm Management System", 105, y, { align: "center" });
+  
+      y += 8;
+      doc.setFontSize(13);
+      doc.text("Resource Management Report", 105, y, { align: "center" });
+  
+      y += 10;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.setTextColor(0);
+      doc.text(`Store: ${selectedStoreName}`, 14, y);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 195, y, { align: "right" });
+      y += 10;
+    };
+  
+    const sectionTitle = (title) => {
+      safeAddPage();
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.setTextColor(22, 22, 22);
+      doc.text(title, 105, y, { align: "center" });
+      y += 6;
+    };
+    
+  
+    const resourceHeader = (label) => {
+      safeAddPage();
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
-      doc.text(`ID: ${hr.id}`, 10, yPosition);
-      doc.text(`Name: ${hr.name}`, 10, yPosition + 5);
-      doc.text(`Role: ${hr.role}`, 10, yPosition + 10);
-      doc.text(`Joining Date: ${hr.joiningDate}`, 10, yPosition + 15);
-      doc.text(`Notes: ${hr.notes}`, 10, yPosition + 20);
-      yPosition += 30;
-
+      doc.setTextColor(0);
+      doc.text(label, 16, y);
+      y += 5;
+    };
+  
+    const addNote = (label, value) => {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      const cleanText = `${label}: ${value || "-"}`;
+      const lines = doc.splitTextToSize(cleanText, 180);
+      doc.text(lines, 18, y);
+      y += lines.length * 5;
+    };
+  
+    const addTable = (head, body) => {
+      safeAddPage();
       doc.autoTable({
-        startY: yPosition,
-        head: [["Start Date", "End Date", "Payment Date", "Amount", "Notes"]],
-        body: hr.payments.map((payment) => [
-          payment.startDate,
-          payment.endDate,
-          payment.paymentDate,
-          payment.amount,
-          payment.notes,
-        ]),
+        startY: y,
+        head: [head],
+        body,
+        theme: "grid",
+        styles: { fontSize: 10 },
+        margin: { left: 14, right: 14 },
+        headStyles: { fillColor: [72, 198, 115] },
+        didDrawPage: (data) => {
+          y = data.cursor.y + 10;
+        },
       });
+    };
+  
+    const addFooter = () => {
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.text(`Page ${i} of ${pageCount}`, 105, pageHeight - 10, { align: "center" });
+      }
+    };
 
-      yPosition = doc.lastAutoTable.finalY + 10;
-    });
-
-    // Unit-Based Resources Section
-    doc.setFontSize(14);
-    doc.text("Unit-Based Resources", 10, yPosition);
-    yPosition += 10;
-
-    resourceData.unitResources.forEach((ur) => {
-      doc.setFontSize(12);
-      doc.text(`ID: ${ur.id}`, 10, yPosition);
-      doc.text(`Type: ${ur.type}`, 10, yPosition + 5);
-      doc.text(`Name: ${ur.name}`, 10, yPosition + 10);
-      doc.text(`Quantity: ${ur.quantity}`, 10, yPosition + 15);
-      doc.text(`Cost Per Unit: ${ur.costPerUnit}`, 10, yPosition + 20);
-      doc.text(`Total Cost: ${ur.totalCost}`, 10, yPosition + 25);
-      doc.text(`Date Added: ${ur.dateAdded}`, 10, yPosition + 30);
-      doc.text(`Notes: ${ur.notes}`, 10, yPosition + 35);
-      yPosition += 45;
-
-      doc.autoTable({
-        startY: yPosition,
-        head: [["Date", "Quantity Used", "Remaining Quantity", "Purpose", "Notes"]],
-        body: ur.usage.map((usage) => [
-          usage.date,
-          usage.quantityUsed,
-          usage.remainingQuantity,
-          usage.purpose,
-          usage.notes,
-        ]),
+    const drawSeparatorLine = () => {
+      safeAddPage(); // make sure we don't go off the page
+      doc.setDrawColor(200); // light gray
+      doc.setLineWidth(0.5);
+      doc.line(14, y, 195, y); // horizontal line from left to right
+      y += 10; // add space after line
+    };
+    
+  
+    // Generate Document
+    addHeader();
+  
+    // Human Resources
+    drawSeparatorLine();
+    drawSeparatorLine();
+    if (resourceData?.humanResources?.length) {
+      sectionTitle("Human Resources");
+      resourceData.humanResources.forEach((hr) => {
+        resourceHeader(`Name: ${hr.workerName} | Role: ${hr.role}`);
+        addNote("Date Joined", new Date(hr.dateEnrolled).toLocaleDateString());
+        addNote("Notes", hr.notes);
+  
+        if (hr.payments?.length) {
+          addTable(
+            ["Start", "End", "Payment Date", "Amount (Rs)", "Notes"],
+            hr.payments.map(p => [
+              new Date(p.workStartDate).toLocaleDateString(),
+              new Date(p.workEndDate).toLocaleDateString(),
+              new Date(p.paymentDate).toLocaleDateString(),
+              p.paymentAmount,
+              p.notes
+            ])
+          );
+        }
       });
-
-      yPosition = doc.lastAutoTable.finalY + 10;
-    });
-
-    // Item-Based Resources Section
-    doc.setFontSize(14);
-    doc.text("Item-Based Resources", 10, yPosition);
-    yPosition += 10;
-
-    resourceData.itemResources.forEach((item) => {
-      doc.setFontSize(12);
-      doc.text(`ID: ${item.id}`, 10, yPosition);
-      doc.text(`Type: ${item.type}`, 10, yPosition + 5);
-      doc.text(`Name: ${item.name}`, 10, yPosition + 10);
-      doc.text(`Quantity: ${item.quantity}`, 10, yPosition + 15);
-      doc.text(`Cost Per Unit: ${item.costPerUnit}`, 10, yPosition + 20);
-      doc.text(`Total Cost: ${item.totalCost}`, 10, yPosition + 25);
-      doc.text(`Date Added: ${item.dateAdded}`, 10, yPosition + 30);
-      doc.text(`Notes: ${item.notes}`, 10, yPosition + 35);
-      yPosition += 45;
-
-      doc.autoTable({
-        startY: yPosition,
-        head: [["Date", "Type", "Cost", "Notes"]],
-        body: item.maintenance.map((maintain) => [
-          maintain.date,
-          maintain.type,
-          maintain.cost,
-          maintain.notes,
-        ]),
+    }
+    
+    drawSeparatorLine();
+    drawSeparatorLine();
+    // Unit Resources
+    if (resourceData?.unitResources?.length) {
+      sectionTitle("Unit-Based Resources");
+      resourceData.unitResources.forEach((ur) => {
+        resourceHeader(`Name: ${ur.resourceName} | Type: ${ur.resourceType}`);
+        addNote("Quantity", `${ur.quantity} ${ur.unit}`);
+        addNote("Cost Per Unit (Rs)", ur.costPerUnit);
+        addNote("Total Cost (Rs)", ur.totalCost);
+        addNote("Date Added", new Date(ur.dateAdded).toLocaleDateString());
+        addNote("Notes", ur.notes);
+  
+        if (ur.usage?.length) {
+          addTable(
+            ["Date", "Qty Used", "Purpose", "Notes"],
+            ur.usage.map(u => [
+              new Date(u.dateOfUsage).toLocaleDateString(),
+              u.quantityUsed,
+              u.usagePurpose,
+              u.notes
+            ])
+          );
+        }
       });
-
-      yPosition = doc.lastAutoTable.finalY + 10;
-
-      doc.autoTable({
-        startY: yPosition,
-        head: [["Date", "Items Sold", "Price Per Unit", "Total", "Notes"]],
-        body: item.sales.map((sale) => [
-          sale.date,
-          sale.itemsSold,
-          sale.pricePerUnit,
-          sale.total,
-          sale.notes,
-        ]),
+    }
+    drawSeparatorLine();
+    drawSeparatorLine();
+  
+    // Item Resources
+    if (resourceData?.itemResources?.length) {
+      sectionTitle("Item-Based Resources");
+      resourceData.itemResources.forEach((ir) => {
+        resourceHeader(`Name: ${ir.resourceName} | Type: ${ir.resourceType}`);
+        addNote("Quantity", ir.quantity);
+        addNote("Cost Per Item (Rs)", ir.costPerItem);
+        addNote("Total Cost (Rs)", ir.totalCost);
+        addNote("Date Added", new Date(ir.dateAdded).toLocaleDateString());
+        addNote("Condition", ir.condition);
+        addNote("Notes", ir.notes);
+  
+        if (ir.maintenance?.length) {
+          addTable(
+            ["Date", "Type", "Cost (Rs)", "Notes"],
+            ir.maintenance.map(m => [
+              new Date(m.dateOfMaintenance).toLocaleDateString(),
+              m.maintenanceType,
+              m.maintenanceCost,
+              m.notes
+            ])
+          );
+        }
+  
+        if (ir.sales?.length) {
+          addTable(
+            ["Date", "Items Sold", "Price Per Unit (Rs)", "Total (Rs)", "Notes"],
+            ir.sales.map(s => [
+              new Date(s.dateOfSale).toLocaleDateString(),
+              s.itemsSold,
+              s.salePricePerUnit,
+              s.totalSalePrice,
+              s.notes
+            ])
+          );
+        }
       });
-
-      yPosition = doc.lastAutoTable.finalY + 10;
-    });
-
-    doc.save(`${resourceData.storeName}-Report.pdf`);
-  };
+    }
+    drawSeparatorLine();
+    drawSeparatorLine();
+  
+    addFooter();
+    doc.save(`${selectedStoreName.replaceAll(" ", "_")}_Resource_Report.pdf`);
+  };  
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Resource Report</h1>
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold">{resourceData.storeName}</h2>
-        <p>Preview the data before downloading the report.</p>
+    <div className="p-4">
+      <h1 className="text-3xl font-bold text-center text-green-700 mb-4">
+        Farm Management System
+      </h1>
+      <h2 className="text-xl font-semibold text-center mb-6">Resource Management Reports</h2>
+
+      <div className="flex gap-4 flex-wrap mb-6 justify-center">
+        {stores.length ? stores.map((store) => (
+          <button
+            key={store._id}
+            onClick={() => handleStoreSelect(store)}
+            className={`py-2 px-4 rounded border ${selectedStoreId === store._id ? 'bg-green-700 text-white' : 'bg-gray-100 hover:bg-green-200'}`}
+          >
+            {store.name}
+          </button>
+        )) : (
+          <p>No stores available.</p>
+        )}
       </div>
-      <button
-        onClick={handleGeneratePDF}
-        className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
-      >
-        Download Report
-      </button>
+
+      {resourceData && (
+        <>
+          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 className="text-lg font-semibold mb-2">
+              Store: {selectedStoreName}
+            </h3>
+            <p><strong>Total Human Resources:</strong> {resourceData.humanResources?.length || 0}</p>
+            <p><strong>Total Unit Resources:</strong> {resourceData.unitResources?.length || 0}</p>
+            <p><strong>Total Item Resources:</strong> {resourceData.itemResources?.length || 0}</p>
+          </div>
+
+          <button
+            onClick={generatePDF}
+            className="bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700"
+          >
+            Print Report as PDF
+          </button>
+        </>
+      )}
     </div>
   );
 };
