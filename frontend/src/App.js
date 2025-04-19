@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 import Navbar from "./components/Navbar";
 import LandingPage from "./components/LandingPage/LandingPage";
 import SignUpModal from "./components/Authentication/SignUpModal";
@@ -23,6 +24,42 @@ const App = () => {
   const [showReportGeneration, setShowReportGeneration] = useState(false);
   const [showChatBot, setShowChatBot] = useState(false);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const logoutNow = () => {
+      localStorage.removeItem("token");
+      alert("Session expired. Logging out now.");
+      setLoggedIn(false);
+      window.location.reload();
+    };
+
+    const checkTokenExpiration = () => {
+      try {
+        const decoded = jwtDecode(token.replace("Bearer ", ""));
+        const currentTime = Date.now() / 1000;
+
+        if (decoded.exp < currentTime) {
+          logoutNow();
+        }
+      } catch (err) {
+        console.error("Token decode error:", err);
+        logoutNow();
+      }
+    };
+
+    // Check token expiration every second
+    const intervalId = setInterval(checkTokenExpiration, 1000);
+
+    // Initial check
+    checkTokenExpiration();
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
   const handleLoginSuccess = () => {
     setLoginOpen(false);
     setLoggedIn(true);
@@ -32,7 +69,6 @@ const App = () => {
     setSignUpOpen(false);
     setLoggedIn(true);
   };
-  
 
   const toggleProfile = () => setShowProfile(!showProfile);
 
@@ -46,51 +82,11 @@ const App = () => {
     setShowChatBot(false);
   };
 
-  const handleServiceReminderClick = () => {
+  const handleProtectedClick = (setter) => {
     if (!isLoggedIn) {
       setLoginOpen(true);
     } else {
-      setShowServiceReminders(true);
-    }
-  };
-
-  const handleCropManagementClick = () => {
-    if (!isLoggedIn) {
-      setLoginOpen(true);
-    } else {
-      setShowCropManagement(true);
-    }
-  };
-
-  const handleLivestockManagementClick = () => {
-    if (!isLoggedIn) {
-      setLoginOpen(true);
-    } else {
-      setShowLivestockManagement(true);
-    }
-  };
-
-  const handleResourceManagementClick = () => {
-    if (!isLoggedIn) {
-      setLoginOpen(true);
-    } else {
-      setShowResourceManagement(true);
-    }
-  };
-
-  const handleReportGenerationClick = () => {
-    if (!isLoggedIn) {
-      setLoginOpen(true);
-    } else {
-      setShowReportGeneration(true);
-    }
-  };
-
-  const handleChatBotClick = () => {
-    if (!isLoggedIn) {
-      setLoginOpen(true);
-    } else {
-      setShowChatBot(true);
+      setter(true);
     }
   };
 
@@ -103,6 +99,7 @@ const App = () => {
         onProfileClick={toggleProfile}
         onNavigateToLanding={navigateToLanding}
       />
+
       {showProfile ? (
         <Profile onClose={toggleProfile} />
       ) : showServiceReminders ? (
@@ -121,14 +118,15 @@ const App = () => {
         <LandingPage
           isLoggedIn={isLoggedIn}
           navigateToLogin={() => setLoginOpen(true)}
-          onReminderServiceClick={handleServiceReminderClick}
-          onCropManagementClick={handleCropManagementClick}
-          onLivestockManagementClick={handleLivestockManagementClick}
-          onResourceManagementClick={handleResourceManagementClick}
-          onChatBotClick={handleChatBotClick}
-          onReportGenerationClick={handleReportGenerationClick}
+          onReminderServiceClick={() => handleProtectedClick(setShowServiceReminders)}
+          onCropManagementClick={() => handleProtectedClick(setShowCropManagement)}
+          onLivestockManagementClick={() => handleProtectedClick(setShowLivestockManagement)}
+          onResourceManagementClick={() => handleProtectedClick(setShowResourceManagement)}
+          onChatBotClick={() => handleProtectedClick(setShowChatBot)}
+          onReportGenerationClick={() => handleProtectedClick(setShowReportGeneration)}
         />
       )}
+
       <SignUpModal
         isOpen={isSignUpOpen}
         onClose={() => setSignUpOpen(false)}
