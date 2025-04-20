@@ -3,7 +3,7 @@ const path = require("path");
 require('dotenv').config();
 const folderPath = path.resolve(
   __dirname,
-  "../../FmsTrainingData"
+  "./FmsTrainingData"
 );
 
 const {

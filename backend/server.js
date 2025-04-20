@@ -23,7 +23,7 @@ app.use("/unit-resources", require("./routes/unitResourceRoutes")); // Unit reso
 app.use("/item-resources", require("./routes/itemResourceRoutes")); // Item resource routes
 app.use("/resource-dashboard", require("./routes/resource_dashboard")); // Include the new router
 app.use("/reminders", require("./routes/reminderRoutes"));
-
+app.use("/api/chat", require("./routes/chatRoutes"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

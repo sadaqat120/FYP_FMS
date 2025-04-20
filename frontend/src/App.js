@@ -9,7 +9,7 @@ import ServiceReminders from "./components/ServiceReminders/ServiceReminders";
 import CropManagement from "./components/CropManagement/CropManagement";
 import LivestockManagement from "./components/LivestockManagement/LivestockManagement";
 import ResourceManagement from "./components/ResourceManagement/ResourceManagement";
-import MainChatBot from "./components/ChatBot/frontend/MainChatBot";
+import MainChatBot from "./components/ChatBot/MainChatBot";
 import ReportGeneration from "./components/ReportGeneration/ReportGeneration";
 
 const App = () => {
