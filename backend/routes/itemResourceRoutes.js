@@ -9,21 +9,29 @@ const router = express.Router();
 // Create a new item-based resource
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { storeId, resourceType, resourceName, uniqueId, quantity, costPerItem, totalCost, condition, dateAdded, notes } = req.body;
+    const {
+      storeId, resourceType, resourceName, uniqueId,
+      quantity, costPerItem, totalCost, condition, dateAdded, notes
+    } = req.body;
+    const userId = req.user.id;
 
-    // Check if the unique ID already exists
-    const existingResource = await ItemResource.findOne({ uniqueId, storeId });
+    // Scoped uniqueness check: userId + storeId + uniqueId
+    const existingResource = await ItemResource.findOne({ userId, storeId, uniqueId });
     if (existingResource) {
-      return res.status(400).json({ message: "Resource ID already exists. Please use a unique ID." });
+      return res.status(400).json({ message: "Item ID already exists for this store and user." });
     }
 
-    const newResource = new ItemResource({ storeId, resourceType, resourceName, uniqueId, quantity, costPerItem, totalCost, condition, dateAdded, notes });
+    const newResource = new ItemResource({
+      userId, storeId, resourceType, resourceName, uniqueId,
+      quantity, costPerItem, totalCost, condition, dateAdded, notes
+    });
     await newResource.save();
     res.status(201).json(newResource);
   } catch (error) {
     res.status(500).json({ message: "Error creating item-based resource", error });
   }
 });
+
 
 // Track repair/maintenance
 router.post("/repair", authMiddleware, async (req, res) => {

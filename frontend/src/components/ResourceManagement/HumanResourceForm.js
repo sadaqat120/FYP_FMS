@@ -56,17 +56,10 @@ const HumanResourceForm = ({ storeId }) => {
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return; // Stop execution if there are validation errors
+      return;
     }
-
+  
     if (activeForm === "add") {
-      // Check for unique ID
-      const existingResource = resources.find(resource => resource.id === formData.id);
-      if (existingResource) {
-        setErrors((prev) => ({ ...prev, id: "Worker ID already exists. Please use a unique ID." }));
-        return;
-      }
-
       try {
         await axios.post("http://localhost:5000/human-resources", {
           ...formData,
@@ -77,17 +70,21 @@ const HumanResourceForm = ({ storeId }) => {
           },
         });
         alert("Human Resource Added Successfully!");
+        setFormData({});
       } catch (error) {
-        console.error("Error adding human resource:", error);
+        if (error.response && error.response.status === 400) {
+          setErrors((prev) => ({ ...prev, id: error.response.data.message }));
+        } else {
+          console.error("Error adding human resource:", error);
+        }
       }
     } else if (activeForm === "payment") {
-      // Check if worker exists
       const workerExists = resources.some(resource => resource.id === formData.workerId);
       if (!workerExists) {
         setErrors((prev) => ({ ...prev, workerId: "Worker ID does not exist." }));
         return;
       }
-
+  
       try {
         await axios.post(`http://localhost:5000/human-resources/${storeId}/${encodeURIComponent(formData.workerId)}/payments`, {
           paymentAmount: formData.payment,
@@ -101,13 +98,13 @@ const HumanResourceForm = ({ storeId }) => {
           },
         });
         alert("Payment Recorded Successfully!");
+        setFormData({});
       } catch (error) {
         console.error("Error recording payment:", error);
       }
     }
-    setFormData({});
   };
-
+  
   return (
     <div className="p-4">
       <h1 className="text-3xl font-bold text-green-600 mb-6 text-center">

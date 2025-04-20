@@ -10,20 +10,22 @@ const router = express.Router();
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { storeId, id, workerName, role, dateEnrolled, notes } = req.body;
+    const userId = req.user.id;
 
-    // Check if the ID already exists
-    const existingResource = await HumanResource.findOne({ id, storeId });
+    // Scoped uniqueness check: userId + storeId + id
+    const existingResource = await HumanResource.findOne({ userId, storeId, id });
     if (existingResource) {
-      return res.status(400).json({ message: "Worker ID already exists." });
+      return res.status(400).json({ message: "Worker ID already exists for this store and user." });
     }
 
-    const newResource = new HumanResource({ storeId, id, workerName, role, dateEnrolled, notes });
+    const newResource = new HumanResource({ userId, storeId, id, workerName, role, dateEnrolled, notes });
     await newResource.save();
     res.status(201).json(newResource);
   } catch (error) {
     res.status(500).json({ message: "Error creating human resource", error });
   }
 });
+
 
 // Get all human resources for a specific store
 router.get("/:storeId", authMiddleware, async (req, res) => {

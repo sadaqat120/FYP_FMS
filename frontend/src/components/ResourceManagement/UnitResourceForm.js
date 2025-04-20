@@ -69,72 +69,51 @@ const UnitResourceForm = ({ storeId }) => {
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return; // Stop execution if there are validation errors
+      return;
     }
-
+  
     if (activeForm === "addResource") {
-      // Check for unique ID
-      const existingResource = resources.find(
-        (resource) => resource.uniqueId === formData.uniqueId
-      );
-      if (existingResource) {
-        setErrors((prev) => ({
-          ...prev,
-          uniqueId: "Resource ID already exists. Please use a unique ID.",
-        }));
-        return;
-      }
-
       try {
-        await axios.post(
-          "http://localhost:5000/unit-resources",
-          {
-            ...formData,
-            storeId,
+        await axios.post("http://localhost:5000/unit-resources", {
+          ...formData,
+          storeId,
+        }, {
+          headers: {
+            Authorization: localStorage.getItem("token"),
           },
-          {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-            },
-          }
-        );
+        });
         alert("Unit-Based Resource Added Successfully!");
+        setFormData({});
       } catch (error) {
-        console.error("Error adding unit-based resource:", error);
+        if (error.response && error.response.status === 400) {
+          setErrors((prev) => ({ ...prev, uniqueId: error.response.data.message }));
+        } else {
+          console.error("Error adding unit-based resource:", error);
+        }
       }
     } else if (activeForm === "usageTracking") {
-      // Check if resource exists
-      const resourceExists = resources.some(
-        (resource) => resource.uniqueId === formData.resourceId
-      );
+      const resourceExists = resources.some(resource => resource.uniqueId === formData.resourceId);
       if (!resourceExists) {
-        setErrors((prev) => ({
-          ...prev,
-          resourceId: "Resource ID does not exist.",
-        }));
+        setErrors((prev) => ({ ...prev, resourceId: "Resource ID does not exist." }));
         return;
       }
-
+  
       try {
-        await axios.post(
-          "http://localhost:5000/unit-resources/usage",
-          {
-            storeId,
-            ...formData,
+        await axios.post("http://localhost:5000/unit-resources/usage", {
+          storeId,
+          ...formData,
+        }, {
+          headers: {
+            Authorization: localStorage.getItem("token"),
           },
-          {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-            },
-          }
-        );
+        });
         alert("Usage Recorded Successfully!");
+        setFormData({});
       } catch (error) {
         console.error("Error recording usage:", error);
       }
     }
-    setFormData({});
-  };
+  };  
 
   return (
     <div className="p-4">

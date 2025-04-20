@@ -63,21 +63,14 @@ const ItemResourceForm = ({ storeId }) => {
     const validationErrors = validateFields();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      return; // Stop execution if there are validation errors
+      return;
     }
-
+  
     if (activeForm === "addResource") {
-      // Check for unique ID
-      const existingResource = resources.find(resource => resource.uniqueId === formData.uniqueId);
-      if (existingResource) {
-        setErrors((prev) => ({ ...prev, uniqueId: "Resource ID already exists. Please use a unique ID." }));
-        return;
-      }
-
       try {
         await axios.post("http://localhost:5000/item-resources", {
           ...formData,
-          totalCost: formData.quantity * formData.costPerItem, // Include totalCost explicitly
+          totalCost: formData.quantity * formData.costPerItem,
           storeId,
         }, {
           headers: {
@@ -85,17 +78,21 @@ const ItemResourceForm = ({ storeId }) => {
           },
         });
         alert("Resource Added Successfully!");
+        setFormData({});
       } catch (error) {
-        console.error("Error adding item-based resource:", error);
+        if (error.response && error.response.status === 400) {
+          setErrors((prev) => ({ ...prev, uniqueId: error.response.data.message }));
+        } else {
+          console.error("Error adding item-based resource:", error);
+        }
       }
     } else if (activeForm === "trackRepair") {
-      // Check if resource exists
       const resourceExists = resources.some(resource => resource.uniqueId === formData.resourceId);
       if (!resourceExists) {
         setErrors((prev) => ({ ...prev, resourceId: "Resource ID does not exist." }));
         return;
       }
-
+  
       try {
         await axios.post("http://localhost:5000/item-resources/repair", {
           storeId,
@@ -106,17 +103,17 @@ const ItemResourceForm = ({ storeId }) => {
           },
         });
         alert("Repair/Maintenance Recorded Successfully!");
+        setFormData({});
       } catch (error) {
         console.error("Error recording repair:", error);
       }
     } else if (activeForm === "trackSale") {
-      // Check if resource exists
       const resourceExists = resources.some(resource => resource.uniqueId === formData.resourceId);
       if (!resourceExists) {
         setErrors((prev) => ({ ...prev, resourceId: "Resource ID does not exist." }));
         return;
       }
-
+  
       try {
         await axios.post("http://localhost:5000/item-resources/sale", {
           storeId,
@@ -127,12 +124,12 @@ const ItemResourceForm = ({ storeId }) => {
           },
         });
         alert("Sale Recorded Successfully!");
+        setFormData({});
       } catch (error) {
         console.error("Error recording sale:", error);
       }
     }
-    setFormData({});
-  };
+  };  
 
   return (
     <div className="p-4">
