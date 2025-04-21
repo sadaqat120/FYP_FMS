@@ -38,9 +38,7 @@ const LandingPage = ({
         <div className="hero-content">
           <h1>Smart Farming, Managed Together!</h1>
           <p className="w-[550px] mx-auto">
-            From real-time crop tracking to efficient livestock management and
-            resource optimization, revolutionize your farming operations and
-            enhance productivity today.
+          From crop tracking and livestock management to basic resource planning — manage your farming operations and improve productivity with simple digital tools.
           </p>
           <button className="button" onClick={handleGetStarted}>
             Get Started
@@ -56,8 +54,8 @@ const LandingPage = ({
             sustainable agricultural practices. Our Farm Management System aims
             to transform traditional farming methods by providing a centralized
             platform for crop planning, livestock tracking, resource management,
-            and intelligent decision-making tools like notifications, reminders,
-            and reports.
+            and intelligent decision-making tools like Chatbot, reminders,
+            and Record Summary.
           </p>
         </div>
         <div className="image">
@@ -80,9 +78,7 @@ const LandingPage = ({
             <img src={service1} alt="Crop Management" />
             <h3>Crop Management</h3>
             <p>
-              Optimize your crop planning and performance with tools for
-              tracking growth, managing resources, and improving yield
-              efficiency.
+            Record and monitor your crop fields, activities, and costs. Track sowing, fertilization, and harvest, with summaries of yield and profit for each plot.
             </p>
           </div>
           <div
@@ -98,9 +94,7 @@ const LandingPage = ({
             <img src={service2} alt="Livestock Management" />
             <h3>Livestock Management</h3>
             <p>
-              Monitor livestock health, feeding schedules, and breeding with
-              precision to ensure the productivity and well-being of your
-              animals.
+            Track health, feeding, and breeding of your animals with precision. Keep your records organized and your livestock cared for.
             </p>
           </div>
           <div
@@ -117,7 +111,7 @@ const LandingPage = ({
             <h3>Resource Management</h3>
             <p>
               Streamline your resource allocation by tracking and managing
-              seeds, fertilizers, equipment, and more for optimal usage.
+              seeds, fertilizers, equipment, and more for optimal usage and ensure timely availability.
             </p>
           </div>
           <div
@@ -141,8 +135,7 @@ const LandingPage = ({
             <img src={service5} alt="Reminders Service" />
             <h3>Reminders Service</h3>
             <p>
-              Stay on top of your tasks with automated reminders for planting,
-              harvesting, feeding, and maintenance activities.
+            Create custom reminders for planting, feeding, irrigation, and more. Stay on top of tasks with manual alerts you set yourself.
             </p>
           </div>
           <div
@@ -156,10 +149,9 @@ const LandingPage = ({
             }}
           >
             <img src={service6} alt="Report Generation" />
-            <h3>Report Generation</h3>
+            <h3>Interactive Record Builder</h3>
             <p>
-              Generate comprehensive reports for crop performance, livestock
-              productivity, and resource usage to make informed decisions.
+            Generate and download summaries of crop and resource records. Includes yield, costs, and profit details saved to your device.
             </p>
           </div>
         </div>
