@@ -3,20 +3,39 @@ import LandRecord from "./LandRecord";
 import CropRecord from "./CropRecord";
 import CostTracking from "./CostTracking";
 import ResultSummary from "./ResultSummary";
-import "./PlotFieldManagement.css";
 
 const PlotFieldManagement = () => {
   const [activeSection, setActiveSection] = useState("");
 
   return (
-    <div className="plot-field-management">
-      <div className="management-options">
-        <button onClick={() => setActiveSection("landRecord")}>Land Record</button>
-        <button onClick={() => setActiveSection("cropRecord")}>Crop Record</button>
-        <button onClick={() => setActiveSection("costTracking")}>Cost Tracking</button>
-        <button onClick={() => setActiveSection("resultSummary")}>Result Summary</button>
+    <div className="p-5">
+      <div className="flex justify-around my-5">
+        <button
+          onClick={() => setActiveSection("landRecord")}
+          className="px-5 py-2 text-lg bg-green-500 text-white border-none rounded-lg cursor-pointer transition-colors duration-300 hover:bg-green-600"
+        >
+          Land Record
+        </button>
+        <button
+          onClick={() => setActiveSection("cropRecord")}
+          className="px-5 py-2 text-lg bg-green-500 text-white border-none rounded-lg cursor-pointer transition-colors duration-300 hover:bg-green-600"
+        >
+          Crop Record
+        </button>
+        <button
+          onClick={() => setActiveSection("costTracking")}
+          className="px-5 py-2 text-lg bg-green-500 text-white border-none rounded-lg cursor-pointer transition-colors duration-300 hover:bg-green-600"
+        >
+          Cost Tracking
+        </button>
+        <button
+          onClick={() => setActiveSection("resultSummary")}
+          className="px-5 py-2 text-lg bg-green-500 text-white border-none rounded-lg cursor-pointer transition-colors duration-300 hover:bg-green-600"
+        >
+          Result Summary
+        </button>
       </div>
-      <div className="form-container">{renderActiveSection(activeSection)}</div>
+      <div className="mt-5">{renderActiveSection(activeSection)}</div>
     </div>
   );
 };
@@ -32,7 +51,7 @@ const renderActiveSection = (section) => {
     case "resultSummary":
       return <ResultSummary />;
     default:
-      return <p>Select an option to get started.</p>;
+      return <p className="text-center text-gray-600 text-xl mt-10">Select an option to get started.</p>;
   }
 };
 
