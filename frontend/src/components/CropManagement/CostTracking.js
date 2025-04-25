@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import "./CropLandCostTrckingResultSummaryFarm.css";
 
 const CostTracking = () => {
   const [selectedActivity, setSelectedActivity] = useState("");
   const [formData, setFormData] = useState({
-    plotName: "",  // Added Plot Name/ID field
+    plotName: "", // Added Plot Name/ID field
     equipmentCost: "",
     materialCost: "",
     laborCost: "",
@@ -38,9 +37,9 @@ const CostTracking = () => {
   };
 
   return (
-    <div className="form-container">
-      <h2>Cost Tracking</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="w-4/5 mx-auto my-5 p-5 border border-gray-300 rounded-lg bg-gray-50 shadow-md flex flex-col gap-4">
+      <h2 className="text-center text-2xl text-green-700">Cost Tracking</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* New Plot Name/ID Field */}
         <input
           type="text"
@@ -49,6 +48,7 @@ const CostTracking = () => {
           value={formData.plotName}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         />
 
         {/* Activity Selection */}
@@ -57,6 +57,7 @@ const CostTracking = () => {
           value={selectedActivity}
           onChange={handleActivityChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         >
           <option value="">Select Activity</option>
           <option value="landPreparation">Land Preparation</option>
@@ -79,6 +80,7 @@ const CostTracking = () => {
               value={formData.equipmentCost}
               onChange={handleChange}
               required
+              className="w-full p-2 text-lg border border-gray-300 rounded-md"
             />
             <input
               type="number"
@@ -86,6 +88,7 @@ const CostTracking = () => {
               placeholder="Material Cost"
               value={formData.materialCost}
               onChange={handleChange}
+              className="w-full p-2 text-lg border border-gray-300 rounded-md"
             />
             <input
               type="number"
@@ -93,6 +96,7 @@ const CostTracking = () => {
               placeholder="Labor Cost"
               value={formData.laborCost}
               onChange={handleChange}
+              className="w-full p-2 text-lg border border-gray-300 rounded-md"
             />
             <input
               type="number"
@@ -100,6 +104,7 @@ const CostTracking = () => {
               placeholder="Transport Cost"
               value={formData.transportCost}
               onChange={handleChange}
+              className="w-full p-2 text-lg border border-gray-300 rounded-md"
             />
             <input
               type="number"
@@ -107,6 +112,7 @@ const CostTracking = () => {
               placeholder="Miscellaneous Cost"
               value={formData.miscCost}
               onChange={handleChange}
+              className="w-full p-2 text-lg border border-gray-300 rounded-md"
             />
             <input
               type="date"
@@ -114,16 +120,21 @@ const CostTracking = () => {
               value={formData.date}
               onChange={handleChange}
               required
+              className="w-full p-2 text-lg border border-gray-300 rounded-md"
             />
             <textarea
               name="notes"
               placeholder="Additional Notes"
               value={formData.notes}
               onChange={handleChange}
+              className="w-full p-2 text-lg border border-gray-300 rounded-md resize-none h-20"
             ></textarea>
           </>
         )}
-        <button type="submit" className="button">
+        <button
+          type="submit"
+          className="p-3 text-lg text-white bg-green-500 rounded-md hover:bg-green-600"
+        >
           Save
         </button>
       </form>

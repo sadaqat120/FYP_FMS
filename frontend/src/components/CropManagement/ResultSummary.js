@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./CropLandCostTrckingResultSummaryFarm.css";
 
 const ResultSummary = () => {
   const [formData, setFormData] = useState({
@@ -19,8 +18,12 @@ const ResultSummary = () => {
   // Calculate net profit whenever sellRevenue or totalCost changes
   useEffect(() => {
     const netProfit =
-      parseFloat(formData.sellRevenue || 0) - parseFloat(formData.totalCost || 0);
-    setFormData((prevData) => ({ ...prevData, netProfit: netProfit.toFixed(2) }));
+      parseFloat(formData.sellRevenue || 0) -
+      parseFloat(formData.totalCost || 0);
+    setFormData((prevData) => ({
+      ...prevData,
+      netProfit: netProfit.toFixed(2),
+    }));
   }, [formData.sellRevenue, formData.totalCost]);
 
   const handleChange = (e) => {
@@ -33,9 +36,9 @@ const ResultSummary = () => {
   };
 
   return (
-    <div className="form-container">
-      <h2>Result Summary</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="w-4/5 mx-auto my-5 p-5 border border-gray-300 rounded-lg bg-gray-50 shadow-md flex flex-col gap-4">
+      <h2 className="text-center text-2xl text-green-700">Result Summary</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* New Plot Name/ID Field */}
         <input
           type="text"
@@ -44,6 +47,7 @@ const ResultSummary = () => {
           value={formData.plotName}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         />
 
         <input
@@ -53,12 +57,14 @@ const ResultSummary = () => {
           value={formData.totalYield}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         />
         <select
           name="yieldGrade"
           value={formData.yieldGrade}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         >
           <option value="">Select Yield Grade</option>
           <option value="excellent">Excellent</option>
@@ -73,12 +79,14 @@ const ResultSummary = () => {
           value={formData.expectedYield}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         />
         <select
           name="unit"
           value={formData.unit}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         >
           <option value="">Select Unit</option>
           <option value="kg">Kg</option>
@@ -89,6 +97,7 @@ const ResultSummary = () => {
           value={formData.satisfaction}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         >
           <option value="">Rate Satisfaction (1-5)</option>
           <option value="1">1</option>
@@ -102,6 +111,7 @@ const ResultSummary = () => {
           placeholder="Notes"
           value={formData.notes}
           onChange={handleChange}
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         ></textarea>
         <input
           type="number"
@@ -110,6 +120,7 @@ const ResultSummary = () => {
           value={formData.totalCost}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         />
         <input
           type="number"
@@ -118,6 +129,7 @@ const ResultSummary = () => {
           value={formData.sellRevenue}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         />
         {/* Display net profit */}
         <input
@@ -126,14 +138,19 @@ const ResultSummary = () => {
           placeholder="Net Profit"
           value={formData.netProfit}
           readOnly
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         />
         <textarea
           name="finalNotes"
           placeholder="Final Notes"
           value={formData.finalNotes}
           onChange={handleChange}
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         ></textarea>
-        <button type="submit" className="button">
+        <button
+          type="submit"
+          className="p-3 text-lg text-white bg-green-500 rounded-md hover:bg-green-600"
+        >
           Save
         </button>
       </form>

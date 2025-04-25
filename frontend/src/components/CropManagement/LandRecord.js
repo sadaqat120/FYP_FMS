@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./CropLandCostTrckingResultSummaryFarm.css";
 
 const LandRecord = () => {
   const [formData, setFormData] = useState({
@@ -22,9 +21,9 @@ const LandRecord = () => {
   };
 
   return (
-    <div className="form-container">
-      <h2>Land Record</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="w-4/5 mx-auto my-5 p-5 border border-gray-300 rounded-lg bg-gray-50 shadow-md flex flex-col gap-4">
+      <h2 className="text-center text-2xl text-green-700">Land Record</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="text"
           name="plotName"
@@ -32,6 +31,7 @@ const LandRecord = () => {
           value={formData.plotName}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         />
         <input
           type="number"
@@ -40,6 +40,7 @@ const LandRecord = () => {
           value={formData.area}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         />
         <input
           type="text"
@@ -48,6 +49,7 @@ const LandRecord = () => {
           value={formData.location}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         />
         <input
           type="text"
@@ -56,12 +58,14 @@ const LandRecord = () => {
           value={formData.soilType}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         />
         <select
           name="landType"
           value={formData.landType}
           onChange={handleChange}
           required
+          className="w-full p-2 text-lg border border-gray-300 rounded-md"
         >
           <option value="">Select Land Type</option>
           <option value="irrigated">Irrigated</option>
@@ -72,14 +76,19 @@ const LandRecord = () => {
           placeholder="Land Suitability (e.g., Suitable for wheat)"
           value={formData.landSuitability}
           onChange={handleChange}
+          className="w-full p-2 text-lg border border-gray-300 rounded-md h-20"
         ></textarea>
         <textarea
           name="notes"
           placeholder="Additional Notes"
           value={formData.notes}
           onChange={handleChange}
+          className="w-full p-2 text-lg border border-gray-300 rounded-md h-20"
         ></textarea>
-        <button type="submit" className="button">
+        <button
+          type="submit"
+          className="p-3 text-lg text-white bg-green-500 rounded-md hover:bg-green-600 transition"
+        >
           Save
         </button>
       </form>
