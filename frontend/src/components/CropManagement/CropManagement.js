@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Dashboard from "./Dashboard";
 import PlotFieldManagement from "./PlotFieldManagement";
-import "./CropManagement.css";
 
 const CropManagement = ({ onBackToLanding }) => {
   const [stores, setStores] = useState([]);
@@ -36,11 +35,15 @@ const CropManagement = ({ onBackToLanding }) => {
     e.preventDefault();
     if (storeName.trim()) {
       try {
-        const response = await axios.post("http://localhost:5000/CropFarm", { name: storeName }, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        });
+        const response = await axios.post(
+          "http://localhost:5000/CropFarm",
+          { name: storeName },
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
         setStores([...stores, response.data]);
         setStoreName("");
         setIsDialogOpen(false);
@@ -54,12 +57,20 @@ const CropManagement = ({ onBackToLanding }) => {
 
   const handleEditStore = async (storeId) => {
     try {
-      const response = await axios.put(`http://localhost:5000/CropFarm/${storeId}`, { name: editStoreName }, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
-      setStores(stores.map(store => store._id === storeId ? response.data : store));
+      const response = await axios.put(
+        `http://localhost:5000/CropFarm/${storeId}`,
+        { name: editStoreName },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      setStores(
+        stores.map((store) =>
+          store._id === storeId ? response.data : store
+        )
+      );
       setEditDialogOpen(false);
       setEditStoreName("");
     } catch (error) {
@@ -74,7 +85,7 @@ const CropManagement = ({ onBackToLanding }) => {
           Authorization: localStorage.getItem("token"),
         },
       });
-      setStores(stores.filter(store => store._id !== storeId));
+      setStores(stores.filter((store) => store._id !== storeId));
       setDeleteConfirmation(false);
     } catch (error) {
       console.error("Error deleting CropFarm:", error);
@@ -83,20 +94,19 @@ const CropManagement = ({ onBackToLanding }) => {
 
   const handleStoreClick = (store) => {
     setActiveStore(store);
-    setStoreName(store.name); // Set the CropFarm name to display
+    setStoreName(store.name);
   };
 
   return (
-    <div className="p-4">
-      {/* Main Content */}
+    <div className="p-5 w-full">
       {activeStore ? (
         <>
-          <h1 className="text-center text-3xl font-bold text-green-600 mb-6">
+          <h1 className="text-4xl font-bold text-green-700 text-center mb-6">
             {activeStore.name}
           </h1>
           <div className="flex justify-center gap-6 mb-6">
             <button
-              className={`py-2 px-4 rounded-lg ${
+              className={`py-2 px-5 text-base font-semibold rounded-md ${
                 activeTab === "dashboard"
                   ? "bg-green-600 text-white"
                   : "bg-gray-200 text-gray-800"
@@ -106,7 +116,7 @@ const CropManagement = ({ onBackToLanding }) => {
               Dashboard
             </button>
             <button
-              className={`py-2 px-4 rounded-lg ${
+              className={`py-2 px-5 text-base font-semibold rounded-md ${
                 activeTab === "manageResources"
                   ? "bg-green-600 text-white"
                   : "bg-gray-200 text-gray-800"
@@ -116,22 +126,21 @@ const CropManagement = ({ onBackToLanding }) => {
               PlotFieldManagement
             </button>
           </div>
-
           {activeTab === "dashboard" ? (
-            <Dashboard storeName={activeStore.name} storeId={activeStore._id}/>
+            <Dashboard storeName={activeStore.name} storeId={activeStore._id} />
           ) : (
             <PlotFieldManagement storeId={activeStore._id} />
           )}
         </>
       ) : (
         <>
-          <h1 className="text-center text-3xl font-bold text-green-600 mb-6">
+          <h1 className="text-center text-4xl font-bold text-green-700 mb-6">
             Your CropFarms
           </h1>
           <div className="flex flex-col items-center">
             {stores.length > 0 ? (
               stores.map((store) => (
-                <div key={store._id} className="flex justify-between items-center w-full max-w-md mb-2">
+                <div key={store._id} className="flex justify-between items-center w-full max-w-md mb-3">
                   <span
                     className="text-lg cursor-pointer hover:text-blue-600"
                     onClick={() => handleStoreClick(store)}
@@ -145,7 +154,7 @@ const CropManagement = ({ onBackToLanding }) => {
                         setActiveStore(store);
                         setEditDialogOpen(true);
                       }}
-                      className="bg-blue-500 text-white py-1 px-2 rounded-lg mr-2"
+                      className="bg-blue-500 text-white py-1 px-3 rounded-md mr-2"
                     >
                       Edit
                     </button>
@@ -154,7 +163,7 @@ const CropManagement = ({ onBackToLanding }) => {
                         setStoreToDelete(store._id);
                         setDeleteConfirmation(true);
                       }}
-                      className="bg-red-500 text-white py-1 px-2 rounded-lg"
+                      className="bg-red-500 text-white py-1 px-3 rounded-md"
                     >
                       Delete
                     </button>
@@ -162,11 +171,13 @@ const CropManagement = ({ onBackToLanding }) => {
                 </div>
               ))
             ) : (
-              <p>No CropFarm found. Please add a new CropFarm.</p>
+              <p className="text-gray-600 text-lg text-center mt-8">
+                No CropFarm found. Please add a new CropFarm.
+              </p>
             )}
             <button
               onClick={() => setIsDialogOpen(true)}
-              className="bg-green-600 text-white py-2 px-4 rounded-lg mt-4"
+              className="bg-green-600 text-white py-2 px-4 rounded-lg mt-6 hover:bg-green-700"
             >
               Add New CropFarm
             </button>
@@ -174,11 +185,11 @@ const CropManagement = ({ onBackToLanding }) => {
         </>
       )}
 
-      {/* Dialog Box for Adding New Store */}
+      {/* Add Dialog */}
       {isDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-xl font-bold text-green-600 mb-4">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md text-center">
+            <h2 className="text-2xl text-green-700 font-semibold mb-4">
               Enter CropFarm Name
             </h2>
             <form onSubmit={handleDialogSubmit} className="flex flex-col gap-4">
@@ -187,7 +198,7 @@ const CropManagement = ({ onBackToLanding }) => {
                 placeholder="Enter store name"
                 value={storeName}
                 onChange={(e) => setStoreName(e.target.value)}
-                className="p-3 border rounded-lg"
+                className="p-3 border rounded-lg shadow-inner"
                 required
               />
               <button
@@ -201,18 +212,18 @@ const CropManagement = ({ onBackToLanding }) => {
         </div>
       )}
 
-      {/* Edit Store Dialog */}
+      {/* Edit Dialog */}
       {isEditDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-xl font-bold text-green-600 mb-4">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md text-center">
+            <h2 className="text-2xl text-green-700 font-semibold mb-4">
               Edit CropFarm Name
             </h2>
             <input
               type="text"
               value={editStoreName}
               onChange={(e) => setEditStoreName(e.target.value)}
-              className="p-3 border rounded-lg mb-4"
+              className="p-3 border rounded-lg shadow-inner mb-4"
               required
             />
             <button
@@ -231,14 +242,14 @@ const CropManagement = ({ onBackToLanding }) => {
         </div>
       )}
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Confirmation */}
       {deleteConfirmation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-xl font-bold text-red-600 mb-4">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md text-center">
+            <h2 className="text-2xl text-red-700 font-semibold mb-4">
               Are you sure you want to delete this CropFarm?
             </h2>
-            <div className="flex justify-between">
+            <div className="flex justify-center gap-4">
               <button
                 onClick={() => handleDeleteStore(storeToDelete)}
                 className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
