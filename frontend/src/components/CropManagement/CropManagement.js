@@ -129,7 +129,7 @@ const CropManagement = ({ onBackToLanding }) => {
           {activeTab === "dashboard" ? (
             <Dashboard storeName={activeStore.name} storeId={activeStore._id} />
           ) : (
-            <PlotFieldManagement storeId={activeStore._id} />
+            <PlotFieldManagement cropFarmId={activeStore._id} />
           )}
         </>
       ) : (

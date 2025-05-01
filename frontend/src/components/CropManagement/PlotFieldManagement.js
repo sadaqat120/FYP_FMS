@@ -4,8 +4,27 @@ import CropRecord from "./CropRecord";
 import CostTracking from "./CostTracking";
 import ResultSummary from "./ResultSummary";
 
-const PlotFieldManagement = () => {
+const PlotFieldManagement = ({ cropFarmId }) => {
   const [activeSection, setActiveSection] = useState("");
+
+  const renderActiveSection = (section, cropFarmId) => {
+    switch (section) {
+      case "landRecord":
+        return <LandRecord cropFarmId={cropFarmId} />;
+      case "cropRecord":
+        return <CropRecord cropFarmId={cropFarmId} />;
+      case "costTracking":
+        return <CostTracking cropFarmId={cropFarmId} />;
+      case "resultSummary":
+        return <ResultSummary cropFarmId={cropFarmId} />;
+      default:
+        return (
+          <p className="text-center text-gray-600 text-xl mt-10">
+            Select an option to get started.
+          </p>
+        );
+    }
+  };
 
   return (
     <div className="p-5">
@@ -35,24 +54,11 @@ const PlotFieldManagement = () => {
           Result Summary
         </button>
       </div>
-      <div className="mt-5">{renderActiveSection(activeSection)}</div>
+      <div className="mt-5">
+        {renderActiveSection(activeSection, cropFarmId)}
+      </div>
     </div>
   );
-};
-
-const renderActiveSection = (section) => {
-  switch (section) {
-    case "landRecord":
-      return <LandRecord />;
-    case "cropRecord":
-      return <CropRecord />;
-    case "costTracking":
-      return <CostTracking />;
-    case "resultSummary":
-      return <ResultSummary />;
-    default:
-      return <p className="text-center text-gray-600 text-xl mt-10">Select an option to get started.</p>;
-  }
 };
 
 export default PlotFieldManagement;

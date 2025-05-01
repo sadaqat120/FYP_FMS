@@ -29,6 +29,11 @@ app.use("/api/chat", require("./routes/chatRoutes"));
 
 // Crop Management
 app.use("/CropFarm", require("./routes/cropFarmRoutes")); // New CropFarm routes
+app.use("/land-records", require("./routes/landRecordRoutes"));
+app.use("/crop-records", require("./routes/cropRecordRoutes"));
+app.use("/cost-tracking", require("./routes/costTrackingRoutes"));
+app.use("/result-summary", require("./routes/resultSummaryRoutes"));
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
