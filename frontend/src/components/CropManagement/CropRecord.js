@@ -7,7 +7,8 @@ const CropRecord = ({ cropFarmId }) => {
     cropType: "",
     cropName: "",
     duration: "",
-    notes: ""
+    seedingDate: "", // ✅ NEW FIELD
+    notes: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -18,7 +19,10 @@ const CropRecord = ({ cropFarmId }) => {
     if (!formData.season.trim()) newErrors.season = "Season is required";
     if (!formData.cropType.trim()) newErrors.cropType = "Crop type is required";
     if (!formData.cropName.trim()) newErrors.cropName = "Crop name is required";
-    if (!formData.duration.trim()) newErrors.duration = "Expected duration is required";
+    if (!formData.duration.trim())
+      newErrors.duration = "Expected duration is required";
+    if (!formData.seedingDate.trim())
+      newErrors.seedingDate = "Seeding date is required"; // ✅ validate
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -38,10 +42,10 @@ const CropRecord = ({ cropFarmId }) => {
         "http://localhost:5000/crop-records",
         {
           ...formData,
-          cropFarmId // Pass the farm ID
+          cropFarmId,
         },
         {
-          headers: { Authorization: token }
+          headers: { Authorization: token },
         }
       );
 
@@ -51,7 +55,8 @@ const CropRecord = ({ cropFarmId }) => {
         cropType: "",
         cropName: "",
         duration: "",
-        notes: ""
+        seedingDate: "", // ✅ reset
+        notes: "",
       });
       setErrors({});
     } catch (err) {
@@ -80,7 +85,9 @@ const CropRecord = ({ cropFarmId }) => {
             <option value="rabi">Rabi</option>
             <option value="kharif">Kharif</option>
           </select>
-          {errors.season && <p className="text-red-500 text-sm">{errors.season}</p>}
+          {errors.season && (
+            <p className="text-red-500 text-sm">{errors.season}</p>
+          )}
         </div>
 
         {/* Crop Type */}
@@ -94,7 +101,9 @@ const CropRecord = ({ cropFarmId }) => {
             className="w-full p-2 text-base border border-gray-300 rounded"
             required
           />
-          {errors.cropType && <p className="text-red-500 text-sm">{errors.cropType}</p>}
+          {errors.cropType && (
+            <p className="text-red-500 text-sm">{errors.cropType}</p>
+          )}
         </div>
 
         {/* Crop Name */}
@@ -108,7 +117,9 @@ const CropRecord = ({ cropFarmId }) => {
             className="w-full p-2 text-base border border-gray-300 rounded"
             required
           />
-          {errors.cropName && <p className="text-red-500 text-sm">{errors.cropName}</p>}
+          {errors.cropName && (
+            <p className="text-red-500 text-sm">{errors.cropName}</p>
+          )}
         </div>
 
         {/* Duration */}
@@ -122,7 +133,25 @@ const CropRecord = ({ cropFarmId }) => {
             className="w-full p-2 text-base border border-gray-300 rounded"
             required
           />
-          {errors.duration && <p className="text-red-500 text-sm">{errors.duration}</p>}
+          {errors.duration && (
+            <p className="text-red-500 text-sm">{errors.duration}</p>
+          )}
+        </div>
+
+        {/* ✅ Seeding Date */}
+        <div>
+          <input
+            type="date"
+            name="seedingDate"
+            placeholder="Seeding Date"
+            value={formData.seedingDate}
+            onChange={handleChange}
+            className="w-full p-2 text-base border border-gray-300 rounded"
+            required
+          />
+          {errors.seedingDate && (
+            <p className="text-red-500 text-sm">{errors.seedingDate}</p>
+          )}
         </div>
 
         {/* Notes (Optional) */}
