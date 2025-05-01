@@ -114,7 +114,7 @@ const CropRecord = ({ cropFarmId }) => {
         {/* Duration */}
         <div>
           <input
-            type="text"
+            type="number"
             name="duration"
             placeholder="Expected Duration (e.g., 120 days)"
             value={formData.duration}

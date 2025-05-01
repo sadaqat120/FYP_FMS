@@ -6,7 +6,7 @@ const CropRecordSchema = new mongoose.Schema({
   season: { type: String, enum: ["rabi", "kharif"], required: true },
   cropType: { type: String, required: true },
   cropName: { type: String, required: true },
-  duration: { type: String, required: true },
+  duration: { type: Number, required: true },
   notes: { type: String }
 }, {
   timestamps: true
