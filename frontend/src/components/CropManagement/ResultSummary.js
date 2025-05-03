@@ -12,14 +12,54 @@ const ResultSummary = ({ cropFarmId }) => {
     totalCost: "",
     sellRevenue: "",
     netProfit: "",
-    revenueNotes: ""
+    revenueNotes: "",
   });
 
   const [errors, setErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [recordId, setRecordId] = useState(null);
 
   useEffect(() => {
-    const profit = parseFloat(formData.sellRevenue || 0) - parseFloat(formData.totalCost || 0);
+    const fetchSummary = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(
+          `http://localhost:5000/result-summary/${cropFarmId}`,
+          {
+            headers: { Authorization: token },
+          }
+        );
+
+        if (res.data && res.data.length > 0) {
+          const existing = res.data[0];
+          setFormData({
+            totalYield: existing.totalYield || "",
+            yieldGrade: existing.yieldGrade || "",
+            expectedYield: existing.expectedYield || "",
+            unit: existing.unit || "",
+            satisfaction: existing.satisfaction || "",
+            yieldNotes: existing.yieldNotes || "",
+            totalCost: existing.totalCost || "",
+            sellRevenue: existing.sellRevenue || "",
+            netProfit: existing.netProfit || "",
+            revenueNotes: existing.revenueNotes || "",
+          });
+          setIsEditMode(true);
+          setRecordId(existing._id);
+        }
+      } catch (err) {
+        console.error("Error fetching result summary:", err);
+      }
+    };
+
+    fetchSummary();
+  }, [cropFarmId]);
+
+  useEffect(() => {
+    const profit =
+      parseFloat(formData.sellRevenue || 0) -
+      parseFloat(formData.totalCost || 0);
     setFormData((prev) => ({ ...prev, netProfit: profit.toFixed(2) }));
   }, [formData.sellRevenue, formData.totalCost]);
 
@@ -32,7 +72,7 @@ const ResultSummary = ({ cropFarmId }) => {
       "unit",
       "satisfaction",
       "totalCost",
-      "sellRevenue"
+      "sellRevenue",
     ];
     required.forEach((field) => {
       if (!formData[field] || formData[field].toString().trim() === "") {
@@ -54,31 +94,31 @@ const ResultSummary = ({ cropFarmId }) => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5000/result-summary", {
+      const payload = {
         cropFarmId,
         ...formData,
         totalYield: Number(formData.totalYield),
         expectedYield: Number(formData.expectedYield),
         totalCost: Number(formData.totalCost),
         sellRevenue: Number(formData.sellRevenue),
-        netProfit: Number(formData.netProfit)
-      }, {
-        headers: { Authorization: token }
-      });
+        netProfit: Number(formData.netProfit),
+      };
 
-      setSuccessMsg("Result Summary Saved Successfully!");
-      setFormData({
-        totalYield: "",
-        yieldGrade: "",
-        expectedYield: "",
-        unit: "",
-        satisfaction: "",
-        yieldNotes: "",
-        totalCost: "",
-        sellRevenue: "",
-        netProfit: "",
-        revenueNotes: ""
-      });
+      if (isEditMode && recordId) {
+        await axios.put(
+          `http://localhost:5000/result-summary/${recordId}`,
+          payload,
+          {
+            headers: { Authorization: token },
+          }
+        );
+        setSuccessMsg("Result Summary Updated Successfully!");
+      } else {
+        await axios.post("http://localhost:5000/result-summary", payload, {
+          headers: { Authorization: token },
+        });
+        setSuccessMsg("Result Summary Saved Successfully!");
+      }
     } catch (err) {
       console.error("Error saving result summary:", err);
       alert("Error saving result summary.");
@@ -87,7 +127,9 @@ const ResultSummary = ({ cropFarmId }) => {
 
   return (
     <div className="w-4/5 mx-auto my-5 p-5 border border-gray-300 rounded-lg bg-gray-50 shadow-md flex flex-col gap-4">
-      <h2 className="text-center text-2xl text-green-700">Result Summary</h2>
+      <h2 className="text-center text-2xl text-green-700">
+        {isEditMode ? "Edit Result Summary" : "Create Result Summary"}
+      </h2>
       {successMsg && <p className="text-green-600 text-center">{successMsg}</p>}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -97,17 +139,19 @@ const ResultSummary = ({ cropFarmId }) => {
           placeholder="Total Yield"
           value={formData.totalYield}
           onChange={handleChange}
-          required
           className="w-full p-2 border rounded-md"
+          required
         />
-        {errors.totalYield && <p className="text-red-500 text-sm">{errors.totalYield}</p>}
+        {errors.totalYield && (
+          <p className="text-red-500 text-sm">{errors.totalYield}</p>
+        )}
 
         <select
           name="yieldGrade"
           value={formData.yieldGrade}
           onChange={handleChange}
-          required
           className="w-full p-2 border rounded-md"
+          required
         >
           <option value="">Select Yield Grade</option>
           <option value="excellent">Excellent</option>
@@ -115,7 +159,9 @@ const ResultSummary = ({ cropFarmId }) => {
           <option value="average">Average</option>
           <option value="poor">Poor</option>
         </select>
-        {errors.yieldGrade && <p className="text-red-500 text-sm">{errors.yieldGrade}</p>}
+        {errors.yieldGrade && (
+          <p className="text-red-500 text-sm">{errors.yieldGrade}</p>
+        )}
 
         <input
           type="number"
@@ -123,17 +169,19 @@ const ResultSummary = ({ cropFarmId }) => {
           placeholder="Expected Yield"
           value={formData.expectedYield}
           onChange={handleChange}
-          required
           className="w-full p-2 border rounded-md"
+          required
         />
-        {errors.expectedYield && <p className="text-red-500 text-sm">{errors.expectedYield}</p>}
+        {errors.expectedYield && (
+          <p className="text-red-500 text-sm">{errors.expectedYield}</p>
+        )}
 
         <select
           name="unit"
           value={formData.unit}
           onChange={handleChange}
-          required
           className="w-full p-2 border rounded-md"
+          required
         >
           <option value="">Select Unit</option>
           <option value="kg">Kg</option>
@@ -145,17 +193,19 @@ const ResultSummary = ({ cropFarmId }) => {
           name="satisfaction"
           value={formData.satisfaction}
           onChange={handleChange}
-          required
           className="w-full p-2 border rounded-md"
+          required
         >
-          <option value="">Satisfaction (1-5)</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
+          <option value="">Satisfaction (1–5)</option>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <option key={i} value={i}>
+              {i}
+            </option>
+          ))}
         </select>
-        {errors.satisfaction && <p className="text-red-500 text-sm">{errors.satisfaction}</p>}
+        {errors.satisfaction && (
+          <p className="text-red-500 text-sm">{errors.satisfaction}</p>
+        )}
 
         <textarea
           name="yieldNotes"
@@ -171,10 +221,12 @@ const ResultSummary = ({ cropFarmId }) => {
           placeholder="Total Cost"
           value={formData.totalCost}
           onChange={handleChange}
-          required
           className="w-full p-2 border rounded-md"
+          required
         />
-        {errors.totalCost && <p className="text-red-500 text-sm">{errors.totalCost}</p>}
+        {errors.totalCost && (
+          <p className="text-red-500 text-sm">{errors.totalCost}</p>
+        )}
 
         <input
           type="number"
@@ -182,10 +234,12 @@ const ResultSummary = ({ cropFarmId }) => {
           placeholder="Sell Revenue"
           value={formData.sellRevenue}
           onChange={handleChange}
-          required
           className="w-full p-2 border rounded-md"
+          required
         />
-        {errors.sellRevenue && <p className="text-red-500 text-sm">{errors.sellRevenue}</p>}
+        {errors.sellRevenue && (
+          <p className="text-red-500 text-sm">{errors.sellRevenue}</p>
+        )}
 
         <input
           type="number"
@@ -208,7 +262,7 @@ const ResultSummary = ({ cropFarmId }) => {
           type="submit"
           className="p-3 text-white bg-green-600 rounded hover:bg-green-700"
         >
-          Save
+          {isEditMode ? "Update" : "Save"}
         </button>
       </form>
     </div>

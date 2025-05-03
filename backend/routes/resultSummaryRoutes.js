@@ -3,7 +3,7 @@ const router = express.Router();
 const ResultSummary = require("../models/ResultSummary");
 const authMiddleware = require("../middlewares/authMiddleware");
 
-// POST: Save result summary
+// POST: Create new result summary
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const {
@@ -16,14 +16,22 @@ router.post("/", authMiddleware, async (req, res) => {
       yieldNotes,
       totalCost,
       sellRevenue,
-      revenueNotes
+      revenueNotes,
     } = req.body;
 
     if (
-      !cropFarmId || !totalYield || !yieldGrade || !expectedYield || !unit ||
-      !satisfaction || !totalCost || !sellRevenue
+      !cropFarmId ||
+      totalYield === undefined ||
+      !yieldGrade ||
+      expectedYield === undefined ||
+      !unit ||
+      !satisfaction ||
+      totalCost === undefined ||
+      sellRevenue === undefined
     ) {
-      return res.status(400).json({ message: "All required fields must be filled." });
+      return res
+        .status(400)
+        .json({ message: "All required fields must be filled." });
     }
 
     const netProfit = parseFloat(sellRevenue) - parseFloat(totalCost);
@@ -40,7 +48,7 @@ router.post("/", authMiddleware, async (req, res) => {
       totalCost,
       sellRevenue,
       netProfit,
-      revenueNotes
+      revenueNotes,
     });
 
     await resultSummary.save();
@@ -51,12 +59,68 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-// GET: Fetch summaries for crop farm
+// PUT: Update existing summary
+router.put("/:id", authMiddleware, async (req, res) => {
+  try {
+    const {
+      totalYield,
+      yieldGrade,
+      expectedYield,
+      unit,
+      satisfaction,
+      yieldNotes,
+      totalCost,
+      sellRevenue,
+      revenueNotes,
+    } = req.body;
+
+    if (
+      totalYield === undefined ||
+      !yieldGrade ||
+      expectedYield === undefined ||
+      !unit ||
+      !satisfaction ||
+      totalCost === undefined ||
+      sellRevenue === undefined
+    ) {
+      return res
+        .status(400)
+        .json({ message: "All required fields must be filled." });
+    }
+
+    const netProfit = parseFloat(sellRevenue) - parseFloat(totalCost);
+
+    const updated = await ResultSummary.findOneAndUpdate(
+      { _id: req.params.id, user: req.user.id },
+      {
+        totalYield,
+        yieldGrade,
+        expectedYield,
+        unit,
+        satisfaction,
+        yieldNotes,
+        totalCost,
+        sellRevenue,
+        netProfit,
+        revenueNotes,
+      },
+      { new: true }
+    );
+
+    if (!updated) return res.status(404).json({ message: "Summary not found" });
+    res.status(200).json(updated);
+  } catch (error) {
+    console.error("Error updating result summary:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// GET: Fetch summaries by cropFarmId
 router.get("/:cropFarmId", authMiddleware, async (req, res) => {
   try {
     const summaries = await ResultSummary.find({
       user: req.user.id,
-      cropFarmId: req.params.cropFarmId
+      cropFarmId: req.params.cropFarmId,
     });
     res.status(200).json(summaries);
   } catch (error) {
