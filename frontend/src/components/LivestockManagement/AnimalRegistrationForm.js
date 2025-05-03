@@ -27,7 +27,7 @@ const AnimalRegistrationForm = ({ farmId }) => {
     if (!animalId) newErrors.animalId = "Animal ID is required.";
     if (!animalCategory) newErrors.animalCategory = "Animal category is required.";
     if (animalCategory === "Others" && !otherCategory) newErrors.otherCategory = "Please specify the other category.";
-    if (!sex) newErrors.sex = "Sex is required.";
+    if (!sex) newErrors.sex = "Gender is required.";
     if (!weight) newErrors.weight = "Weight is required.";
     if (!breed) newErrors.breed = "Breed is required.";
     if (!age) newErrors.age = "Age is required.";
@@ -140,7 +140,7 @@ const AnimalRegistrationForm = ({ farmId }) => {
             onChange={(e) => setSex(e.target.value)}
             required
           >
-            <option value="">Select Sex</option>
+            <option value="">Select Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>

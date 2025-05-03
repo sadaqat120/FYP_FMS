@@ -96,7 +96,7 @@ const AnimalCard = ({ animal, isHighlighted }) => {
       <h4 className="text-lg font-bold text-gray-700">Animal Details</h4>
       <ul className="list-disc ml-6">
         <li><strong>Animal ID:</strong> {animal.animalId}</li>
-        <li><strong>Sex:</strong> {animal.sex}</li>
+        <li><strong>Gender:</strong> {animal.sex}</li>
         <li><strong>Breed:</strong> {animal.breed}</li>
         <li><strong>Weight:</strong> {animal.weight}</li>
         <li><strong>Feed Type:</strong> {animal.feedType}</li>

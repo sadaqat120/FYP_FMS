@@ -85,7 +85,7 @@ const AnimalCategoryDetails = ({ category, farmId }) => {
   }, [category, farmId]);
 
   const pieDataConfigs = {
-    Sex: {
+    Gender: {
       labels: ["Male", "Female"],
       data: [sexData.male, sexData.female],
       backgroundColor: ["#FF6384", "#36A2EB"],
