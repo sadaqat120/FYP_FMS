@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const LandRecord = ({ cropFarmId }) => {
   const [formData, setFormData] = useState({
-    plotId: "", // This acts as the identifier for the plot
+    plotId: "",
     area: "",
     location: "",
     soilType: "",
@@ -14,6 +14,40 @@ const LandRecord = ({ cropFarmId }) => {
 
   const [errors, setErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [recordId, setRecordId] = useState(null);
+
+  useEffect(() => {
+    const fetchLandRecord = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(
+          `http://localhost:5000/land-records/${cropFarmId}`,
+          {
+            headers: { Authorization: token },
+          }
+        );
+        if (res.data && res.data.length > 0) {
+          const existingRecord = res.data[0];
+          setFormData({
+            plotId: existingRecord.plotId || "",
+            area: existingRecord.area || "",
+            location: existingRecord.location || "",
+            soilType: existingRecord.soilType || "",
+            landType: existingRecord.landType || "",
+            landSuitability: existingRecord.landSuitability || "",
+            notes: existingRecord.notes || "",
+          });
+          setIsEditMode(true);
+          setRecordId(existingRecord._id);
+        }
+      } catch (error) {
+        console.error("Error fetching land record:", error);
+      }
+    };
+
+    fetchLandRecord();
+  }, [cropFarmId]);
 
   const validate = () => {
     const newErrors = {};
@@ -39,27 +73,27 @@ const LandRecord = ({ cropFarmId }) => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        "http://localhost:5000/land-records",
-        {
-          ...formData,
-          cropFarmId, // Include CropFarm reference
-        },
-        {
-          headers: { Authorization: token },
-        }
-      );
 
-      setSuccessMsg("Land Record Saved Successfully!");
-      setFormData({
-        plotId: "",
-        area: "",
-        location: "",
-        soilType: "",
-        landType: "",
-        landSuitability: "",
-        notes: "",
-      });
+      if (isEditMode && recordId) {
+        await axios.put(
+          `http://localhost:5000/land-records/${recordId}`,
+          { ...formData },
+          {
+            headers: { Authorization: token },
+          }
+        );
+        setSuccessMsg("Land Record Updated Successfully!");
+      } else {
+        await axios.post(
+          "http://localhost:5000/land-records",
+          { ...formData, cropFarmId },
+          {
+            headers: { Authorization: token },
+          }
+        );
+        setSuccessMsg("Land Record Saved Successfully!");
+      }
+
       setErrors({});
     } catch (err) {
       console.error(err);
@@ -70,7 +104,9 @@ const LandRecord = ({ cropFarmId }) => {
 
   return (
     <div className="w-4/5 mx-auto my-5 p-5 border border-gray-300 rounded-lg bg-gray-50 shadow-md flex flex-col gap-4">
-      <h2 className="text-center text-2xl text-green-700">Land Record</h2>
+      <h2 className="text-center text-2xl text-green-700">
+        {isEditMode ? "Edit Land Record" : "Add Land Record"}
+      </h2>
       {successMsg && <p className="text-green-600 text-center">{successMsg}</p>}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -163,7 +199,7 @@ const LandRecord = ({ cropFarmId }) => {
           className="w-full p-2 text-lg border border-gray-300 rounded-md h-20"
         />
 
-        {/* Notes (optional) */}
+        {/* Notes */}
         <textarea
           name="notes"
           placeholder="Additional Notes"
@@ -177,7 +213,7 @@ const LandRecord = ({ cropFarmId }) => {
           type="submit"
           className="p-3 text-lg text-white bg-green-500 rounded-md hover:bg-green-600 transition"
         >
-          Save
+          {isEditMode ? "Update" : "Save"}
         </button>
       </form>
     </div>
