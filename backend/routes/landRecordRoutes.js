@@ -8,7 +8,6 @@ router.post("/", authMiddleware, async (req, res) => {
   try {
     const {
       cropFarmId,
-      plotId,
       area,
       location,
       soilType,
@@ -18,7 +17,6 @@ router.post("/", authMiddleware, async (req, res) => {
     } = req.body;
 
     if (
-      !plotId ||
       !area ||
       !location ||
       !soilType ||
@@ -33,7 +31,6 @@ router.post("/", authMiddleware, async (req, res) => {
     const landRecord = new LandRecord({
       user: req.user.id,
       cropFarmId,
-      plotId,
       area,
       location,
       soilType,

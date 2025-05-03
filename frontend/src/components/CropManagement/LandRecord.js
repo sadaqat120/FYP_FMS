@@ -3,7 +3,6 @@ import axios from "axios";
 
 const LandRecord = ({ cropFarmId }) => {
   const [formData, setFormData] = useState({
-    plotId: "",
     area: "",
     location: "",
     soilType: "",
@@ -30,7 +29,6 @@ const LandRecord = ({ cropFarmId }) => {
         if (res.data && res.data.length > 0) {
           const existingRecord = res.data[0];
           setFormData({
-            plotId: existingRecord.plotId || "",
             area: existingRecord.area || "",
             location: existingRecord.location || "",
             soilType: existingRecord.soilType || "",
@@ -51,7 +49,6 @@ const LandRecord = ({ cropFarmId }) => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.plotId.trim()) newErrors.plotId = "Plot ID is required";
     if (!formData.area || isNaN(formData.area))
       newErrors.area = "Valid area is required";
     if (!formData.location.trim()) newErrors.location = "Location is required";
@@ -110,21 +107,6 @@ const LandRecord = ({ cropFarmId }) => {
       {successMsg && <p className="text-green-600 text-center">{successMsg}</p>}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* Plot ID */}
-        <div>
-          <input
-            type="text"
-            name="plotId"
-            placeholder="Plot ID (e.g., PLOT123)"
-            value={formData.plotId}
-            onChange={handleChange}
-            className="w-full p-2 text-lg border border-gray-300 rounded-md"
-            required
-          />
-          {errors.plotId && (
-            <p className="text-red-500 text-sm">{errors.plotId}</p>
-          )}
-        </div>
 
         {/* Area */}
         <div>
