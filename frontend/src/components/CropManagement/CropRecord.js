@@ -7,7 +7,8 @@ const CropRecord = ({ cropFarmId }) => {
     cropType: "",
     cropName: "",
     duration: "",
-    seedingDate: "", // ✅ NEW FIELD
+    seedingDate: "",
+    seedQuantity: "", // ✅ NEW FIELD
     notes: "",
   });
 
@@ -22,7 +23,9 @@ const CropRecord = ({ cropFarmId }) => {
     if (!formData.duration.trim())
       newErrors.duration = "Expected duration is required";
     if (!formData.seedingDate.trim())
-      newErrors.seedingDate = "Seeding date is required"; // ✅ validate
+      newErrors.seedingDate = "Seeding date is required";
+    if (!formData.seedQuantity.trim())
+      newErrors.seedQuantity = "Seed quantity is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -55,7 +58,8 @@ const CropRecord = ({ cropFarmId }) => {
         cropType: "",
         cropName: "",
         duration: "",
-        seedingDate: "", // ✅ reset
+        seedingDate: "",
+        seedQuantity: "",
         notes: "",
       });
       setErrors({});
@@ -138,12 +142,27 @@ const CropRecord = ({ cropFarmId }) => {
           )}
         </div>
 
-        {/* ✅ Seeding Date */}
+        {/* ✅ Seed Quantity */}
+        <div>
+          <input
+            type="number"
+            name="seedQuantity"
+            placeholder="Seed Quantity (Kg)"
+            value={formData.seedQuantity}
+            onChange={handleChange}
+            className="w-full p-2 text-base border border-gray-300 rounded"
+            required
+          />
+          {errors.seedQuantity && (
+            <p className="text-red-500 text-sm">{errors.seedQuantity}</p>
+          )}
+        </div>
+
+        {/* Seeding Date */}
         <div>
           <input
             type="date"
             name="seedingDate"
-            placeholder="Seeding Date"
             value={formData.seedingDate}
             onChange={handleChange}
             className="w-full p-2 text-base border border-gray-300 rounded"
@@ -154,7 +173,7 @@ const CropRecord = ({ cropFarmId }) => {
           )}
         </div>
 
-        {/* Notes (Optional) */}
+        {/* Notes */}
         <div>
           <textarea
             name="notes"
@@ -165,7 +184,7 @@ const CropRecord = ({ cropFarmId }) => {
           />
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <button
           type="submit"
           className="px-5 py-3 text-white text-base bg-green-600 rounded hover:bg-green-700 transition"
