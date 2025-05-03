@@ -33,6 +33,8 @@ app.use("/land-records", require("./routes/landRecordRoutes"));
 app.use("/crop-records", require("./routes/cropRecordRoutes"));
 app.use("/cost-tracking", require("./routes/costTrackingRoutes"));
 app.use("/result-summary", require("./routes/resultSummaryRoutes"));
+app.use("/dashboard", require("./routes/dashboardRoutes"));
+
 
 
 const PORT = process.env.PORT || 5000;
