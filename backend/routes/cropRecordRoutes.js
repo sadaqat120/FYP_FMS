@@ -6,10 +6,10 @@ const authMiddleware = require("../middlewares/authMiddleware");
 // Create Crop Record
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { cropFarmId, season, cropType, cropName, duration, seedingDate, notes } = req.body;
+    const { cropFarmId, season, cropType, cropName, duration, seedingDate, seedQuantity, notes } = req.body;
 
     // Basic validation
-    if (!cropFarmId || !season || !cropType || !cropName || !duration || !seedingDate) {
+    if (!cropFarmId || !season || !cropType || !cropName || !duration || !seedingDate || !seedQuantity) {
       return res.status(400).json({ message: "All required fields must be filled." });
     }
 
@@ -21,6 +21,7 @@ router.post("/", authMiddleware, async (req, res) => {
       cropName,
       duration,
       seedingDate,
+      seedQuantity,
       notes
     });
 

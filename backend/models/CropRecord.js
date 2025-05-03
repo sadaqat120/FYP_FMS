@@ -12,6 +12,7 @@ const CropRecordSchema = new mongoose.Schema(
     cropType: { type: String, required: true },
     cropName: { type: String, required: true },
     duration: { type: Number, required: true }, // in days
+    seedQuantity: { type: Number, required: true },
     seedingDate: { type: String, required: true },
     notes: { type: String },
   },
