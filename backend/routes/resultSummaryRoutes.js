@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const ResultSummary = require("../models/ResultSummary");
 const authMiddleware = require("../middlewares/authMiddleware");
+const CropRecord = require("../models/CropRecord");
 
 // POST: Create new result summary
 router.post("/", authMiddleware, async (req, res) => {
@@ -126,6 +127,29 @@ router.get("/:cropFarmId", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error("Error fetching result summaries:", error);
     res.status(500).json({ error: "Server error" });
+  }
+});
+
+// GET: Check if crop is harvested
+router.get("/check-harvest/:cropFarmId", authMiddleware, async (req, res) => {
+  try {
+    const crop = await CropRecord.findOne({
+      cropFarmId: req.params.cropFarmId,
+      user: req.user.id,
+    });
+
+    if (!crop) return res.status(404).json({ isHarvested: false, message: "Crop record not found" });
+
+    const now = new Date();
+    const seedingDate = new Date(crop.seedingDate);
+    const duration = Number(crop.duration);
+    const daysPassed = Math.floor((now - seedingDate) / (1000 * 60 * 60 * 24));
+
+    const isHarvested = daysPassed >= duration;
+    res.status(200).json({ isHarvested });
+  } catch (err) {
+    console.error("Harvest check error:", err);
+    res.status(500).json({ error: "Server error during harvest check." });
   }
 });
 
