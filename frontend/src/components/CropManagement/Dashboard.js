@@ -258,6 +258,32 @@ const Dashboard = ({ storeId }) => {
           </table>
         </div>
       </div>
+      {/* Satisfaction Rating Section */}
+      <div className="p-4 bg-purple-50 border border-purple-300 rounded-lg shadow-sm hover:shadow-md mt-4 text-center">
+        <h3 className="font-semibold text-purple-800 mb-2 text-center">
+          Farmer Satisfaction
+        </h3>
+        {summary ? (
+          <div className="flex items-center space-x-1 text-xl text-yellow-500 justify-center">
+            {Array.from({ length: 5 }, (_, i) =>
+              i < summary.satisfaction ? (
+                <span key={i}>★</span>
+              ) : (
+                <span key={i} className="text-gray-300">
+                  ★
+                </span>
+              )
+            )}
+            <span className="ml-2 text-sm text-gray-700">
+              {summary.satisfaction}/5
+            </span>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-sm">
+            Satisfaction rating will be available after harvest.
+          </p>
+        )}
+      </div>
     </div>
   );
 };
