@@ -274,9 +274,9 @@ const Dashboard = ({ storeId }) => {
                 </span>
               )
             )}
-            <span className="ml-2 text-sm text-gray-700">
+            {/* <span className="ml-2 text-sm text-gray-700">
               {summary.satisfaction}/5
-            </span>
+            </span> */}
           </div>
         ) : (
           <p className="text-gray-500 text-sm">
