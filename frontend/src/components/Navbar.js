@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { FaBell } from "react-icons/fa";
 import "./Navbar.css";
 
 const Navbar = ({
@@ -8,9 +9,11 @@ const Navbar = ({
   isLoggedIn,
   onProfileClick,
   onNavigateToLanding,
+  onAlertClick
 }) => {
-  const [userDetails, setUserDetails] = useState(null); // State to store user details
-  const [profilePicture, setProfilePicture] = useState(null); // State to store profile picture
+  const [userDetails, setUserDetails] = useState(null);
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [reminderCount, setReminderCount] = useState(0);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -18,13 +21,13 @@ const Navbar = ({
       if (token) {
         try {
           const response = await axios.get("http://localhost:5000/auth/user", {
-            headers: {
-              Authorization: token,
-            },
+            headers: { Authorization: token },
           });
           setUserDetails(response.data);
           if (response.data.profilePicture) {
-            setProfilePicture(`http://localhost:5000/uploads/profilePictures/${response.data.profilePicture}`);
+            setProfilePicture(
+              `http://localhost:5000/uploads/profilePictures/${response.data.profilePicture}`
+            );
           }
         } catch (error) {
           console.error("Error fetching user details:", error);
@@ -32,8 +35,25 @@ const Navbar = ({
       }
     };
 
-    fetchUserDetails();
-  }, [isLoggedIn]); // Fetch user details when the user logs in
+    const fetchReminderCount = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await axios.get("http://localhost:5000/reminders", {
+            headers: { Authorization: token },
+          });
+          setReminderCount(response.data.length);
+        } catch (err) {
+          console.error("Error fetching reminders:", err);
+        }
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchUserDetails();
+      fetchReminderCount();
+    }
+  }, [isLoggedIn]);
 
   const handleNavigation = (sectionId) => {
     onNavigateToLanding();
@@ -45,7 +65,6 @@ const Navbar = ({
     }, 0);
   };
 
-  // Extract initials from userDetails
   const getInitials = (user) => {
     if (!user) return "";
     const { firstName = "", lastName = "" } = user;
@@ -59,10 +78,7 @@ const Navbar = ({
         <a href="#hero-section" onClick={() => handleNavigation("hero-section")}>
           Home
         </a>
-        <a
-          href="#services-section"
-          onClick={() => handleNavigation("services-section")}
-        >
+        <a href="#services-section" onClick={() => handleNavigation("services-section")}>
           Services
         </a>
         <a href="#about-section" onClick={() => handleNavigation("about-section")}>
@@ -70,6 +86,18 @@ const Navbar = ({
         </a>
       </div>
       <div className="navbar-nav-auth">
+        {isLoggedIn && (
+          <div
+            className="navbar-alert-icon"
+            onClick={onAlertClick}
+            title={reminderCount > 0 ? `You have ${reminderCount} reminders` : "No reminders"}
+          >
+            <FaBell />
+            {reminderCount > 0 && (
+              <span className="alert-count">{reminderCount}</span>
+            )}
+          </div>
+        )}
         {isLoggedIn ? (
           <div className="navbar-profile-icon" onClick={onProfileClick}>
             {profilePicture ? (

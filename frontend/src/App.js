@@ -39,25 +39,17 @@ const App = () => {
       try {
         const decoded = jwtDecode(token.replace("Bearer ", ""));
         const currentTime = Date.now() / 1000;
-
-        if (decoded.exp < currentTime) {
-          logoutNow();
-        }
+        if (decoded.exp < currentTime) logoutNow();
       } catch (err) {
         console.error("Token decode error:", err);
         logoutNow();
       }
     };
 
-    // Check token expiration every second
     const intervalId = setInterval(checkTokenExpiration, 1000);
-
-    // Initial check
     checkTokenExpiration();
 
-    return () => {
-      clearInterval(intervalId);
-    };
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleLoginSuccess = () => {
@@ -98,6 +90,7 @@ const App = () => {
         isLoggedIn={isLoggedIn}
         onProfileClick={toggleProfile}
         onNavigateToLanding={navigateToLanding}
+        onAlertClick={() => handleProtectedClick(setShowServiceReminders)} // alert -> reminders
       />
 
       {showProfile ? (
@@ -118,12 +111,22 @@ const App = () => {
         <LandingPage
           isLoggedIn={isLoggedIn}
           navigateToLogin={() => setLoginOpen(true)}
-          onReminderServiceClick={() => handleProtectedClick(setShowServiceReminders)}
-          onCropManagementClick={() => handleProtectedClick(setShowCropManagement)}
-          onLivestockManagementClick={() => handleProtectedClick(setShowLivestockManagement)}
-          onResourceManagementClick={() => handleProtectedClick(setShowResourceManagement)}
+          onReminderServiceClick={() =>
+            handleProtectedClick(setShowServiceReminders)
+          }
+          onCropManagementClick={() =>
+            handleProtectedClick(setShowCropManagement)
+          }
+          onLivestockManagementClick={() =>
+            handleProtectedClick(setShowLivestockManagement)
+          }
+          onResourceManagementClick={() =>
+            handleProtectedClick(setShowResourceManagement)
+          }
           onChatBotClick={() => handleProtectedClick(setShowChatBot)}
-          onReportGenerationClick={() => handleProtectedClick(setShowReportGeneration)}
+          onReportGenerationClick={() =>
+            handleProtectedClick(setShowReportGeneration)
+          }
         />
       )}
 

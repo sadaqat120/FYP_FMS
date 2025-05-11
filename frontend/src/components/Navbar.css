@@ -87,8 +87,37 @@
   cursor: pointer;
 }
 
+.navbar-alert-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-size: 22px;
+  cursor: pointer;
+  color: white;
+  transition: transform 0.2s ease;
+  margin-right: 12px;
+  height: 40px;
+  width: 40px;
+}
 
 .navbar-profile-initials:hover {
   font-size: 23px;
   background-color: #838b83; /* Darker background on hover */
+}
+
+.navbar-alert-icon:hover {
+  transform: scale(1.2);
+}
+
+.alert-count {
+  position: absolute;
+  top: 0px;         /* Lowered the badge slightly */
+  right: 0px;       /* Adjusted to sit inside top-right corner */
+  background: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
 }
