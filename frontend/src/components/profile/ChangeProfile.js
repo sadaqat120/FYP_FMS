@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./ChangeProfile.css";
 
-const ChangeProfile = ({ onProfileUpdated }) => {
+const ChangeProfile = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -10,101 +9,75 @@ const ChangeProfile = ({ onProfileUpdated }) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
+    const fetchDetails = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get("http://localhost:5000/auth/user", {
-            headers: {
-              Authorization: token,
-            },
+          const { data } = await axios.get("http://localhost:5000/auth/user", {
+            headers: { Authorization: token },
           });
-          const { firstName, lastName, email, phone } = response.data;
-          setFirstName(firstName);
-          setLastName(lastName);
-          setEmail(email);
-          setPhone(phone);
-        } catch (error) {
-          console.error("Error fetching user details:", error);
+          setFirstName(data.firstName);
+          setLastName(data.lastName);
+          setEmail(data.email);
+          setPhone(data.phone);
+        } catch (err) {
+          console.error("Fetch failed:", err);
         }
       }
     };
-
-    fetchUserDetails();
+    fetchDetails();
   }, []);
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const phoneRegex = /^\d{10,15}$/;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    // Validate fields
-    if (!firstName || !lastName || !email || !phone) {
-      setError("All fields are required.");
+    if (!firstName || !lastName) {
+      setError("First and last name are required.");
       return;
     }
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    if (!phoneRegex.test(phone)) {
-      setError("Phone number must be between 10 to 15 digits.");
-      return;
-    }
-
-    // Update user details
-    const token = localStorage.getItem("token");
     try {
-      await axios.put("http://localhost:5000/auth/user", {
-        firstName,
-        lastName,
-        email,
-        phone,
-      }, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      alert("Profile updated successfully!");
-      // onProfileUpdated(); // Call the function to refresh the profile page
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      setError("Failed to update profile. Please try again.");
+      const token = localStorage.getItem("token");
+      await axios.put(
+        "http://localhost:5000/auth/user",
+        { firstName, lastName },
+        { headers: { Authorization: token } }
+      );
+      alert("Profile updated!");
+    } catch {
+      setError("Failed to update.");
     }
   };
 
   return (
-    <div className="change-profile">
-      <h2>Edit Profile</h2>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit}>
+    <div className="flex flex-col items-center">
+      <h2 className="text-2xl font-bold mb-4 text-green-700">Edit Profile</h2>
+      {error && <p className="text-red-600">{error}</p>}
+      <form onSubmit={handleSubmit} className="w-full space-y-4">
         <input
-          type="text"
+          className="input input-bordered w-full"
           placeholder="First Name"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
         />
         <input
-          type="text"
+          className="input input-bordered w-full"
           placeholder="Last Name"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
         />
         <input
-          type="email"
-          placeholder="Email"
+          className="input input-bordered w-full bg-gray-100 text-gray-600 cursor-not-allowed"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          disabled
         />
         <input
-          type="tel"
-          placeholder="Phone"
+          className="input input-bordered w-full bg-gray-100 text-gray-600 cursor-not-allowed"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          disabled
         />
-        <button type="submit">Save</button>
+        <button className="btn w-full bg-green-600 text-white hover:bg-green-700">
+          Save Changes
+        </button>
       </form>
     </div>
   );
