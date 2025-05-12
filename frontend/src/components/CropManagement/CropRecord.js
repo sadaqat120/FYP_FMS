@@ -186,6 +186,9 @@ const CropRecord = ({ cropFarmId }) => {
         {errors.seedQuantity && (
           <p className="text-red-500 text-sm">{errors.seedQuantity}</p>
         )}
+        <label htmlFor="seedingDate" className="font-medium text-gray-700">
+          Seeding Date (Date when crop was planted 👇 )
+        </label>
 
         <input
           type="date"
