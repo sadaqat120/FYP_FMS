@@ -8,96 +8,70 @@ const Location = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchUserLocation = async () => {
+    const fetch = async () => {
       const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const response = await axios.get("http://localhost:5000/auth/user", {
-            headers: {
-              Authorization: token,
-            },
-          });
-          if (response.data.location) {
-            setCurrentLocation(response.data.location);
-          }
-        } catch (error) {
-          console.error("Error fetching user location:", error);
-        }
+      try {
+        const { data } = await axios.get("http://localhost:5000/auth/user", {
+          headers: { Authorization: token },
+        });
+        setCurrentLocation(data.location || "");
+      } catch (err) {
+        console.error(err);
       }
     };
-
-    fetchUserLocation();
+    fetch();
   }, []);
-
-  const handleAddLocation = () => {
-    setIsEditing(true);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-
     if (!newLocation) {
-      setError("Location cannot be empty.");
+      setError("Location is required.");
       return;
     }
-
     const token = localStorage.getItem("token");
     try {
-      await axios.put("http://localhost:5000/auth/user/location", { location: newLocation }, {
-        headers: {
-          Authorization: token,
-        },
-      });
+      await axios.put(
+        "http://localhost:5000/auth/user/location",
+        { location: newLocation },
+        { headers: { Authorization: token } }
+      );
       setCurrentLocation(newLocation);
       setNewLocation("");
       setIsEditing(false);
-      alert("Location updated successfully!");
-    } catch (error) {
-      console.error("Error updating location:", error);
-      setError("Failed to update location.");
+      alert("Location updated.");
+    } catch {
+      setError("Error saving location.");
     }
   };
 
   return (
-    <div className="p-5">
-      <h2 className="text-xl font-bold mb-4">Edit Location</h2>
-      {currentLocation ? (
-        <div>
-          <p className="mb-2">Current Location: {currentLocation}</p>
-          {isEditing ? (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-              <input
-                type="text"
-                placeholder="New Location"
-                value={newLocation}
-                onChange={(e) => setNewLocation(e.target.value)}
-                className="p-2 border border-gray-300 rounded"
-              />
-              <button type="submit" className="bg-[#4caf50] text-white p-2 rounded">Save</button>
-              {error && <p className="text-red-500">{error}</p>}
-            </form>
-          ) : (
-            <button onClick={handleAddLocation} className="bg-[#4caf50] text-white p-2 rounded">Change Location</button>
-          )}
-        </div>
+    <div className="flex flex-col items-center w-full">
+      <h2 className="text-2xl font-bold mb-4 text-green-700">Your Location</h2>
+      {currentLocation && (
+        <p className="mb-4">
+          Current: <strong>{currentLocation}</strong>
+        </p>
+      )}
+      {isEditing ? (
+        <form onSubmit={handleSubmit} className="w-full space-y-4">
+          <input
+            placeholder="New Location"
+            value={newLocation}
+            onChange={(e) => setNewLocation(e.target.value)}
+            className="input input-bordered w-full"
+          />
+          {error && <p className="text-red-600">{error}</p>}
+          <button className="btn w-full bg-green-600 text-white hover:bg-green-700">
+            Save
+          </button>
+        </form>
       ) : (
-        <div>
-          <button onClick={handleAddLocation} className="bg-[#4caf50] text-white p-2 rounded">Add Location</button>
-          {isEditing && (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-              <input
-                type="text"
-                placeholder="New Location"
-                value={newLocation}
-                onChange={(e) => setNewLocation(e.target.value)}
-                className="p-2 border border-gray-300 rounded"
-              />
-              <button type="submit" className="bg-[#4caf50] text-white p-2 rounded">Save</button>
-              {error && <p className="text-red-500">{error}</p>}
-            </form>
-          )}
-        </div>
+        <button
+          onClick={() => setIsEditing(true)}
+          className="btn bg-green-600 text-white hover:bg-green-700"
+        >
+          {currentLocation ? "Change Location" : "Add Location"}
+        </button>
       )}
     </div>
   );
