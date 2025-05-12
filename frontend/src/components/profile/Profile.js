@@ -1,17 +1,14 @@
-// Profile.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./Profile.css";
 import ChangeProfile from "./ChangeProfile";
-import Notifications from "./Notifications";
-import Languages from "./Languages";
 import ChangePassword from "./ChangePassword";
 import LogoutPrompt from "./LogoutPrompt";
 import Location from "./Location";
+import bgImage from "../../assets/FMS-Profile-background-picture.jpg";
 
 const Profile = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState("");
-  const [userDetails, setUserDetails] = useState({}); // Store user details
+  const [userDetails, setUserDetails] = useState({});
   const [profilePicture, setProfilePicture] = useState(null);
 
   useEffect(() => {
@@ -20,13 +17,13 @@ const Profile = ({ onClose }) => {
       if (token) {
         try {
           const response = await axios.get("http://localhost:5000/auth/user", {
-            headers: {
-              Authorization: token,
-            },
+            headers: { Authorization: token },
           });
           setUserDetails(response.data);
           if (response.data.profilePicture) {
-            setProfilePicture(`http://localhost:5000/uploads/profilePictures/${response.data.profilePicture}`);
+            setProfilePicture(
+              `http://localhost:5000/uploads/profilePictures/${response.data.profilePicture}`
+            );
           }
         } catch (error) {
           console.error("Error fetching user details:", error);
@@ -46,25 +43,27 @@ const Profile = ({ onClose }) => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post("http://localhost:5000/profilePictureUpload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Authorization": token,
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:5000/profilePictureUpload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: token,
+          },
+        }
+      );
 
       if (response.data.imagePath) {
         const imageUrl = `http://localhost:5000/uploads/profilePictures/${response.data.imagePath}`;
         setProfilePicture(imageUrl);
-
-        // Update user details with the new profile picture
-        setUserDetails((prevDetails) => ({
-          ...prevDetails,
+        setUserDetails((prev) => ({
+          ...prev,
           profilePicture: response.data.imagePath,
         }));
       }
     } catch (error) {
-      console.error("Error uploading image:", error);
+      console.error("Image upload error:", error);
     }
   };
 
@@ -72,10 +71,6 @@ const Profile = ({ onClose }) => {
     switch (activeTab) {
       case "changeProfile":
         return <ChangeProfile />;
-      case "notifications":
-        return <Notifications />;
-      case "languages":
-        return <Languages />;
       case "changePassword":
         return <ChangePassword />;
       case "location":
@@ -84,49 +79,86 @@ const Profile = ({ onClose }) => {
         return <LogoutPrompt onClose={onClose} />;
       default:
         return (
-          <div className="empty-section">
-            <p>Select an option to view details here.</p>
+          <div className="text-gray-500 text-lg text-center">
+            Select an option to view details.
           </div>
         );
     }
   };
 
   return (
-    <div className="profile-page">
-      <div className="profile-left">
-        <div className="profile-picture-wrapper">
+    <div className="flex h-[calc(100vh-64px)]">
+      {/* Left Panel */}
+      <div className="w-1/3 bg-green-800 text-white flex flex-col items-center py-8 shadow-lg">
+        <div className="relative w-32 h-32 mb-4">
           {profilePicture ? (
-            <img src={profilePicture} alt="Profile" className="profile-picture" />
+            <img
+              src={profilePicture}
+              alt="Profile"
+              className="w-full h-full object-cover rounded-full border-4 border-white"
+            />
           ) : (
-            <div className="profile-placeholder">
-              {userDetails.firstName?.[0]}{userDetails.lastName?.[0]}
+            <div className="w-full h-full flex items-center justify-center bg-gray-300 rounded-full text-3xl font-bold text-white">
+              {userDetails.firstName?.[0]}
+              {userDetails.lastName?.[0]}
             </div>
           )}
-
-          <label htmlFor="file-upload" className="upload-icon">
-            <span style={{ fontSize: "26px" }}>📷</span>
-            <span>Add photo</span>
+          <label
+            htmlFor="file-upload"
+            className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-sm rounded-full opacity-0 hover:opacity-100 cursor-pointer"
+          >
+            <span className="text-white text-xl">📷</span>
+            <span className="text-white text-xs">Add Photo</span>
           </label>
           <input
             id="file-upload"
             type="file"
-            style={{ display: "none" }}
+            className="hidden"
             onChange={handleImageUpload}
           />
         </div>
-
-        <h3>{userDetails.firstName} {userDetails.lastName}</h3>
-        <p>{userDetails.email}</p>
-
-        <ul className="profile-menu">
-          <li onClick={() => setActiveTab("changeProfile")}>Change Profile</li>
-          <li onClick={() => setActiveTab("notifications")}>Notifications</li>
-          <li onClick={() => setActiveTab("changePassword")}>Change Password</li>
-          <li onClick={() => setActiveTab("location")}>Location</li>
-          <li onClick={() => setActiveTab("logout")}>Logout</li>
+        <h3 className="text-xl font-semibold">
+          {userDetails.firstName} {userDetails.lastName}
+        </h3>
+        <p className="text-sm text-gray-200 mb-6">{userDetails.email}</p>
+        <ul className="space-y-3 w-3/4">
+          <li
+            className="bg-white bg-opacity-10 hover:bg-opacity-30 text-center py-2 rounded cursor-pointer"
+            onClick={() => setActiveTab("changeProfile")}
+          >
+            Change Profile
+          </li>
+          <li
+            className="bg-white bg-opacity-10 hover:bg-opacity-30 text-center py-2 rounded cursor-pointer"
+            onClick={() => setActiveTab("changePassword")}
+          >
+            Change Password
+          </li>
+          <li
+            className="bg-white bg-opacity-10 hover:bg-opacity-30 text-center py-2 rounded cursor-pointer"
+            onClick={() => setActiveTab("location")}
+          >
+            Location
+          </li>
+          <li
+            className="bg-red-600 hover:bg-red-700 text-center py-2 rounded cursor-pointer"
+            onClick={() => setActiveTab("logout")}
+          >
+            Logout
+          </li>
         </ul>
       </div>
-      <div className="profile-right">{renderContent()}</div>
+
+      {/* Right Panel */}
+      <div
+        className="w-2/3 relative bg-cover bg-center flex justify-center items-center"
+        style={{ backgroundImage: `url(${bgImage})` }}
+      >
+        <div className="absolute inset-0 bg-white bg-opacity-80 backdrop-blur-sm" />
+        <div className="relative z-10 w-full max-w-xl p-6 bg-white bg-opacity-90 rounded shadow-lg">
+          {renderContent()}
+        </div>
+      </div>
     </div>
   );
 };
