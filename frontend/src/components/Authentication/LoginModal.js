@@ -114,7 +114,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
           />
           <button type="submit" className="button">Login</button>
         </form>
-        <button onClick={onClose} className="close-button">Close</button>
+        <button onClick={onClose} className="close-button">×</button>
       </div>
     </div>
   );

@@ -13,8 +13,9 @@ const SignUpModal = ({ isOpen, onClose, onSignUpSuccess }) => {
 
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [waitingVerification, setWaitingVerification] = useState(false);
-  const [timer, setTimer] = useState(60); // 1 minutes
+  const [timer, setTimer] = useState(60);
 
   useEffect(() => {
     let countdown;
@@ -41,6 +42,7 @@ const SignUpModal = ({ isOpen, onClose, onSignUpSuccess }) => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     try {
       const response = await axios.post(
         "http://localhost:5000/auth/signup",
@@ -67,37 +69,36 @@ const SignUpModal = ({ isOpen, onClose, onSignUpSuccess }) => {
         email: formData.email,
         code,
       });
-  
+
       if (res.status === 201 && res.data.token) {
-        // ✅ Store the token just like the old code
         localStorage.setItem("token", res.data.token);
-  
-        // ✅ Optionally decode token (if needed)
+
         const payload = decodeToken(res.data.token);
         if (payload?.firstName && payload?.email) {
-          alert("✅ Email verified and user logged in successfully!");
+          setSuccess("Sign up successful!");
+          setError("");
           setWaitingVerification(false);
-          onSignUpSuccess();  // callback for login state
-          onClose();
+          setTimeout(() => {
+            onSignUpSuccess();
+            onClose();
+          }, 1000);
         } else {
-          setError("Verification succeeded, but failed to decode user.");
+          setError("Verification succeeded, but user decoding failed.");
         }
       }
     } catch (err) {
       setError(err.response?.data?.message || "Verification failed.");
     }
   };
-  
-  // Helper to decode JWT (same as in your old code)
+
   const decodeToken = (token) => {
     try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload;
+      return JSON.parse(atob(token.split(".")[1]));
     } catch (err) {
       console.error("Invalid token format:", err);
       return null;
     }
-  };  
+  };
 
   if (!isOpen) return null;
 
@@ -128,6 +129,7 @@ const SignUpModal = ({ isOpen, onClose, onSignUpSuccess }) => {
               <p className="timer-text">
                 ⏳ Time left: <strong>{timer} seconds</strong>
               </p>
+              {success && <p className="success-message">{success}</p>}
               {error && <p className="error-message">{error}</p>}
             </div>
           </>
