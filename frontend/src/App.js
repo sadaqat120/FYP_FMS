@@ -90,7 +90,19 @@ const App = () => {
         isLoggedIn={isLoggedIn}
         onProfileClick={toggleProfile}
         onNavigateToLanding={navigateToLanding}
-        onAlertClick={() => handleProtectedClick(setShowServiceReminders)} // alert -> reminders
+        onAlertClick={() => {
+          if (!isLoggedIn) {
+            setLoginOpen(true);
+          } else {
+            setShowProfile(false);
+            setShowCropManagement(false);
+            setShowLivestockManagement(false);
+            setShowResourceManagement(false);
+            setShowReportGeneration(false);
+            setShowChatBot(false);
+            setShowServiceReminders((prev) => !prev); // toggle reminders page
+          }
+        }}
       />
 
       {showProfile ? (
