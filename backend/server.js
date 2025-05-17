@@ -35,6 +35,7 @@ app.use("/cost-tracking", require("./routes/costTrackingRoutes"));
 app.use("/result-summary", require("./routes/resultSummaryRoutes"));
 app.use("/dashboard", require("./routes/dashboardRoutes"));
 
+app.use("/CropFarm", require("./routes/cropFarmRoutes"));
 
 
 const PORT = process.env.PORT || 5000;
