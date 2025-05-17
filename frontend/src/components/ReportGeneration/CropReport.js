@@ -27,7 +27,10 @@ const CropReport = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!selectedFarmId) return;
+      if (!selectedFarmId) {
+        setFarmData(null);
+        return;
+      }
       setLoading(true);
       try {
         const res = await axios.get(
@@ -134,64 +137,54 @@ const CropReport = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-center text-emerald-800">
-        Crop Management Report
-      </h1>
-
-      <div className="max-w-xl mx-auto">
+    <div className="p-6 min-h-screen bg-gradient-to-br from-green-50 to-white">
+      <div className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6 border border-gray-200">
+        <label className="block mb-2 font-semibold text-gray-700">
+          Select a Crop Farm
+        </label>
         <select
           onChange={(e) => setSelectedFarmId(e.target.value)}
           value={selectedFarmId}
-          className="w-full border p-3 rounded-lg shadow-sm"
+          className="w-full border rounded p-2 mb-6 focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
-          <option value="">Select a Crop Farm</option>
+          <option value="">-- Select Crop Farm --</option>
           {farms.map((farm) => (
             <option key={farm._id} value={farm._id}>
               {farm.name}
             </option>
           ))}
         </select>
-      </div>
 
-      {loading && <p className="text-center text-gray-500">Loading farm data...</p>}
+        {loading && <p className="text-center text-gray-500">Loading farm data...</p>}
 
-      {farmData && (
-        <div className="bg-white p-6 rounded-xl shadow-lg space-y-6">
-          <h2 className="text-2xl font-bold text-green-700 text-center mb-4">
-            {farmData.crop?.cropName || "Crop"} Record Overview
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-6 text-sm text-gray-700">
-            <div>
-              <h3 className="text-lg font-semibold text-emerald-600 mb-2">Land Info</h3>
+        {farmData && (
+          <div className="space-y-4">
+            <div className="bg-emerald-50 p-4 rounded shadow">
+              <h2 className="text-lg font-bold text-emerald-800 mb-2">
+                Crop Summary: {farmData.crop?.cropName}
+              </h2>
               <p><strong>Location:</strong> {farmData.land?.location || "—"}</p>
-              <p><strong>Area:</strong> {farmData.land?.area} acres</p>
-              <p><strong>Type:</strong> {farmData.land?.landType}</p>
-              <p><strong>Soil:</strong> {farmData.land?.soilType}</p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-emerald-600 mb-2">Crop Info</h3>
-              <p><strong>Crop:</strong> {farmData.crop?.cropName}</p>
+              <p><strong>Area:</strong> {farmData.land?.area || "—"} acres</p>
+              <p><strong>Land Type:</strong> {farmData.land?.landType || "—"}</p>
+              <p><strong>Soil Type:</strong> {farmData.land?.soilType || "—"}</p>
               <p><strong>Season:</strong> {farmData.crop?.season}</p>
               <p><strong>Type:</strong> {farmData.crop?.cropType}</p>
               <p><strong>Seeding Date:</strong> {farmData.crop?.seedingDate}</p>
               <p><strong>Duration:</strong> {farmData.crop?.duration} days</p>
               <p><strong>Seed Quantity:</strong> {farmData.crop?.seedQuantity} kg</p>
             </div>
-          </div>
 
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={generatePDF}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-md shadow-md transition"
-            >
-              Download PDF Report
-            </button>
+            <div className="text-center mt-4">
+              <button
+                onClick={generatePDF}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition"
+              >
+                Download PDF
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
