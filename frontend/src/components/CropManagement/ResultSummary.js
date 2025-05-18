@@ -134,7 +134,8 @@ const ResultSummary = ({ cropFarmId }) => {
       }
     } catch (err) {
       console.error("Error saving result summary:", err);
-      alert("Error saving result summary.");
+      setErrors({ general: "Error saving result summary. Please try again." });
+      setTimeout(() => setErrors({ general: "" }), 2000); // optional
     }
   };
 
@@ -144,6 +145,11 @@ const ResultSummary = ({ cropFarmId }) => {
         {isEditMode ? "Edit Result Summary" : "Create Result Summary"}
       </h2>
       {successMsg && <p className="text-green-600 text-center">{successMsg}</p>}
+      {errors.general && (
+        <p className="text-red-600 text-center font-medium text-sm">
+          {errors.general}
+        </p>
+      )}
 
       {/* Modal */}
       {showModal && (
