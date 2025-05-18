@@ -6,6 +6,7 @@ const UnitResourceForm = ({ storeId }) => {
   const [formData, setFormData] = useState({});
   const [resources, setResources] = useState([]);
   const [errors, setErrors] = useState({}); // State to hold error messages
+  const [successMsg, setSuccessMsg] = useState("");
 
   useEffect(() => {
     const fetchResources = async () => {
@@ -71,55 +72,76 @@ const UnitResourceForm = ({ storeId }) => {
       setErrors(validationErrors);
       return;
     }
-  
+
     if (activeForm === "addResource") {
       try {
-        await axios.post("http://localhost:5000/unit-resources", {
-          ...formData,
-          storeId,
-        }, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
+        await axios.post(
+          "http://localhost:5000/unit-resources",
+          {
+            ...formData,
+            storeId,
           },
-        });
-        alert("Unit-Based Resource Added Successfully!");
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
+        setSuccessMsg("Unit-Based Resource Added Successfully!");
+        setTimeout(() => setSuccessMsg(""), 2000);
         setFormData({});
       } catch (error) {
         if (error.response && error.response.status === 400) {
-          setErrors((prev) => ({ ...prev, uniqueId: error.response.data.message }));
+          setErrors((prev) => ({
+            ...prev,
+            uniqueId: error.response.data.message,
+          }));
         } else {
           console.error("Error adding unit-based resource:", error);
         }
       }
     } else if (activeForm === "usageTracking") {
-      const resourceExists = resources.some(resource => resource.uniqueId === formData.resourceId);
+      const resourceExists = resources.some(
+        (resource) => resource.uniqueId === formData.resourceId
+      );
       if (!resourceExists) {
-        setErrors((prev) => ({ ...prev, resourceId: "Resource ID does not exist." }));
+        setErrors((prev) => ({
+          ...prev,
+          resourceId: "Resource ID does not exist.",
+        }));
         return;
       }
-  
+
       try {
-        await axios.post("http://localhost:5000/unit-resources/usage", {
-          storeId,
-          ...formData,
-        }, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
+        await axios.post(
+          "http://localhost:5000/unit-resources/usage",
+          {
+            storeId,
+            ...formData,
           },
-        });
-        alert("Usage Recorded Successfully!");
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
+        setSuccessMsg("Usage Recorded Successfully!");
+        setTimeout(() => setSuccessMsg(""), 2000);
         setFormData({});
       } catch (error) {
         console.error("Error recording usage:", error);
       }
     }
-  };  
+  };
 
   return (
     <div className="p-4">
       <h1 className="text-3xl font-bold text-green-600 mb-6 text-center">
         Unit-Based Resource Management
       </h1>
+      {successMsg && (
+        <p className="text-green-600 font-medium mb-4">{successMsg}</p>
+      )}
 
       {/* Form Selector */}
       <div className="flex gap-4 mb-6">
