@@ -95,7 +95,8 @@ const LandRecord = ({ cropFarmId }) => {
     } catch (err) {
       console.error(err);
       setSuccessMsg("");
-      alert("Error saving land record. Please try again.");
+      setErrors({ general: "Error saving land record. Please try again." });
+      setTimeout(() => setErrors({ general: "" }), 2000); // optional: clears after 2s
     }
   };
 
@@ -105,9 +106,13 @@ const LandRecord = ({ cropFarmId }) => {
         {isEditMode ? "Edit Land Record" : "Add Land Record"}
       </h2>
       {successMsg && <p className="text-green-600 text-center">{successMsg}</p>}
+      {errors.general && (
+        <p className="text-red-600 text-center font-medium text-sm">
+          {errors.general}
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-
         {/* Area */}
         <div>
           <input
