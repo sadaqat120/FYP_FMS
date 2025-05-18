@@ -6,15 +6,19 @@ const HumanResourceForm = ({ storeId }) => {
   const [formData, setFormData] = useState({});
   const [resources, setResources] = useState([]);
   const [errors, setErrors] = useState({}); // State to hold error messages
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     const fetchResources = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/human-resources/${storeId}`, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        });
+        const response = await axios.get(
+          `http://localhost:5000/human-resources/${storeId}`,
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
         setResources(response.data);
       } catch (error) {
         console.error("Error fetching resources:", error);
@@ -40,14 +44,19 @@ const HumanResourceForm = ({ storeId }) => {
     if (activeForm === "payment") {
       if (!formData.workerId) newErrors.workerId = "Worker ID is required.";
       if (!formData.payment) newErrors.payment = "Payment Amount is required.";
-      if (!formData.workStartDate) newErrors.workStartDate = "Work Start Date is required.";
-      if (!formData.workEndDate) newErrors.workEndDate = "Work End Date is required.";
-      if (!formData.paymentDate) newErrors.paymentDate = "Payment Date is required.";
+      if (!formData.workStartDate)
+        newErrors.workStartDate = "Work Start Date is required.";
+      if (!formData.workEndDate)
+        newErrors.workEndDate = "Work End Date is required.";
+      if (!formData.paymentDate)
+        newErrors.paymentDate = "Payment Date is required.";
     } else if (activeForm === "add") {
       if (!formData.id) newErrors.id = "ID is required.";
-      if (!formData.workerName) newErrors.workerName = "Worker Name is required.";
+      if (!formData.workerName)
+        newErrors.workerName = "Worker Name is required.";
       if (!formData.role) newErrors.role = "Role/Position is required.";
-      if (!formData.dateEnrolled) newErrors.dateEnrolled = "Date Enrolled is required.";
+      if (!formData.dateEnrolled)
+        newErrors.dateEnrolled = "Date Enrolled is required.";
     }
     return newErrors;
   };
@@ -58,18 +67,24 @@ const HumanResourceForm = ({ storeId }) => {
       setErrors(validationErrors);
       return;
     }
-  
+
     if (activeForm === "add") {
       try {
-        await axios.post("http://localhost:5000/human-resources", {
-          ...formData,
-          storeId,
-        }, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
+        await axios.post(
+          "http://localhost:5000/human-resources",
+          {
+            ...formData,
+            storeId,
           },
-        });
-        alert("Human Resource Added Successfully!");
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
+        setSuccessMessage("Human Resource Added Successfully!");
+        setTimeout(() => setSuccessMessage(""), 2000); // <-- clear after 2 seconds
+
         setFormData({});
       } catch (error) {
         if (error.response && error.response.status === 400) {
@@ -79,32 +94,44 @@ const HumanResourceForm = ({ storeId }) => {
         }
       }
     } else if (activeForm === "payment") {
-      const workerExists = resources.some(resource => resource.id === formData.workerId);
+      const workerExists = resources.some(
+        (resource) => resource.id === formData.workerId
+      );
       if (!workerExists) {
-        setErrors((prev) => ({ ...prev, workerId: "Worker ID does not exist." }));
+        setErrors((prev) => ({
+          ...prev,
+          workerId: "Worker ID does not exist.",
+        }));
         return;
       }
-  
+
       try {
-        await axios.post(`http://localhost:5000/human-resources/${storeId}/${encodeURIComponent(formData.workerId)}/payments`, {
-          paymentAmount: formData.payment,
-          workStartDate: formData.workStartDate,
-          workEndDate: formData.workEndDate,
-          paymentDate: formData.paymentDate,
-          notes: formData.notes,
-        }, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
+        await axios.post(
+          `http://localhost:5000/human-resources/${storeId}/${encodeURIComponent(
+            formData.workerId
+          )}/payments`,
+          {
+            paymentAmount: formData.payment,
+            workStartDate: formData.workStartDate,
+            workEndDate: formData.workEndDate,
+            paymentDate: formData.paymentDate,
+            notes: formData.notes,
           },
-        });
-        alert("Payment Recorded Successfully!");
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
+        setSuccessMessage("Payment Recorded Successfully!");
+        setTimeout(() => setSuccessMessage(""), 2000); // <-- clear after 2 seconds
         setFormData({});
       } catch (error) {
         console.error("Error recording payment:", error);
       }
     }
   };
-  
+
   return (
     <div className="p-4">
       <h1 className="text-3xl font-bold text-green-600 mb-6 text-center">
@@ -113,7 +140,8 @@ const HumanResourceForm = ({ storeId }) => {
 
       {/* Form Selector */}
       <div className="flex gap-4 mb-6">
-        <button onClick={() => handleFormSwitch("add")}
+        <button
+          onClick={() => handleFormSwitch("add")}
           className={`py-2 px-4 rounded-lg ${
             activeForm === "add"
               ? "bg-green-600 text-white"
@@ -140,6 +168,12 @@ const HumanResourceForm = ({ storeId }) => {
           <h2 className="text-xl font-bold text-blue-600 mb-4">
             Add New Human Resource
           </h2>
+          {successMessage && (
+            <div className="bg-green-100 text-green-800 px-4 py-2 rounded mb-4 text-center shadow-md">
+              {successMessage}
+            </div>
+          )}
+
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label>ID (Unique)</label>
@@ -159,11 +193,15 @@ const HumanResourceForm = ({ storeId }) => {
                 type="text"
                 placeholder="Worker Name"
                 value={formData.workerName || ""}
-                onChange={(e) => handleInputChange("workerName", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("workerName", e.target.value)
+                }
                 className="p-2 border rounded-lg"
                 required
               />
-              {errors.workerName && <p className="text-red-500">{errors.workerName}</p>}
+              {errors.workerName && (
+                <p className="text-red-500">{errors.workerName}</p>
+              )}
             </div>
             <div>
               <label>Role/Position</label>
@@ -183,11 +221,15 @@ const HumanResourceForm = ({ storeId }) => {
                 type="date"
                 placeholder="Date Enrolled"
                 value={formData.dateEnrolled || ""}
-                onChange={(e) => handleInputChange("dateEnrolled", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("dateEnrolled", e.target.value)
+                }
                 className="p-2 border rounded-lg"
                 required
               />
-              {errors.dateEnrolled && <p className="text-red-500">{errors.dateEnrolled}</p>}
+              {errors.dateEnrolled && (
+                <p className="text-red-500">{errors.dateEnrolled}</p>
+              )}
             </div>
             <div className="col-span-2">
               <label>Notes</label>
@@ -226,7 +268,9 @@ const HumanResourceForm = ({ storeId }) => {
                 className="p-2 border rounded-lg"
                 required
               />
-              {errors.workerId && <p className="text-red-500">{errors.workerId}</p>}
+              {errors.workerId && (
+                <p className="text-red-500">{errors.workerId}</p>
+              )}
             </div>
             <div>
               <label>Payment Amount</label>
@@ -238,7 +282,9 @@ const HumanResourceForm = ({ storeId }) => {
                 className="p-2 border rounded-lg"
                 required
               />
-              {errors.payment && <p className="text-red-500">{errors.payment}</p>}
+              {errors.payment && (
+                <p className="text-red-500">{errors.payment}</p>
+              )}
             </div>
             <div>
               <label>Work Start Date</label>
@@ -246,11 +292,15 @@ const HumanResourceForm = ({ storeId }) => {
                 type="date"
                 placeholder="Work Start Date"
                 value={formData.workStartDate || ""}
-                onChange={(e) => handleInputChange("workStartDate", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("workStartDate", e.target.value)
+                }
                 className="p-2 border rounded-lg"
                 required
               />
-              {errors.workStartDate && <p className="text-red-500">{errors.workStartDate}</p>}
+              {errors.workStartDate && (
+                <p className="text-red-500">{errors.workStartDate}</p>
+              )}
             </div>
             <div>
               <label>Work End Date</label>
@@ -258,11 +308,15 @@ const HumanResourceForm = ({ storeId }) => {
                 type="date"
                 placeholder="Work End Date"
                 value={formData.workEndDate || ""}
-                onChange={(e) => handleInputChange("workEndDate", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("workEndDate", e.target.value)
+                }
                 className="p-2 border rounded-lg"
                 required
               />
-              {errors.workEndDate && <p className="text-red-500">{errors.workEndDate}</p>}
+              {errors.workEndDate && (
+                <p className="text-red-500">{errors.workEndDate}</p>
+              )}
             </div>
             <div>
               <label>Payment Date</label>
@@ -270,11 +324,15 @@ const HumanResourceForm = ({ storeId }) => {
                 type="date"
                 placeholder="Payment Date"
                 value={formData.paymentDate || ""}
-                onChange={(e) => handleInputChange("paymentDate", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("paymentDate", e.target.value)
+                }
                 className="p-2 border rounded-lg"
                 required
               />
-              {errors.paymentDate && <p className="text-red-500">{errors.paymentDate}</p>}
+              {errors.paymentDate && (
+                <p className="text-red-500">{errors.paymentDate}</p>
+              )}
             </div>
             <div className="col-span-2">
               <label>Notes</label>
