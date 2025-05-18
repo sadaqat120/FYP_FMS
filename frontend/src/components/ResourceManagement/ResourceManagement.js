@@ -13,6 +13,7 @@ const ResourceManagement = ({ onBackToLanding }) => {
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [storeToDelete, setStoreToDelete] = useState(null);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -35,11 +36,15 @@ const ResourceManagement = ({ onBackToLanding }) => {
     e.preventDefault();
     if (storeName.trim()) {
       try {
-        const response = await axios.post("http://localhost:5000/stores", { name: storeName }, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        });
+        const response = await axios.post(
+          "http://localhost:5000/stores",
+          { name: storeName },
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
         setStores([...stores, response.data]);
         setStoreName("");
         setIsDialogOpen(false);
@@ -47,18 +52,25 @@ const ResourceManagement = ({ onBackToLanding }) => {
         console.error("Error adding store:", error);
       }
     } else {
-      alert("Please enter a store name.");
+      setErrorMessage("Please enter a store name.");
+      setTimeout(() => setErrorMessage(""), 2000); // <-- clear after 2 seconds
     }
   };
 
   const handleEditStore = async (storeId) => {
     try {
-      const response = await axios.put(`http://localhost:5000/stores/${storeId}`, { name: editStoreName }, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
-      setStores(stores.map(store => store._id === storeId ? response.data : store));
+      const response = await axios.put(
+        `http://localhost:5000/stores/${storeId}`,
+        { name: editStoreName },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      setStores(
+        stores.map((store) => (store._id === storeId ? response.data : store))
+      );
       setEditDialogOpen(false);
       setEditStoreName("");
     } catch (error) {
@@ -73,7 +85,7 @@ const ResourceManagement = ({ onBackToLanding }) => {
           Authorization: localStorage.getItem("token"),
         },
       });
-      setStores(stores.filter(store => store._id !== storeId));
+      setStores(stores.filter((store) => store._id !== storeId));
       setDeleteConfirmation(false);
     } catch (error) {
       console.error("Error deleting store:", error);
@@ -93,6 +105,9 @@ const ResourceManagement = ({ onBackToLanding }) => {
           <h1 className="text-center text-3xl font-bold text-green-600 mb-6">
             {activeStore.name}
           </h1>
+          {errorMessage && (
+            <p className="text-red-600 text-sm">{errorMessage}</p>
+          )}
           <div className="flex justify-center gap-6 mb-6">
             <button
               className={`py-2 px-4 rounded-lg ${
@@ -117,7 +132,7 @@ const ResourceManagement = ({ onBackToLanding }) => {
           </div>
 
           {activeTab === "dashboard" ? (
-            <Dashboard storeName={activeStore.name} storeId={activeStore._id}/>
+            <Dashboard storeName={activeStore.name} storeId={activeStore._id} />
           ) : (
             <ManageResources storeId={activeStore._id} />
           )}
@@ -130,7 +145,10 @@ const ResourceManagement = ({ onBackToLanding }) => {
           <div className="flex flex-col items-center">
             {stores.length > 0 ? (
               stores.map((store) => (
-                <div key={store._id} className="flex justify-between items-center w-full max-w-md mb-2">
+                <div
+                  key={store._id}
+                  className="flex justify-between items-center w-full max-w-md mb-2"
+                >
                   <span
                     className="text-lg cursor-pointer hover:text-blue-600"
                     onClick={() => handleStoreClick(store)}
