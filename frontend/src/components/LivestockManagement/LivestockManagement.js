@@ -113,7 +113,7 @@ const LivestockManagement = ({ onBackToLanding }) => {
         paddingTop: `${NAVBAR_HEIGHT + 60}px`,
       }}
     >
-      <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-0" />
+      <div className="absolute inset-0 bg-black bg-opacity-30 z-0" />
 
       {/* Action Bar */}
       <div className="w-full fixed top-[80px] z-40 text-white flex justify-between items-center px-6 py-3 bg-opacity-70">
