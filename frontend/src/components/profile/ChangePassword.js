@@ -5,6 +5,8 @@ const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +23,9 @@ const ChangePassword = () => {
         { currentPassword, newPassword },
         { headers: { Authorization: token } }
       );
-      alert(res.data.message);
+      setSuccessMsg(res.data.message);
+setTimeout(() => setSuccessMsg(""), 2000);
+
     } catch (err) {
       setError(err.response?.data?.error || "Error changing password.");
     }
@@ -31,6 +35,7 @@ const ChangePassword = () => {
     <div className="flex flex-col items-center">
       <h2 className="text-2xl font-bold mb-4 text-green-700">Change Password</h2>
       {error && <p className="text-red-600">{error}</p>}
+      {successMsg && <p className="text-green-600">{successMsg}</p>}
       <form onSubmit={handleSubmit} className="w-full space-y-4">
         <input
           type="password"
