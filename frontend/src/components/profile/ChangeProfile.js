@@ -7,6 +7,7 @@ const ChangeProfile = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState(""); // <-- added success state
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -31,10 +32,13 @@ const ChangeProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccessMsg(""); // clear previous success message on new submit
+
     if (!firstName || !lastName) {
       setError("First and last name are required.");
       return;
     }
+
     try {
       const token = localStorage.getItem("token");
       await axios.put(
@@ -42,7 +46,8 @@ const ChangeProfile = () => {
         { firstName, lastName },
         { headers: { Authorization: token } }
       );
-      alert("Profile updated!");
+      setSuccessMsg("Profile updated!"); // <-- show success inline
+      setTimeout(() => setSuccessMsg(""), 2000); // <-- clear after 2 seconds
     } catch {
       setError("Failed to update.");
     }
@@ -51,7 +56,11 @@ const ChangeProfile = () => {
   return (
     <div className="flex flex-col items-center">
       <h2 className="text-2xl font-bold mb-4 text-green-700">Edit Profile</h2>
+
+      {/* Inline messages */}
       {error && <p className="text-red-600">{error}</p>}
+      {successMsg && <p className="text-green-600">{successMsg}</p>}
+
       <form onSubmit={handleSubmit} className="w-full space-y-4">
         <input
           className="input input-bordered w-full"
