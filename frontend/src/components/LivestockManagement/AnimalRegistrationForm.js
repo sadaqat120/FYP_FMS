@@ -100,7 +100,7 @@ const AnimalRegistrationForm = ({ farmId }) => {
 
   return (
     <div className="mt-4 border p-4 rounded-lg">
-      <h3 className="text-lg font-bold text-green-600">Animal Registration</h3>
+      {/* <h3 className="text-lg font-bold text-green-600">Animal Registration</h3> */}
       {successMsg && (
         <p className="text-green-600 text-center font-medium">{successMsg}</p>
       )}
