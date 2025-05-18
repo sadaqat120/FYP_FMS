@@ -15,8 +15,8 @@ const AnimalRegistrationForm = ({ farmId }) => {
   const [feedType, setFeedType] = useState("");
   const [milkingQuantity, setMilkingQuantity] = useState("");
   const [status, setStatus] = useState("");
-
   const [errors, setErrors] = useState({});
+  const [successMsg, setSuccessMsg] = useState("");
 
   const handleSave = async () => {
     // Reset errors
@@ -25,8 +25,10 @@ const AnimalRegistrationForm = ({ farmId }) => {
     // Validate required fields
     const newErrors = {};
     if (!animalId) newErrors.animalId = "Animal ID is required.";
-    if (!animalCategory) newErrors.animalCategory = "Animal category is required.";
-    if (animalCategory === "Others" && !otherCategory) newErrors.otherCategory = "Please specify the other category.";
+    if (!animalCategory)
+      newErrors.animalCategory = "Animal category is required.";
+    if (animalCategory === "Others" && !otherCategory)
+      newErrors.otherCategory = "Please specify the other category.";
     if (!sex) newErrors.sex = "Gender is required.";
     if (!weight) newErrors.weight = "Weight is required.";
     if (!breed) newErrors.breed = "Breed is required.";
@@ -34,7 +36,8 @@ const AnimalRegistrationForm = ({ farmId }) => {
     if (!healthStatus) newErrors.healthStatus = "Health status is required.";
     if (!feedType) newErrors.feedType = "Feed type is required.";
     if (!status) newErrors.status = "Animal status is required.";
-    if (sex === "female" && !milkingQuantity) newErrors.milkingQuantity = "Milking quantity is required for females.";
+    if (sex === "female" && !milkingQuantity)
+      newErrors.milkingQuantity = "Milking quantity is required for females.";
 
     // Check if there are any errors
     if (Object.keys(newErrors).length > 0) {
@@ -43,7 +46,10 @@ const AnimalRegistrationForm = ({ farmId }) => {
     }
 
     // Format animal category
-    const formattedCategory = animalCategory === "Others" ? capitalizeFirstLetter(otherCategory) : capitalizeFirstLetter(animalCategory);
+    const formattedCategory =
+      animalCategory === "Others"
+        ? capitalizeFirstLetter(otherCategory)
+        : capitalizeFirstLetter(animalCategory);
 
     // Prepare data to save
     const animalData = {
@@ -64,19 +70,26 @@ const AnimalRegistrationForm = ({ farmId }) => {
 
     try {
       // Save data to the backend
-      const response = await axios.post("http://localhost:5000/animals", animalData, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:5000/animals",
+        animalData,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
       console.log("Animal data saved:", response);
-      alert("Data Saved Successfully!");
+      setSuccessMsg("Animal registered successfully!");
+      setTimeout(() => setSuccessMsg(""), 2000); // optional: auto-clear
     } catch (error) {
       console.error("Error saving animal data:", error);
       if (error.response && error.response.status === 400) {
         setErrors({ animalId: error.response.data.message }); // Use the message from the backend
       } else {
-        setErrors({ general: "An unexpected error occurred. Please try again." });
+        setErrors({
+          general: "An unexpected error occurred. Please try again.",
+        });
       }
     }
   };
@@ -88,6 +101,10 @@ const AnimalRegistrationForm = ({ farmId }) => {
   return (
     <div className="mt-4 border p-4 rounded-lg">
       <h3 className="text-lg font-bold text-green-600">Animal Registration</h3>
+      {successMsg && (
+        <p className="text-green-600 text-center font-medium">{successMsg}</p>
+      )}
+
       <form className="space-y-4">
         <div>
           <input
@@ -98,7 +115,9 @@ const AnimalRegistrationForm = ({ farmId }) => {
             className="w-full border rounded-lg p-2"
             required
           />
-          {errors.animalId && <p className="text-red-500 text-sm">{errors.animalId}</p>}
+          {errors.animalId && (
+            <p className="text-red-500 text-sm">{errors.animalId}</p>
+          )}
         </div>
 
         <div>
@@ -116,7 +135,9 @@ const AnimalRegistrationForm = ({ farmId }) => {
             <option value="goat">Goat</option>
             <option value="Others">Others</option>
           </select>
-          {errors.animalCategory && <p className="text-red-500 text-sm">{errors.animalCategory}</p>}
+          {errors.animalCategory && (
+            <p className="text-red-500 text-sm">{errors.animalCategory}</p>
+          )}
         </div>
 
         {animalCategory === "Others" && (
@@ -129,7 +150,9 @@ const AnimalRegistrationForm = ({ farmId }) => {
               className="w-full border rounded-lg p-2"
               required
             />
-            {errors.otherCategory && <p className="text-red-500 text-sm">{errors.otherCategory}</p>}
+            {errors.otherCategory && (
+              <p className="text-red-500 text-sm">{errors.otherCategory}</p>
+            )}
           </div>
         )}
 
@@ -156,7 +179,9 @@ const AnimalRegistrationForm = ({ farmId }) => {
             className="w-full border rounded-lg p-2"
             required
           />
-          {errors.weight && <p className="text-red-500 text-sm">{errors.weight}</p>}
+          {errors.weight && (
+            <p className="text-red-500 text-sm">{errors.weight}</p>
+          )}
         </div>
 
         <div>
@@ -168,7 +193,9 @@ const AnimalRegistrationForm = ({ farmId }) => {
             className="w-full border rounded-lg p-2"
             required
           />
-          {errors.breed && <p className="text-red-500 text-sm">{errors.breed}</p>}
+          {errors.breed && (
+            <p className="text-red-500 text-sm">{errors.breed}</p>
+          )}
         </div>
 
         <div>
@@ -195,7 +222,9 @@ const AnimalRegistrationForm = ({ farmId }) => {
             <option value="sick">Sick</option>
             <option value="recovering">Recovering</option>
           </select>
-          {errors.healthStatus && <p className="text-red-500 text-sm">{errors.healthStatus}</p>}
+          {errors.healthStatus && (
+            <p className="text-red-500 text-sm">{errors.healthStatus}</p>
+          )}
         </div>
 
         <div>
@@ -231,7 +260,9 @@ const AnimalRegistrationForm = ({ farmId }) => {
             <option value="silage">Silage</option>
             <option value="Others">Others</option>
           </select>
-          {errors.feedType && <p className="text-red-500 text-sm">{errors.feedType}</p>}
+          {errors.feedType && (
+            <p className="text-red-500 text-sm">{errors.feedType}</p>
+          )}
         </div>
 
         <div>
@@ -244,7 +275,9 @@ const AnimalRegistrationForm = ({ farmId }) => {
             disabled={sex === "male"}
             required={sex === "female"}
           />
-          {errors.milkingQuantity && <p className="text-red-500 text-sm">{errors.milkingQuantity}</p>}
+          {errors.milkingQuantity && (
+            <p className="text-red-500 text-sm">{errors.milkingQuantity}</p>
+          )}
         </div>
 
         <div>
@@ -259,7 +292,9 @@ const AnimalRegistrationForm = ({ farmId }) => {
             <option value="dead">Dead</option>
             <option value="sold">Sold</option>
           </select>
-          {errors.status && <p className="text-red-500 text-sm">{errors.status}</p>}
+          {errors.status && (
+            <p className="text-red-500 text-sm">{errors.status}</p>
+          )}
         </div>
 
         <button
@@ -269,7 +304,9 @@ const AnimalRegistrationForm = ({ farmId }) => {
         >
           Save
         </button>
-        {errors.general && <p className="text-red-500 text-sm">{errors.general}</p>}
+        {errors.general && (
+          <p className="text-red-500 text-sm">{errors.general}</p>
+        )}
       </form>
     </div>
   );
