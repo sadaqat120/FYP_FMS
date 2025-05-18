@@ -108,7 +108,8 @@ const CropRecord = ({ cropFarmId }) => {
     } catch (err) {
       console.error(err);
       setSuccessMsg("");
-      alert("Error saving crop record.");
+      setErrors({ general: "Error saving crop record." });
+      setTimeout(() => setErrors({ general: "" }), 2000); // Optional: hide after 2s
     }
   };
 
@@ -118,6 +119,11 @@ const CropRecord = ({ cropFarmId }) => {
         {isEditMode ? "Edit Crop Record" : "Create Crop Record"}
       </h2>
       {successMsg && <p className="text-green-600 text-center">{successMsg}</p>}
+      {errors.general && (
+        <p className="text-red-600 text-center font-medium text-sm">
+          {errors.general}
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <select
