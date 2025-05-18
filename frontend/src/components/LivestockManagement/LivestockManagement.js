@@ -13,6 +13,8 @@ const LivestockManagement = ({ onBackToLanding }) => {
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [farmToDelete, setFarmToDelete] = useState(null);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [formError, setFormError] = useState("");
+  const [formSuccess, setFormSuccess] = useState("");
 
   useEffect(() => {
     const fetchFarms = async () => {
@@ -33,32 +35,48 @@ const LivestockManagement = ({ onBackToLanding }) => {
 
   const handleDialogSubmit = async (e) => {
     e.preventDefault();
+    setFormError("");
+    setFormSuccess("");
+
     if (farmName.trim()) {
       try {
-        const response = await axios.post("http://localhost:5000/farms", { name: farmName }, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        });
+        const response = await axios.post(
+          "http://localhost:5000/farms",
+          { name: farmName },
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
         setFarms([...farms, response.data]);
         setFarmName("");
         setDialogOpen(false);
+        setFormSuccess("Farm added successfully!");
+        setTimeout(() => setFormSuccess(""), 2000);
       } catch (error) {
         console.error("Error adding farm:", error);
+        setFormError("Failed to add farm. Please try again.");
       }
     } else {
-      alert("Please enter a farm name.");
+      setFormError("Please enter a farm name.");
     }
   };
 
   const handleEditFarm = async (farmId) => {
     try {
-      const response = await axios.put(`http://localhost:5000/farms/${farmId}`, { name: editFarmName }, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
-      setFarms(farms.map(farm => farm._id === farmId ? response.data : farm));
+      const response = await axios.put(
+        `http://localhost:5000/farms/${farmId}`,
+        { name: editFarmName },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      setFarms(
+        farms.map((farm) => (farm._id === farmId ? response.data : farm))
+      );
       setEditDialogOpen(false);
       setEditFarmName("");
     } catch (error) {
@@ -73,7 +91,7 @@ const LivestockManagement = ({ onBackToLanding }) => {
           Authorization: localStorage.getItem("token"),
         },
       });
-      setFarms(farms.filter(farm => farm._id !== farmId));
+      setFarms(farms.filter((farm) => farm._id !== farmId));
       setDeleteConfirmation(false);
     } catch (error) {
       console.error("Error deleting farm:", error);
@@ -117,7 +135,7 @@ const LivestockManagement = ({ onBackToLanding }) => {
           </div>
 
           {activeTab === "dashboard" ? (
-            <Dashboard activeFarmId={activeFarm._id}/>
+            <Dashboard activeFarmId={activeFarm._id} />
           ) : (
             <ManageLivestock activeFarmId={activeFarm._id} />
           )}
@@ -130,7 +148,10 @@ const LivestockManagement = ({ onBackToLanding }) => {
           <div className="flex flex-col items-center">
             {farms.length > 0 ? (
               farms.map((farm) => (
-                <div key={farm._id} className="flex justify-between items-center w-full max-w-md mb-2">
+                <div
+                  key={farm._id}
+                  className="flex justify-between items-center w-full max-w-md mb-2"
+                >
                   <span
                     className="text-lg cursor-pointer hover:text-blue-600"
                     onClick={() => handleFarmClick(farm)}
@@ -180,6 +201,12 @@ const LivestockManagement = ({ onBackToLanding }) => {
             <h2 className="text-xl font-bold text-green-600 mb-4">
               Enter Livestock Farm Name
             </h2>
+            {formError && (
+              <p className="text-red-600 text-sm mb-2">{formError}</p>
+            )}
+            {formSuccess && (
+              <p className="text-green-600 text-sm mb-2">{formSuccess}</p>
+            )}
             <form onSubmit={handleDialogSubmit} className="flex flex-col gap-4">
               <input
                 type="text"
