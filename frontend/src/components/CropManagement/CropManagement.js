@@ -13,6 +13,7 @@ const CropManagement = ({ onBackToLanding }) => {
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [storeToDelete, setStoreToDelete] = useState(null);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -51,7 +52,8 @@ const CropManagement = ({ onBackToLanding }) => {
         console.error("Error adding CropFarm:", error);
       }
     } else {
-      alert("Please enter a CropFarm name.");
+      setErrorMsg("Please enter a CropFarm name.");
+      setTimeout(() => setErrorMsg(""), 2000);
     }
   };
 
@@ -67,9 +69,7 @@ const CropManagement = ({ onBackToLanding }) => {
         }
       );
       setStores(
-        stores.map((store) =>
-          store._id === storeId ? response.data : store
-        )
+        stores.map((store) => (store._id === storeId ? response.data : store))
       );
       setEditDialogOpen(false);
       setEditStoreName("");
@@ -140,7 +140,10 @@ const CropManagement = ({ onBackToLanding }) => {
           <div className="flex flex-col items-center">
             {stores.length > 0 ? (
               stores.map((store) => (
-                <div key={store._id} className="flex justify-between items-center w-full max-w-md mb-3">
+                <div
+                  key={store._id}
+                  className="flex justify-between items-center w-full max-w-md mb-3"
+                >
                   <span
                     className="text-lg cursor-pointer hover:text-blue-600"
                     onClick={() => handleStoreClick(store)}
@@ -193,6 +196,10 @@ const CropManagement = ({ onBackToLanding }) => {
               Enter CropFarm Name
             </h2>
             <form onSubmit={handleDialogSubmit} className="flex flex-col gap-4">
+              {errorMsg && (
+                <p className="text-red-600 text-sm font-medium">{errorMsg}</p>
+              )}
+
               <input
                 type="text"
                 placeholder="Enter store name"
