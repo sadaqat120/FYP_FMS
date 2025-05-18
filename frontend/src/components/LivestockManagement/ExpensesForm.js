@@ -7,6 +7,8 @@ const ExpensesForm = ({ farmId }) => {
   const [notes, setNotes] = useState("");
   const [date, setDate] = useState("");
   const [errors, setErrors] = useState({});
+  const [successMsg, setSuccessMsg] = useState("");
+
 
   const handleSave = async () => {
     // Reset errors
@@ -42,7 +44,9 @@ const ExpensesForm = ({ farmId }) => {
         },
       });
       console.log("Expense data saved:", response.data);
-      alert("Data Saved Successfully!");
+      setSuccessMsg("Expense saved successfully!");
+setTimeout(() => setSuccessMsg(""), 2000); // Optional auto-hide after 2s
+
       // Optionally reset the form
       setExpenseType("");
       setAmount("");
@@ -56,6 +60,8 @@ const ExpensesForm = ({ farmId }) => {
   return (
     <div className="mt-4 border p-4 rounded-lg">
       <h3 className="text-lg font-bold text-green-600">Expenses</h3>
+      {successMsg && <p className="text-green-600 text-center font-medium">{successMsg}</p>}
+
       <form className="space-y-4">
         <select
           className="w-full border rounded-lg p-2"
