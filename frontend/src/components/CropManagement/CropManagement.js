@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { FaEdit, FaTrash, FaTimes } from "react-icons/fa";
 import Dashboard from "./Dashboard";
 import PlotFieldManagement from "./PlotFieldManagement";
+import bgImage from "../../assets/crop-page-background-piture-02.jpg";
+
+const NAVBAR_HEIGHT = 80;
 
 const CropManagement = ({ onBackToLanding }) => {
   const [stores, setStores] = useState([]);
   const [storeName, setStoreName] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeStore, setActiveStore] = useState(null);
+  const [storeBeingEdited, setStoreBeingEdited] = useState(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [editStoreName, setEditStoreName] = useState("");
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
@@ -19,71 +24,75 @@ const CropManagement = ({ onBackToLanding }) => {
     const fetchStores = async () => {
       try {
         const response = await axios.get("http://localhost:5000/CropFarm", {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
+          headers: { Authorization: localStorage.getItem("token") },
         });
         setStores(response.data);
       } catch (error) {
         console.error("Error fetching CropFarms:", error);
       }
     };
-
     fetchStores();
   }, []);
 
   const handleDialogSubmit = async (e) => {
     e.preventDefault();
-    if (storeName.trim()) {
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/CropFarm",
-          { name: storeName },
-          {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-            },
-          }
-        );
-        setStores([...stores, response.data]);
-        setStoreName("");
-        setIsDialogOpen(false);
-      } catch (error) {
-        console.error("Error adding CropFarm:", error);
-      }
-    } else {
-      setErrorMsg("Please enter a CropFarm name.");
+    setErrorMsg("");
+
+    if (!storeName.trim()) {
+      setErrorMsg("CropFarm name is required.");
       setTimeout(() => setErrorMsg(""), 2000);
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/CropFarm",
+        { name: storeName },
+        { headers: { Authorization: localStorage.getItem("token") } }
+      );
+      setStores([...stores, response.data]);
+      setStoreName("");
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Error adding CropFarm:", error);
+      setErrorMsg("Error adding CropFarm.");
     }
   };
 
-  const handleEditStore = async (storeId) => {
+  const handleEditStore = async () => {
+    if (!editStoreName.trim()) {
+      setErrorMsg("CropFarm name is required.");
+      setTimeout(() => setErrorMsg(""), 2000);
+      return;
+    }
+
     try {
       const response = await axios.put(
-        `http://localhost:5000/CropFarm/${storeId}`,
+        `http://localhost:5000/CropFarm/${storeBeingEdited._id}`,
         { name: editStoreName },
-        {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        }
+        { headers: { Authorization: localStorage.getItem("token") } }
       );
       setStores(
-        stores.map((store) => (store._id === storeId ? response.data : store))
+        stores.map((s) => (s._id === storeBeingEdited._id ? response.data : s))
       );
-      setEditDialogOpen(false);
+
+      if (activeStore && activeStore._id === storeBeingEdited._id) {
+        setActiveStore(response.data);
+      }
+
       setEditStoreName("");
+      setStoreBeingEdited(null);
+      setEditDialogOpen(false);
     } catch (error) {
-      console.error("Error updating store:", error);
+      console.error("Edit error:", error);
+      setErrorMsg("Error updating CropFarm.");
     }
   };
 
   const handleDeleteStore = async (storeId) => {
     try {
       await axios.delete(`http://localhost:5000/CropFarm/${storeId}`, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
+        headers: { Authorization: localStorage.getItem("token") },
       });
       setStores(stores.filter((store) => store._id !== storeId));
       setDeleteConfirmation(false);
@@ -94,192 +103,214 @@ const CropManagement = ({ onBackToLanding }) => {
 
   const handleStoreClick = (store) => {
     setActiveStore(store);
-    setStoreName(store.name);
   };
 
   return (
-    <div className="p-5 w-full">
-      {activeStore ? (
-        <>
-          <h1 className="text-4xl font-bold text-green-700 text-center mb-6">
-            {activeStore.name}
-          </h1>
-          <div className="flex justify-center gap-6 mb-6">
-            <button
-              className={`py-2 px-5 text-base font-semibold rounded-md ${
-                activeTab === "dashboard"
-                  ? "bg-green-600 text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-              onClick={() => setActiveTab("dashboard")}
-            >
-              Dashboard
-            </button>
-            <button
-              className={`py-2 px-5 text-base font-semibold rounded-md ${
-                activeTab === "manageResources"
-                  ? "bg-green-600 text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-              onClick={() => setActiveTab("manageResources")}
-            >
-              PlotFieldManagement
-            </button>
-          </div>
-          {activeTab === "dashboard" ? (
-            <Dashboard storeName={activeStore.name} storeId={activeStore._id} />
-          ) : (
-            <PlotFieldManagement cropFarmId={activeStore._id} />
-          )}
-        </>
-      ) : (
-        <>
-          <h1 className="text-center text-4xl font-bold text-green-700 mb-6">
-            Your CropFarms
-          </h1>
-          <div className="flex flex-col items-center">
-            {stores.length > 0 ? (
-              stores.map((store) => (
-                <div
-                  key={store._id}
-                  className="flex justify-between items-center w-full max-w-md mb-3"
+    <div
+      className={`relative min-h-screen overflow-hidden text-gray-900 ${
+        !activeStore ? "bg-cover" : "bg-white"
+      }`}
+      style={
+        !activeStore
+          ? {
+              backgroundImage: `url(${bgImage})`,
+              backgroundPosition: "center bottom",
+              backgroundSize: "cover",
+              paddingTop: `${NAVBAR_HEIGHT + 60}px`,
+            }
+          : { paddingTop: `${NAVBAR_HEIGHT + 60}px` }
+      }
+    >
+      {!activeStore && (
+        <div className="absolute inset-0 bg-black bg-opacity-30 z-0" />
+      )}
+
+      {/* Action Bar */}
+      <div className="w-full fixed top-[80px] z-40 text-white flex justify-between items-center px-6 py-3 bg-opacity-70">
+        <button
+          onClick={() =>
+            activeStore ? setActiveStore(null) : onBackToLanding()
+          }
+          className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
+        >
+          ⬅ {activeStore ? "Back" : "Services"}
+        </button>
+        {!activeStore && (
+          <button
+            onClick={() => setIsDialogOpen(true)}
+            className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
+          >
+            ➕ Add New CropFarm
+          </button>
+        )}
+      </div>
+
+      <div className="relative z-10 p-6 pb-20">
+        {activeStore ? (
+          <>
+            <h1 className="text-4xl font-bold text-green-700 text-center mb-6 drop-shadow-lg">
+              {activeStore.name}
+            </h1>
+            <div className="flex justify-center gap-4 mb-6">
+              {["dashboard", "manageResources"].map((tab) => (
+                <button
+                  key={tab}
+                  className={`px-5 py-2 rounded-md font-semibold ${
+                    activeTab === tab
+                      ? "bg-green-700 text-white"
+                      : "bg-white text-green-800"
+                  }`}
+                  onClick={() => setActiveTab(tab)}
                 >
-                  <span
-                    className="text-lg cursor-pointer hover:text-blue-600"
-                    onClick={() => handleStoreClick(store)}
-                  >
-                    {store.name}
-                  </span>
-                  <div>
-                    <button
-                      onClick={() => {
-                        setEditStoreName(store.name);
-                        setActiveStore(store);
-                        setEditDialogOpen(true);
-                      }}
-                      className="bg-blue-500 text-white py-1 px-3 rounded-md mr-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        setStoreToDelete(store._id);
-                        setDeleteConfirmation(true);
-                      }}
-                      className="bg-red-500 text-white py-1 px-3 rounded-md"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))
+                  {tab === "dashboard" ? "Dashboard" : "Plot Field Management"}
+                </button>
+              ))}
+            </div>
+            {activeTab === "dashboard" ? (
+              <Dashboard storeId={activeStore._id} />
             ) : (
-              <p className="text-gray-600 text-lg text-center mt-8">
-                No CropFarm found. Please add a new CropFarm.
-              </p>
+              <PlotFieldManagement cropFarmId={activeStore._id} />
             )}
-            <button
-              onClick={() => setIsDialogOpen(true)}
-              className="bg-green-600 text-white py-2 px-4 rounded-lg mt-6 hover:bg-green-700"
-            >
-              Add New CropFarm
-            </button>
-          </div>
-        </>
-      )}
-
-      {/* Add Dialog */}
-      {isDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md text-center">
-            <h2 className="text-2xl text-green-700 font-semibold mb-4">
-              Enter CropFarm Name
+          </>
+        ) : (
+          <>
+            <h2 className="text-3xl font-bold text-center mb-6 text-white bg-opacity-40 py-2 rounded">
+              Your CropFarms
             </h2>
-            <form onSubmit={handleDialogSubmit} className="flex flex-col gap-4">
-              {errorMsg && (
-                <p className="text-red-600 text-sm font-medium">{errorMsg}</p>
+            <div className="max-w-2xl mx-auto bg-white bg-opacity-90 p-6 rounded-lg shadow space-y-4">
+              {stores.length > 0 ? (
+                stores.map((store) => (
+                  <div
+                    key={store._id}
+                    className="flex justify-between items-center border-b pb-2"
+                  >
+                    <span
+                      onClick={() => handleStoreClick(store)}
+                      className="cursor-pointer font-semibold hover:text-green-600"
+                    >
+                      {store.name}
+                    </span>
+                    <div className="flex gap-3">
+                      <FaEdit
+                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                        onClick={() => {
+                          setEditStoreName(store.name);
+                          setStoreBeingEdited(store);
+                          setEditDialogOpen(true);
+                        }}
+                      />
+                      <FaTrash
+                        className="text-red-600 hover:text-red-800 cursor-pointer"
+                        onClick={() => {
+                          setStoreToDelete(store._id);
+                          setDeleteConfirmation(true);
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-600 text-center">No CropFarms found.</p>
               )}
+            </div>
+          </>
+        )}
+      </div>
 
-              <input
-                type="text"
-                placeholder="Enter store name"
-                value={storeName}
-                onChange={(e) => setStoreName(e.target.value)}
-                className="p-3 border rounded-lg shadow-inner"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
-              >
-                Add CropFarm
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Dialog */}
-      {isEditDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md text-center">
-            <h2 className="text-2xl text-green-700 font-semibold mb-4">
-              Edit CropFarm Name
-            </h2>
+      {/* Add Modal */}
+      {isDialogOpen && (
+        <Modal onClose={() => setIsDialogOpen(false)}>
+          <h2 className="text-xl font-bold text-green-700 mb-4 border-b pb-2 text-center">
+            Add New CropFarm
+          </h2>
+          {errorMsg && (
+            <p className="text-red-500 mb-2 text-center">{errorMsg}</p>
+          )}
+          <form onSubmit={handleDialogSubmit} className="space-y-4">
             <input
               type="text"
-              value={editStoreName}
-              onChange={(e) => setEditStoreName(e.target.value)}
-              className="p-3 border rounded-lg shadow-inner mb-4"
+              placeholder="Enter CropFarm name"
+              value={storeName}
+              onChange={(e) => setStoreName(e.target.value)}
+              className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
               required
             />
             <button
-              onClick={() => handleEditStore(activeStore._id)}
-              className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
+              type="submit"
+              className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 font-semibold"
             >
-              Save Changes
+              Add CropFarm
+            </button>
+          </form>
+        </Modal>
+      )}
+
+      {/* Edit Modal */}
+      {isEditDialogOpen && (
+        <Modal onClose={() => setEditDialogOpen(false)}>
+          <h2 className="text-xl font-bold text-green-700 mb-4 border-b pb-2 text-center">
+            Edit CropFarm Name
+          </h2>
+          {errorMsg && (
+            <p className="text-red-500 mb-2 text-center">{errorMsg}</p>
+          )}
+          <input
+            type="text"
+            value={editStoreName}
+            onChange={(e) => setEditStoreName(e.target.value)}
+            className="w-full border p-3 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-green-400"
+            required
+          />
+          <button
+            onClick={handleEditStore}
+            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 font-semibold"
+          >
+            Save Changes
+          </button>
+        </Modal>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmation && (
+        <Modal onClose={() => setDeleteConfirmation(false)}>
+          <h2 className="text-lg font-semibold text-red-700 mb-4">
+            Are you sure you want to delete this CropFarm?
+          </h2>
+          <div className="flex justify-between">
+            <button
+              onClick={() => handleDeleteStore(storeToDelete)}
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Yes, Delete
             </button>
             <button
-              onClick={() => setEditDialogOpen(false)}
-              className="bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500 ml-2"
+              onClick={() => setDeleteConfirmation(false)}
+              className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
             >
               Cancel
             </button>
           </div>
-        </div>
+        </Modal>
       )}
+    </div>
+  );
+};
 
-      {/* Delete Confirmation */}
-      {deleteConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md text-center">
-            <h2 className="text-2xl text-red-700 font-semibold mb-4">
-              Are you sure you want to delete this CropFarm?
-            </h2>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={() => handleDeleteStore(storeToDelete)}
-                className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
-              >
-                Yes, Delete
-              </button>
-              <button
-                onClick={() => setDeleteConfirmation(false)}
-                className="bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+const Modal = ({ children, onClose }) => {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => (document.body.style.overflow = "auto");
+  }, []);
 
-      <button
-        onClick={onBackToLanding}
-        className="mt-6 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
-      >
-        Back to Services
-      </button>
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+      <div className="relative bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
+        <FaTimes
+          className="absolute top-3 right-4 text-red-600 cursor-pointer text-xl"
+          onClick={onClose}
+        />
+        {children}
+      </div>
     </div>
   );
 };
