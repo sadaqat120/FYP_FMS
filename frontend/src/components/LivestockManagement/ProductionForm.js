@@ -12,6 +12,7 @@ const ProductionForm = ({ farmId }) => {
   const [date, setDate] = useState("");
   const [notes, setNotes] = useState("");
   const [errors, setErrors] = useState({});
+  const [successMsg, setSuccessMsg] = useState("");
 
   const handleSave = async () => {
     // Reset errors
@@ -19,16 +20,20 @@ const ProductionForm = ({ farmId }) => {
 
     // Validate required fields
     const newErrors = {};
-    if (!productionType) newErrors.productionType = "Production type is required.";
+    if (!productionType)
+      newErrors.productionType = "Production type is required.";
     if (productionType === "sellingAnimal") {
-      if (!soldAnimals) newErrors.soldAnimals = "Sold animals count is required.";
-      if (!sellingRevenue) newErrors.sellingRevenue = "Selling revenue is required.";
+      if (!soldAnimals)
+        newErrors.soldAnimals = "Sold animals count is required.";
+      if (!sellingRevenue)
+        newErrors.sellingRevenue = "Selling revenue is required.";
     } else if (productionType === "milkSelling") {
       if (!milkQuantity) newErrors.milkQuantity = "Milk quantity is required.";
       if (!milkRevenue) newErrors.milkRevenue = "Milk revenue is required.";
     } else if (productionType === "otherRevenue") {
       if (!revenueType) newErrors.revenueType = "Revenue type is required.";
-      if (!revenueIncome) newErrors.revenueIncome = "Revenue income is required.";
+      if (!revenueIncome)
+        newErrors.revenueIncome = "Revenue income is required.";
     } else if (productionType === "milkProduction") {
       if (!milkQuantity) newErrors.milkQuantity = "Milk quantity is required.";
     }
@@ -44,25 +49,38 @@ const ProductionForm = ({ farmId }) => {
     const productionData = {
       farmId,
       productionType,
-      soldAnimals: productionType === "sellingAnimal" ? parseInt(soldAnimals) : null,
-      sellingRevenue: productionType === "sellingAnimal" ? parseFloat(sellingRevenue) : null,
-      milkQuantity: (productionType === "milkSelling" || productionType === "milkProduction") ? parseFloat(milkQuantity) : null,
-      milkRevenue: productionType === "milkSelling" ? parseFloat(milkRevenue) : null,
+      soldAnimals:
+        productionType === "sellingAnimal" ? parseInt(soldAnimals) : null,
+      sellingRevenue:
+        productionType === "sellingAnimal" ? parseFloat(sellingRevenue) : null,
+      milkQuantity:
+        productionType === "milkSelling" || productionType === "milkProduction"
+          ? parseFloat(milkQuantity)
+          : null,
+      milkRevenue:
+        productionType === "milkSelling" ? parseFloat(milkRevenue) : null,
       revenueType: productionType === "otherRevenue" ? revenueType : null,
-      revenueIncome: productionType === "otherRevenue" ? parseFloat(revenueIncome) : null,
+      revenueIncome:
+        productionType === "otherRevenue" ? parseFloat(revenueIncome) : null,
       date,
       notes: notes || null,
     };
 
     try {
       // Save data to the backend
-      const response = await axios.post("http://localhost:5000/productions", productionData, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:5000/productions",
+        productionData,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
       console.log("Production data saved:", response.data);
-      alert("Data Saved Successfully!");
+      setSuccessMsg("Production data saved successfully!");
+      setTimeout(() => setSuccessMsg(""), 2000);
+
       // Optionally reset the form
       setProductionType("");
       setSoldAnimals("");
@@ -76,7 +94,7 @@ const ProductionForm = ({ farmId }) => {
     } catch (error) {
       console.error("Error saving production data:", error);
     }
- };
+  };
 
   const renderFields = () => {
     switch (productionType) {
@@ -91,7 +109,9 @@ const ProductionForm = ({ farmId }) => {
               className="w-full border rounded-lg p-2"
               required
             />
-            {errors.soldAnimals && <p className="text-red-500 text-sm">{errors.soldAnimals}</p>}
+            {errors.soldAnimals && (
+              <p className="text-red-500 text-sm">{errors.soldAnimals}</p>
+            )}
             <input
               type="number"
               value={sellingRevenue}
@@ -100,7 +120,9 @@ const ProductionForm = ({ farmId }) => {
               className="w-full border rounded-lg p-2"
               required
             />
-            {errors.sellingRevenue && <p className="text-red-500 text-sm">{errors.sellingRevenue}</p>}
+            {errors.sellingRevenue && (
+              <p className="text-red-500 text-sm">{errors.sellingRevenue}</p>
+            )}
             <input
               type="date"
               value={date}
@@ -108,7 +130,9 @@ const ProductionForm = ({ farmId }) => {
               className="w-full border rounded-lg p-2"
               required
             />
-            {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
+            {errors.date && (
+              <p className="text-red-500 text-sm">{errors.date}</p>
+            )}
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -129,7 +153,9 @@ const ProductionForm = ({ farmId }) => {
               className="w-full border rounded-lg p-2"
               required
             />
-            {errors.milkQuantity && <p className="text-red-500 text-sm">{errors.milkQuantity}</p>}
+            {errors.milkQuantity && (
+              <p className="text-red-500 text-sm">{errors.milkQuantity}</p>
+            )}
             <input
               type="number"
               value={milkRevenue}
@@ -138,7 +164,9 @@ const ProductionForm = ({ farmId }) => {
               className="w-full border rounded-lg p-2"
               required
             />
-            {errors.milkRevenue && <p className="text-red-500 text-sm">{errors.milkRevenue}</p>}
+            {errors.milkRevenue && (
+              <p className="text-red-500 text-sm">{errors.milkRevenue}</p>
+            )}
             <input
               type="date"
               value={date}
@@ -146,7 +174,9 @@ const ProductionForm = ({ farmId }) => {
               className="w-full border rounded-lg p-2"
               required
             />
-            {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
+            {errors.date && (
+              <p className="text-red-500 text-sm">{errors.date}</p>
+            )}
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -167,7 +197,9 @@ const ProductionForm = ({ farmId }) => {
               className="w-full border rounded-lg p-2"
               required
             />
-            {errors.revenueType && <p className="text-red-500 text-sm">{errors.revenueType}</p>}
+            {errors.revenueType && (
+              <p className="text-red-500 text-sm">{errors.revenueType}</p>
+            )}
             <input
               type="number"
               value={revenueIncome}
@@ -176,7 +208,9 @@ const ProductionForm = ({ farmId }) => {
               className="w-full border rounded-lg p-2"
               required
             />
-            {errors.revenueIncome && <p className="text-red-500 text-sm">{errors.revenueIncome}</p>}
+            {errors.revenueIncome && (
+              <p className="text-red-500 text-sm">{errors.revenueIncome}</p>
+            )}
             <input
               type="date"
               value={date}
@@ -184,7 +218,9 @@ const ProductionForm = ({ farmId }) => {
               className="w-full border rounded-lg p-2"
               required
             />
-            {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
+            {errors.date && (
+              <p className="text-red-500 text-sm">{errors.date}</p>
+            )}
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -205,7 +241,9 @@ const ProductionForm = ({ farmId }) => {
               className="w-full border rounded-lg p-2"
               required
             />
-            {errors.milkQuantity && <p className="text-red-500 text-sm">{errors.milkQuantity}</p>}
+            {errors.milkQuantity && (
+              <p className="text-red-500 text-sm">{errors.milkQuantity}</p>
+            )}
             <input
               type="date"
               value={date}
@@ -213,7 +251,9 @@ const ProductionForm = ({ farmId }) => {
               className="w full border rounded-lg p-2"
               required
             />
-            {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
+            {errors.date && (
+              <p className="text-red-500 text-sm">{errors.date}</p>
+            )}
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -231,6 +271,9 @@ const ProductionForm = ({ farmId }) => {
   return (
     <div className="mt-4 border p-4 rounded-lg">
       <h3 className="text-lg font-bold text-green-600">Production</h3>
+      {successMsg && (
+        <p className="text-green-600 text-sm mb-2">{successMsg}</p>
+      )}
       <form className="space-y-4">
         <select
           name="productionType"
