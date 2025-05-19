@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const AnimalRegistrationForm = ({ farmId }) => {
@@ -18,13 +18,46 @@ const AnimalRegistrationForm = ({ farmId }) => {
   const [errors, setErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
 
-  const handleSave = async () => {
-    // Reset errors
-    setErrors({});
+  const [animalIdPlaceholder, setAnimalIdPlaceholder] = useState(
+    "Animal ID will be generated after category selection"
+  );
 
-    // Validate required fields
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  };
+
+  useEffect(() => {
+    const generateAnimalId = async (categoryName) => {
+      try {
+        const capitalizedCategory = capitalizeFirstLetter(categoryName);
+        const res = await axios.get(
+          `http://localhost:5000/animals/generate-id?farmId=${farmId}&category=${capitalizedCategory}`,
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
+        const { animalId: generatedId } = res.data;
+        setAnimalId(generatedId);
+        setAnimalIdPlaceholder(generatedId);
+      } catch (error) {
+        console.error("Failed to generate animal ID", error);
+        setAnimalIdPlaceholder("Error generating ID. Try again.");
+      }
+    };
+
+    if (animalCategory && animalCategory !== "Others") {
+      generateAnimalId(animalCategory);
+    } else if (animalCategory === "Others" && otherCategory.trim()) {
+      generateAnimalId(otherCategory.trim());
+    }
+  }, [animalCategory, otherCategory, farmId]);
+
+  const handleSave = async () => {
+    setErrors({});
     const newErrors = {};
-    if (!animalId) newErrors.animalId = "Animal ID is required.";
+    if (!animalId) newErrors.animalId = "Animal ID is not generated yet.";
     if (!animalCategory)
       newErrors.animalCategory = "Animal category is required.";
     if (animalCategory === "Others" && !otherCategory)
@@ -38,22 +71,19 @@ const AnimalRegistrationForm = ({ farmId }) => {
     if (!status) newErrors.status = "Animal status is required.";
     if (sex === "female" && !milkingQuantity)
       newErrors.milkingQuantity = "Milking quantity is required for females.";
-
-    // Check if there are any errors
+    setTimeout(() => setErrors(""), 2000);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    // Format animal category
     const formattedCategory =
       animalCategory === "Others"
         ? capitalizeFirstLetter(otherCategory)
         : capitalizeFirstLetter(animalCategory);
 
-    // Prepare data to save
     const animalData = {
-      farmId, // Include the farm ID
+      farmId,
       animalId,
       category: formattedCategory,
       sex,
@@ -64,12 +94,11 @@ const AnimalRegistrationForm = ({ farmId }) => {
       symptoms,
       medicine,
       feedType,
-      milkingQuantity: sex === "male" ? null : milkingQuantity, // Set to null if male
+      milkingQuantity: sex === "male" ? null : milkingQuantity,
       status,
     };
 
     try {
-      // Save data to the backend
       const response = await axios.post(
         "http://localhost:5000/animals",
         animalData,
@@ -81,11 +110,12 @@ const AnimalRegistrationForm = ({ farmId }) => {
       );
       console.log("Animal data saved:", response);
       setSuccessMsg("Animal registered successfully!");
-      setTimeout(() => setSuccessMsg(""), 2000); // optional: auto-clear
+      
+      setTimeout(() => setSuccessMsg(""), 2000);
     } catch (error) {
       console.error("Error saving animal data:", error);
       if (error.response && error.response.status === 400) {
-        setErrors({ animalId: error.response.data.message }); // Use the message from the backend
+        setErrors({ animalId: error.response.data.message });
       } else {
         setErrors({
           general: "An unexpected error occurred. Please try again.",
@@ -94,26 +124,19 @@ const AnimalRegistrationForm = ({ farmId }) => {
     }
   };
 
-  const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-  };
-
   return (
     <div className="mt-4 border p-4 rounded-lg">
-      {/* <h3 className="text-lg font-bold text-green-600">Animal Registration</h3> */}
       {successMsg && (
         <p className="text-green-600 text-center font-medium">{successMsg}</p>
       )}
-
       <form className="space-y-4">
         <div>
           <input
             type="text"
-            placeholder="Animal ID"
+            placeholder={animalIdPlaceholder}
             value={animalId}
-            onChange={(e) => setAnimalId(e.target.value)}
-            className="w-full border rounded-lg p-2"
-            required
+            disabled
+            className="w-full border rounded-lg p-2 bg-gray-100 text-gray-600"
           />
           {errors.animalId && (
             <p className="text-red-500 text-sm">{errors.animalId}</p>

@@ -29,6 +29,37 @@ router.get("/farm/:farmId", authMiddleware, async (req, res) => {
   }
 });
 
+// Generate a unique Animal ID
+router.get("/generate-id", authMiddleware, async (req, res) => {
+  try {
+    const { farmId, category } = req.query;
+    if (!farmId || !category) {
+      return res.status(400).json({ message: "Missing farmId or category" });
+    }
+
+    const capitalizedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+
+    const existingAnimals = await Animal.find({
+      farmId,
+      category: capitalizedCategory,
+    });
+
+    const ids = existingAnimals
+      .map((a) => a.animalId)
+      .filter((id) => id.startsWith(`FMS-Livestock-${capitalizedCategory}-`))
+      .map((id) => parseInt(id.split("-").pop()))
+      .filter((num) => !isNaN(num));
+
+    const nextNumber = ids.length > 0 ? Math.max(...ids) + 1 : 1;
+
+    const newId = `FMS-Livestock-${capitalizedCategory}-${nextNumber}`;
+    return res.status(200).json({ animalId: newId });
+  } catch (error) {
+    console.error("Error generating ID", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 // Other routes (update, delete, etc.) can be added here
 
 module.exports = router;
