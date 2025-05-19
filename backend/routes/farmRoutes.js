@@ -7,8 +7,8 @@ const router = express.Router();
 // Create a new farm
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { name, location, totalLivestockCount } = req.body; // Include new fields
-    const newFarm = new Farm({ userId: req.user.id, name, location, totalLivestockCount });
+    const { name, location } = req.body; // Include new fields
+    const newFarm = new Farm({ userId: req.user.id, name, location });
     await newFarm.save();
     res.status(201).json(newFarm);
   } catch (error) {
@@ -40,10 +40,10 @@ router.get("/:id", authMiddleware, async (req, res) => {
 // Edit a farm details
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const { name, location, totalLivestockCount } = req.body; // Include new fields
+    const { name, location } = req.body; // Include new fields
     const updatedFarm = await Farm.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },
-      { name, location, totalLivestockCount }, // Update new fields
+      { name, location }, // Update new fields
       { new: true }
     );
     if (!updatedFarm) return res.status(404).json({ message: "Farm not found" });

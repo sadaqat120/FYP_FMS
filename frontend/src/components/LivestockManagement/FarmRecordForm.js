@@ -5,21 +5,23 @@ const FarmRecordForm = ({ farmId }) => {
   const [farmData, setFarmData] = useState({
     name: "",
     location: "",
-    totalLivestockCount: "",
   });
+
+  const [livestockCount, setLivestockCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
 
   useEffect(() => {
-    const fetchFarmData = async () => {
+    const fetchFarmAndAnimalData = async () => {
       if (!farmId) {
         console.error("Farm ID is undefined");
         return;
       }
 
       try {
-        const response = await axios.get(
+        // Fetch farm
+        const farmResponse = await axios.get(
           `http://localhost:5000/farms/${farmId}`,
           {
             headers: {
@@ -27,19 +29,31 @@ const FarmRecordForm = ({ farmId }) => {
             },
           }
         );
+
         setFarmData({
-          name: response.data.name,
-          location: response.data.location || "",
-          totalLivestockCount: response.data.totalLivestockCount || "",
+          name: farmResponse.data.name,
+          location: farmResponse.data.location || "",
         });
+
+        // Fetch animals for this farm and count them
+        const animalResponse = await axios.get(
+          `http://localhost:5000/animals/farm/${farmId}`,
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        );
+
+        setLivestockCount(animalResponse.data.length);
         setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching farm data:", error);
+        console.error("Error fetching farm or animals:", error);
         setIsLoading(false);
       }
     };
 
-    fetchFarmData();
+    fetchFarmAndAnimalData();
   }, [farmId]);
 
   const handleSave = async () => {
@@ -49,16 +63,6 @@ const FarmRecordForm = ({ farmId }) => {
 
     if (!farmData.location.trim()) {
       newErrors.location = "Location is required.";
-    }
-
-    if (!farmData.totalLivestockCount) {
-      newErrors.totalLivestockCount = "Livestock count is required.";
-    } else if (
-      isNaN(farmData.totalLivestockCount) ||
-      farmData.totalLivestockCount < 0
-    ) {
-      newErrors.totalLivestockCount =
-        "Total livestock count must be a valid number.";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -71,7 +75,6 @@ const FarmRecordForm = ({ farmId }) => {
         `http://localhost:5000/farms/${farmId}`,
         {
           location: farmData.location,
-          totalLivestockCount: farmData.totalLivestockCount,
         },
         {
           headers: {
@@ -93,7 +96,6 @@ const FarmRecordForm = ({ farmId }) => {
 
   return (
     <div className="mt-4 border p-4 rounded-lg">
-      {/* <h3 className="text-lg font-bold text-green-600">Farm Record</h3> */}
       {successMsg && (
         <p className="text-green-600 text-center font-medium">{successMsg}</p>
       )}
@@ -128,16 +130,10 @@ const FarmRecordForm = ({ farmId }) => {
           <input
             type="number"
             placeholder="Total Livestock Count"
-            value={farmData.totalLivestockCount}
-            onChange={(e) =>
-              setFarmData({ ...farmData, totalLivestockCount: e.target.value })
-            }
-            className="w-full border rounded-lg p-2"
-            required
+            value={livestockCount}
+            disabled
+            className="w-full border rounded-lg p-2 bg-gray-100 text-gray-700"
           />
-          {errors.totalLivestockCount && (
-            <p className="text-red-500 text-sm">{errors.totalLivestockCount}</p>
-          )}
         </div>
 
         <button
