@@ -19,7 +19,7 @@ const ResultSummary = ({ cropFarmId }) => {
   const [successMsg, setSuccessMsg] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [recordId, setRecordId] = useState(null);
-  const [isHarvested, setIsHarvested] = useState(true); // default assume it's editable
+  const [isHarvested, setIsHarvested] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -38,6 +38,24 @@ const ResultSummary = ({ cropFarmId }) => {
           setShowModal(true);
         }
 
+        // Fetch costs and calculate totalCost
+        const costsRes = await axios.get(
+          `http://localhost:5000/dashboard/${cropFarmId}`,
+          { headers: { Authorization: token } }
+        );
+
+        const costEntries = costsRes.data?.costs || [];
+        const totalCost = costEntries.reduce((acc, c) => {
+          return (
+            acc +
+            (c.equipmentCost || 0) +
+            (c.materialCost || 0) +
+            (c.laborCost || 0) +
+            (c.transportCost || 0) +
+            (c.miscCost || 0)
+          );
+        }, 0);
+
         // Fetch existing summary
         const summaryRes = await axios.get(
           `http://localhost:5000/result-summary/${cropFarmId}`,
@@ -53,13 +71,19 @@ const ResultSummary = ({ cropFarmId }) => {
             unit: existing.unit || "",
             satisfaction: existing.satisfaction || "",
             yieldNotes: existing.yieldNotes || "",
-            totalCost: existing.totalCost || "",
+            totalCost: totalCost.toFixed(2), // override existing value
             sellRevenue: existing.sellRevenue || "",
             netProfit: existing.netProfit || "",
             revenueNotes: existing.revenueNotes || "",
           });
           setIsEditMode(true);
           setRecordId(existing._id);
+        } else {
+          // set totalCost only
+          setFormData((prev) => ({
+            ...prev,
+            totalCost: totalCost.toFixed(2),
+          }));
         }
       } catch (err) {
         console.error("Error loading result summary:", err);
@@ -69,11 +93,15 @@ const ResultSummary = ({ cropFarmId }) => {
     fetchData();
   }, [cropFarmId]);
 
+  // Calculate net profit live
   useEffect(() => {
     const profit =
       parseFloat(formData.sellRevenue || 0) -
       parseFloat(formData.totalCost || 0);
-    setFormData((prev) => ({ ...prev, netProfit: profit.toFixed(2) }));
+    setFormData((prev) => ({
+      ...prev,
+      netProfit: profit.toFixed(2),
+    }));
   }, [formData.sellRevenue, formData.totalCost]);
 
   const validate = () => {
@@ -84,8 +112,7 @@ const ResultSummary = ({ cropFarmId }) => {
       "expectedYield",
       "unit",
       "satisfaction",
-      "totalCost",
-      "sellRevenue",
+      "sellRevenue", // totalCost is system-controlled
     ];
     required.forEach((field) => {
       if (!formData[field] || formData[field].toString().trim() === "") {
@@ -112,7 +139,7 @@ const ResultSummary = ({ cropFarmId }) => {
         ...formData,
         totalYield: Number(formData.totalYield),
         expectedYield: Number(formData.expectedYield),
-        totalCost: Number(formData.totalCost),
+        totalCost: Number(formData.totalCost), // from system
         sellRevenue: Number(formData.sellRevenue),
         netProfit: Number(formData.netProfit),
       };
@@ -135,7 +162,7 @@ const ResultSummary = ({ cropFarmId }) => {
     } catch (err) {
       console.error("Error saving result summary:", err);
       setErrors({ general: "Error saving result summary. Please try again." });
-      setTimeout(() => setErrors({ general: "" }), 2000); // optional
+      setTimeout(() => setErrors({ general: "" }), 2000);
     }
   };
 
@@ -181,7 +208,12 @@ const ResultSummary = ({ cropFarmId }) => {
         {[
           { name: "totalYield", type: "number", label: "Total Yield" },
           { name: "expectedYield", type: "number", label: "Expected Yield" },
-          { name: "totalCost", type: "number", label: "Total Cost" },
+          {
+            name: "totalCost",
+            type: "number",
+            label: "Total Cost",
+            readOnly: true,
+          },
           { name: "sellRevenue", type: "number", label: "Sell Revenue" },
           {
             name: "netProfit",
