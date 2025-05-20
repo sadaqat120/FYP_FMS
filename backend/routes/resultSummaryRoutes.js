@@ -35,8 +35,6 @@ router.post("/", authMiddleware, async (req, res) => {
         .json({ message: "All required fields must be filled." });
     }
 
-    const netProfit = parseFloat(sellRevenue) - parseFloat(totalCost);
-
     const resultSummary = new ResultSummary({
       user: req.user.id,
       cropFarmId,
@@ -48,7 +46,6 @@ router.post("/", authMiddleware, async (req, res) => {
       yieldNotes,
       totalCost,
       sellRevenue,
-      netProfit,
       revenueNotes,
     });
 
@@ -89,8 +86,6 @@ router.put("/:id", authMiddleware, async (req, res) => {
         .json({ message: "All required fields must be filled." });
     }
 
-    const netProfit = parseFloat(sellRevenue) - parseFloat(totalCost);
-
     const updated = await ResultSummary.findOneAndUpdate(
       { _id: req.params.id, user: req.user.id },
       {
@@ -102,7 +97,6 @@ router.put("/:id", authMiddleware, async (req, res) => {
         yieldNotes,
         totalCost,
         sellRevenue,
-        netProfit,
         revenueNotes,
       },
       { new: true }

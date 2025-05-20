@@ -11,7 +11,6 @@ const ResultSummary = ({ cropFarmId }) => {
     yieldNotes: "",
     totalCost: "",
     sellRevenue: "",
-    netProfit: "",
     revenueNotes: "",
   });
 
@@ -27,7 +26,6 @@ const ResultSummary = ({ cropFarmId }) => {
       try {
         const token = localStorage.getItem("token");
 
-        // Check if crop is harvested
         const harvestRes = await axios.get(
           `http://localhost:5000/result-summary/check-harvest/${cropFarmId}`,
           { headers: { Authorization: token } }
@@ -38,7 +36,6 @@ const ResultSummary = ({ cropFarmId }) => {
           setShowModal(true);
         }
 
-        // Fetch costs and calculate totalCost
         const costsRes = await axios.get(
           `http://localhost:5000/dashboard/${cropFarmId}`,
           { headers: { Authorization: token } }
@@ -56,7 +53,6 @@ const ResultSummary = ({ cropFarmId }) => {
           );
         }, 0);
 
-        // Fetch existing summary
         const summaryRes = await axios.get(
           `http://localhost:5000/result-summary/${cropFarmId}`,
           { headers: { Authorization: token } }
@@ -71,15 +67,13 @@ const ResultSummary = ({ cropFarmId }) => {
             unit: existing.unit || "",
             satisfaction: existing.satisfaction || "",
             yieldNotes: existing.yieldNotes || "",
-            totalCost: totalCost.toFixed(2), // override existing value
+            totalCost: totalCost.toFixed(2),
             sellRevenue: existing.sellRevenue || "",
-            netProfit: existing.netProfit || "",
             revenueNotes: existing.revenueNotes || "",
           });
           setIsEditMode(true);
           setRecordId(existing._id);
         } else {
-          // set totalCost only
           setFormData((prev) => ({
             ...prev,
             totalCost: totalCost.toFixed(2),
@@ -93,17 +87,6 @@ const ResultSummary = ({ cropFarmId }) => {
     fetchData();
   }, [cropFarmId]);
 
-  // Calculate net profit live
-  useEffect(() => {
-    const profit =
-      parseFloat(formData.sellRevenue || 0) -
-      parseFloat(formData.totalCost || 0);
-    setFormData((prev) => ({
-      ...prev,
-      netProfit: profit.toFixed(2),
-    }));
-  }, [formData.sellRevenue, formData.totalCost]);
-
   const validate = () => {
     const newErrors = {};
     const required = [
@@ -112,7 +95,7 @@ const ResultSummary = ({ cropFarmId }) => {
       "expectedYield",
       "unit",
       "satisfaction",
-      "sellRevenue", // totalCost is system-controlled
+      "sellRevenue",
     ];
     required.forEach((field) => {
       if (!formData[field] || formData[field].toString().trim() === "") {
@@ -139,9 +122,8 @@ const ResultSummary = ({ cropFarmId }) => {
         ...formData,
         totalYield: Number(formData.totalYield),
         expectedYield: Number(formData.expectedYield),
-        totalCost: Number(formData.totalCost), // from system
+        totalCost: Number(formData.totalCost),
         sellRevenue: Number(formData.sellRevenue),
-        netProfit: Number(formData.netProfit),
       };
 
       if (isEditMode && recordId) {
@@ -178,7 +160,6 @@ const ResultSummary = ({ cropFarmId }) => {
         </p>
       )}
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-md relative w-[90%] max-w-md">
@@ -205,7 +186,7 @@ const ResultSummary = ({ cropFarmId }) => {
         className="flex flex-col gap-4"
         disabled={!isHarvested}
       >
-        {[
+        {[ 
           { name: "totalYield", type: "number", label: "Total Yield" },
           { name: "expectedYield", type: "number", label: "Expected Yield" },
           {
@@ -215,12 +196,6 @@ const ResultSummary = ({ cropFarmId }) => {
             readOnly: true,
           },
           { name: "sellRevenue", type: "number", label: "Sell Revenue" },
-          {
-            name: "netProfit",
-            type: "number",
-            label: "Net Profit",
-            readOnly: true,
-          },
         ].map(({ name, type, label, readOnly }) => (
           <input
             key={name}

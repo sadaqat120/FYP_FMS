@@ -12,7 +12,6 @@ const ResultSummarySchema = new mongoose.Schema({
   yieldNotes: { type: String },
   totalCost: { type: Number, required: true },
   sellRevenue: { type: Number, required: true },
-  netProfit: { type: Number, required: true },
   revenueNotes: { type: String }
 }, { timestamps: true });
 
