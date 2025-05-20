@@ -57,6 +57,7 @@ const Dashboard = ({ storeId }) => {
     setProgressStage(stage);
   };
 
+  // ✅ Total cost from costs array
   const totalCost = costs.reduce((acc, c) => {
     return (
       acc +
@@ -67,6 +68,11 @@ const Dashboard = ({ storeId }) => {
       c.miscCost
     );
   }, 0);
+
+  // ✅ Dynamic net profit calculation
+  const netProfit = summary?.sellRevenue
+    ? summary.sellRevenue - totalCost
+    : null;
 
   return (
     <div className="p-6 bg-gray-50 rounded-xl shadow-inner space-y-6">
@@ -175,13 +181,14 @@ const Dashboard = ({ storeId }) => {
             {summary ? (
               <div className="text-sm space-y-1">
                 <p>
-                  <strong>Total Cost:</strong> PKR {summary.totalCost}
+                  <strong>Total Cost:</strong> PKR {totalCost}
                 </p>
                 <p>
                   <strong>Revenue:</strong> PKR {summary.sellRevenue}
                 </p>
                 <p>
-                  <strong>Net Profit:</strong> PKR {summary.netProfit}
+                  <strong>Net Profit:</strong>{" "}
+                  {netProfit !== null ? `PKR ${netProfit}` : "—"}
                 </p>
                 <p>
                   <strong>Notes:</strong> {summary.revenueNotes || "—"}
@@ -258,7 +265,7 @@ const Dashboard = ({ storeId }) => {
           </table>
         </div>
       </div>
-      {/* Satisfaction Rating Section */}
+
       <div className="p-4 bg-purple-50 border border-purple-300 rounded-lg shadow-sm hover:shadow-md mt-4 text-center">
         <h3 className="font-semibold text-purple-800 mb-2 text-center">
           Farmer Satisfaction
@@ -274,9 +281,6 @@ const Dashboard = ({ storeId }) => {
                 </span>
               )
             )}
-            {/* <span className="ml-2 text-sm text-gray-700">
-              {summary.satisfaction}/5
-            </span> */}
           </div>
         ) : (
           <p className="text-gray-500 text-sm">
