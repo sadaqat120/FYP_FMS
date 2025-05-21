@@ -224,6 +224,7 @@ const ItemResourceForm = ({ storeId }) => {
             Add New Item-Based Resource
           </h2>
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
             <select
               value={formData.resourceType || ""}
               onChange={(e) =>
@@ -243,6 +244,8 @@ const ItemResourceForm = ({ storeId }) => {
             {errors.resourceType && (
               <p className="text-red-500">{errors.resourceType}</p>
             )}
+            </div>
+            <div>
             <input
               type="text"
               placeholder="Resource Name"
@@ -256,6 +259,8 @@ const ItemResourceForm = ({ storeId }) => {
             {errors.resourceName && (
               <p className="text-red-500">{errors.resourceName}</p>
             )}
+            </div>
+            <div>
             <input
               type="text"
               placeholder="Unique ID"
@@ -267,6 +272,8 @@ const ItemResourceForm = ({ storeId }) => {
             {errors.uniqueId && (
               <p className="text-red-500">{errors.uniqueId}</p>
             )}
+            </div>
+            <div>
             <input
               type="number"
               placeholder="Number of Items"
@@ -278,6 +285,8 @@ const ItemResourceForm = ({ storeId }) => {
             {errors.quantity && (
               <p className="text-red-500">{errors.quantity}</p>
             )}
+            </div>
+            <div>
             <input
               type="number"
               placeholder="Cost Per Item"
@@ -294,6 +303,8 @@ const ItemResourceForm = ({ storeId }) => {
                 {errors.costPerItem}
               </p>
             )}
+            </div>
+            <div>
             <input
               type="number"
               placeholder="Total Cost"
@@ -321,12 +332,16 @@ const ItemResourceForm = ({ storeId }) => {
             {errors.condition && (
               <p className="text-red-500">{errors.condition}</p>
             )}
+            </div>
+            <div>
             <textarea
               placeholder="Notes"
               value={formData.notes || ""}
               onChange={(e) => handleInputChange("notes", e.target.value)}
               className="p-2 border rounded-lg col-span-2"
             />
+            </div>
+            <div>
             <input
               type="date"
               placeholder="Date Added"
@@ -338,6 +353,7 @@ const ItemResourceForm = ({ storeId }) => {
             {errors.dateAdded && (
               <p className="text-red-500">{errors.dateAdded}</p>
             )}
+            </div>
             <button
               type="button"
               onClick={handleSave}
@@ -355,6 +371,7 @@ const ItemResourceForm = ({ storeId }) => {
             Track Repair/Maintenance
           </h2>
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
             <input
               type="text"
               placeholder="Resource ID"
@@ -366,6 +383,8 @@ const ItemResourceForm = ({ storeId }) => {
             {errors.resourceId && (
               <p className="text-red-500">{errors.resourceId}</p>
             )}
+            </div>
+            <div>
             <textarea
               placeholder="Maintenance Type"
               value={formData.maintenanceType || ""}
@@ -378,6 +397,8 @@ const ItemResourceForm = ({ storeId }) => {
             {errors.maintenanceType && (
               <p className="text-red-500">{errors.maintenanceType}</p>
             )}
+            </div>
+            <div>
             <input
               type="number"
               placeholder="Cost of Maintenance"
@@ -390,7 +411,8 @@ const ItemResourceForm = ({ storeId }) => {
             />
             {errors.maintenanceCost && (
               <p className="text-red-500">{errors.maintenanceCost}</p>
-            )}
+            )} </div> 
+            <div>
             <input
               type="date"
               placeholder="Date of Maintenance"
@@ -403,13 +425,15 @@ const ItemResourceForm = ({ storeId }) => {
             />
             {errors.dateOfMaintenance && (
               <p className="text-red-500">{errors.dateOfMaintenance}</p>
-            )}
+            )} </div>
+            <div>
             <textarea
               placeholder="Notes"
               value={formData.notes || ""}
               onChange={(e) => handleInputChange("notes", e.target.value)}
               className="p-2 border rounded-lg col-span-2"
             />
+            </div>
             <button
               type="button"
               onClick={handleSave}
@@ -425,6 +449,7 @@ const ItemResourceForm = ({ storeId }) => {
         <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-bold text-blue-600 mb-4">Record Sale</h2>
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
             <input
               type="text"
               placeholder="Resource ID"
@@ -435,7 +460,8 @@ const ItemResourceForm = ({ storeId }) => {
             />
             {errors.resourceId && (
               <p className="text-red-500">{errors.resourceId}</p>
-            )}
+            )} </div>
+            <div>
             <input
               type="number"
               placeholder="Number of Items Sold"
@@ -446,7 +472,8 @@ const ItemResourceForm = ({ storeId }) => {
             />
             {errors.itemsSold && (
               <p className="text-red-500">{errors.itemsSold}</p>
-            )}
+            )} </div>
+            <div>
             <input
               type="number"
               placeholder="Sale Price Per Unit"
@@ -459,7 +486,8 @@ const ItemResourceForm = ({ storeId }) => {
             />
             {errors.salePricePerUnit && (
               <p className="text-red-500">{errors.salePricePerUnit}</p>
-            )}
+            )} </div>
+            <div>
             <input
               type="number"
               placeholder="Total Sale Price"
@@ -470,7 +498,8 @@ const ItemResourceForm = ({ storeId }) => {
               }
               readOnly
               className="p-2 border rounded-lg bg-gray-200"
-            />
+            /> </div>
+            <div>
             <input
               type="date"
               placeholder="Date of Sale"
@@ -481,13 +510,15 @@ const ItemResourceForm = ({ storeId }) => {
             />
             {errors.dateOfSale && (
               <p className="text-red-500">{errors.dateOfSale}</p>
-            )}
+            )} </div>
+            <div>
             <textarea
               placeholder="Notes"
               value={formData.notes || ""}
               onChange={(e) => handleInputChange("notes", e.target.value)}
               className="p-2 border rounded-lg col-span-2"
             />
+            </div>
             <button
               type="button"
               onClick={handleSave}
