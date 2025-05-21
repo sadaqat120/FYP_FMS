@@ -9,7 +9,6 @@ const ResultSummary = ({ cropFarmId }) => {
     unit: "",
     satisfaction: "",
     yieldNotes: "",
-    totalCost: "",
     sellRevenue: "",
     revenueNotes: "",
   });
@@ -26,6 +25,7 @@ const ResultSummary = ({ cropFarmId }) => {
       try {
         const token = localStorage.getItem("token");
 
+        // Check harvest status
         const harvestRes = await axios.get(
           `http://localhost:5000/result-summary/check-harvest/${cropFarmId}`,
           { headers: { Authorization: token } }
@@ -36,23 +36,7 @@ const ResultSummary = ({ cropFarmId }) => {
           setShowModal(true);
         }
 
-        const costsRes = await axios.get(
-          `http://localhost:5000/dashboard/${cropFarmId}`,
-          { headers: { Authorization: token } }
-        );
-
-        const costEntries = costsRes.data?.costs || [];
-        const totalCost = costEntries.reduce((acc, c) => {
-          return (
-            acc +
-            (c.equipmentCost || 0) +
-            (c.materialCost || 0) +
-            (c.laborCost || 0) +
-            (c.transportCost || 0) +
-            (c.miscCost || 0)
-          );
-        }, 0);
-
+        // Fetch result summary (if exists)
         const summaryRes = await axios.get(
           `http://localhost:5000/result-summary/${cropFarmId}`,
           { headers: { Authorization: token } }
@@ -67,17 +51,11 @@ const ResultSummary = ({ cropFarmId }) => {
             unit: existing.unit || "",
             satisfaction: existing.satisfaction || "",
             yieldNotes: existing.yieldNotes || "",
-            totalCost: totalCost.toFixed(2),
             sellRevenue: existing.sellRevenue || "",
             revenueNotes: existing.revenueNotes || "",
           });
           setIsEditMode(true);
           setRecordId(existing._id);
-        } else {
-          setFormData((prev) => ({
-            ...prev,
-            totalCost: totalCost.toFixed(2),
-          }));
         }
       } catch (err) {
         console.error("Error loading result summary:", err);
@@ -122,7 +100,6 @@ const ResultSummary = ({ cropFarmId }) => {
         ...formData,
         totalYield: Number(formData.totalYield),
         expectedYield: Number(formData.expectedYield),
-        totalCost: Number(formData.totalCost),
         sellRevenue: Number(formData.sellRevenue),
       };
 
@@ -189,14 +166,8 @@ const ResultSummary = ({ cropFarmId }) => {
         {[ 
           { name: "totalYield", type: "number", label: "Total Yield" },
           { name: "expectedYield", type: "number", label: "Expected Yield" },
-          {
-            name: "totalCost",
-            type: "number",
-            label: "Total Cost",
-            readOnly: true,
-          },
           { name: "sellRevenue", type: "number", label: "Sell Revenue" },
-        ].map(({ name, type, label, readOnly }) => (
+        ].map(({ name, type, label }) => (
           <input
             key={name}
             type={type}
@@ -205,8 +176,8 @@ const ResultSummary = ({ cropFarmId }) => {
             value={formData[name]}
             onChange={handleChange}
             className="w-full p-2 border rounded-md"
-            required={!readOnly}
-            readOnly={readOnly || !isHarvested}
+            required
+            readOnly={!isHarvested}
           />
         ))}
 
