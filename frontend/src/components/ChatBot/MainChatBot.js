@@ -43,7 +43,9 @@ function MainChatBot() {
 
         {/* Input Section */}
         <div className="flex items-center gap-2 p-4 border-t border-gray-300 bg-white">
-          <ChatInput sendMessage={sendMessage} />
+          {/* <ChatInput sendMessage={sendMessage} /> */}
+          <ChatInput sendMessage={sendMessage} language={language} />
+
           <select
             onChange={(e) => setLanguage(e.target.value)}
             value={language}
