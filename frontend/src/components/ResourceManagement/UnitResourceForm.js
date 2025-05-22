@@ -3,10 +3,15 @@ import axios from "axios";
 
 const UnitResourceForm = ({ storeId }) => {
   const [activeForm, setActiveForm] = useState("");
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    quantity: 1,
+    costPerUnit: 0,
+    totalCost: 0,
+  });
   const [resources, setResources] = useState([]);
-  const [errors, setErrors] = useState({}); // State to hold error messages
-  const [successMsg, setSuccessMsg] = useState("");
+  const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
+  const [generatedId, setGeneratedId] = useState("");
 
   useEffect(() => {
     const fetchResources = async () => {
@@ -26,17 +31,58 @@ const UnitResourceForm = ({ storeId }) => {
     };
 
     fetchResources();
-  }, [storeId]);
+  }, [storeId, successMessage]);
+
+  useEffect(() => {
+    // Calculate total cost whenever quantity or costPerUnit changes
+    if (activeForm === "addResource") {
+      const quantity = parseFloat(formData.quantity) || 0;
+      const costPerUnit = parseFloat(formData.costPerUnit) || 0;
+      const totalCost = quantity * costPerUnit;
+      setFormData((prev) => ({
+        ...prev,
+        totalCost: totalCost.toFixed(2),
+      }));
+    }
+  }, [formData.quantity, formData.costPerUnit, activeForm]);
 
   const handleFormSwitch = (form) => {
     setActiveForm(form === activeForm ? "" : form);
-    setFormData({});
-    setErrors({}); // Reset errors when switching forms
+    setFormData({
+      quantity: 1,
+      costPerUnit: 0,
+      totalCost: 0,
+    });
+    setErrors({});
+    setSuccessMessage("");
+    setGeneratedId("");
+    if (form === "addResource") generateUniqueId();
+  };
+
+  const generateUniqueId = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/unit-resources/generate-id/${storeId}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      setGeneratedId(response.data.id);
+      setFormData((prev) => ({ ...prev, uniqueId: response.data.id }));
+    } catch (error) {
+      console.error("Error generating ID:", error);
+      setErrors((prev) => ({
+        ...prev,
+        general: error.response?.data?.message || "Failed to generate ID",
+      }));
+    }
   };
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: "" })); // Clear error for the field being edited
+    setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
   const validateFields = () => {
@@ -46,13 +92,11 @@ const UnitResourceForm = ({ storeId }) => {
         newErrors.resourceType = "Resource Type is required.";
       if (!formData.resourceName)
         newErrors.resourceName = "Resource Name is required.";
-      if (!formData.uniqueId) newErrors.uniqueId = "Unique ID is required.";
       if (!formData.quantity) newErrors.quantity = "Quantity is required.";
       if (!formData.unit) newErrors.unit = "Unit is required.";
       if (!formData.costPerUnit)
         newErrors.costPerUnit = "Cost Per Unit is required.";
-      if (!formData.totalCost) newErrors.totalCost = "Total Cost is required.";
-      if (!formData.dateAdded) newErrors.dateAdded = "Date Added is required."; // Make date required
+      if (!formData.dateAdded) newErrors.dateAdded = "Date Added is required.";
     } else if (activeForm === "usageTracking") {
       if (!formData.resourceId)
         newErrors.resourceId = "Resource ID is required.";
@@ -73,8 +117,8 @@ const UnitResourceForm = ({ storeId }) => {
       return;
     }
 
-    if (activeForm === "addResource") {
-      try {
+    try {
+      if (activeForm === "addResource") {
         await axios.post(
           "http://localhost:5000/unit-resources",
           {
@@ -87,32 +131,8 @@ const UnitResourceForm = ({ storeId }) => {
             },
           }
         );
-        setSuccessMsg("Unit-Based Resource Added Successfully!");
-        setTimeout(() => setSuccessMsg(""), 2000);
-        setFormData({});
-      } catch (error) {
-        if (error.response && error.response.status === 400) {
-          setErrors((prev) => ({
-            ...prev,
-            uniqueId: error.response.data.message,
-          }));
-        } else {
-          console.error("Error adding unit-based resource:", error);
-        }
-      }
-    } else if (activeForm === "usageTracking") {
-      const resourceExists = resources.some(
-        (resource) => resource.uniqueId === formData.resourceId
-      );
-      if (!resourceExists) {
-        setErrors((prev) => ({
-          ...prev,
-          resourceId: "Resource ID does not exist.",
-        }));
-        return;
-      }
-
-      try {
+        setSuccessMessage("Unit-Based Resource Added Successfully!");
+      } else if (activeForm === "usageTracking") {
         await axios.post(
           "http://localhost:5000/unit-resources/usage",
           {
@@ -125,11 +145,34 @@ const UnitResourceForm = ({ storeId }) => {
             },
           }
         );
-        setSuccessMsg("Usage Recorded Successfully!");
-        setTimeout(() => setSuccessMsg(""), 2000);
-        setFormData({});
-      } catch (error) {
-        console.error("Error recording usage:", error);
+        setSuccessMessage("Usage Recorded Successfully!");
+      }
+
+      setTimeout(() => {
+        setSuccessMessage("");
+        if (activeForm === "addResource") {
+          setFormData({
+            quantity: 1,
+            costPerUnit: 0,
+            totalCost: 0,
+          });
+          generateUniqueId();
+        } else {
+          setFormData({});
+        }
+      }, 2000);
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setErrors((prev) => ({
+          ...prev,
+          uniqueId: error.response.data.message,
+        }));
+      } else {
+        console.error("Error saving data:", error);
+        setErrors((prev) => ({
+          ...prev,
+          general: error.response?.data?.message || "An error occurred",
+        }));
       }
     }
   };
@@ -139,9 +182,6 @@ const UnitResourceForm = ({ storeId }) => {
       <h1 className="text-3xl font-bold text-green-600 mb-6 text-center">
         Unit-Based Resource Management
       </h1>
-      {successMsg && (
-        <p className="text-green-600 font-medium mb-4">{successMsg}</p>
-      )}
 
       {/* Form Selector */}
       <div className="flex gap-4 mb-6">
@@ -167,150 +207,168 @@ const UnitResourceForm = ({ storeId }) => {
         </button>
       </div>
 
+      {errors.general && (
+        <div className="bg-red-100 text-red-800 px-4 py-2 rounded mb-4 text-center shadow-md">
+          {errors.general}
+        </div>
+      )}
+
       {/* Add New Resource Form */}
       {activeForm === "addResource" && (
         <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-bold text-blue-600 mb-4">
             Add New Unit-Based Resource
           </h2>
+          {successMessage && (
+            <div className="bg-green-100 text-green-800 px-4 py-2 rounded mb-4 text-center shadow-md">
+              {successMessage}
+            </div>
+          )}
+
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label>Resource Type</label>
+              <label className="block text-gray-700 mb-1">Unique ID</label>
+              <input
+                type="text"
+                value={generatedId}
+                disabled
+                className="w-full p-2 border rounded-lg bg-gray-100 text-gray-600"
+              />
+              {errors.uniqueId && (
+                <p className="text-red-500 text-sm mt-1">{errors.uniqueId}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-1">Resource Type</label>
               <select
                 value={formData.resourceType || ""}
                 onChange={(e) =>
                   handleInputChange("resourceType", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               >
-                <option value="" disabled>
-                  Select Resource Type
-                </option>
+                <option value="">Select Resource Type</option>
                 <option value="Seeds">Seeds</option>
                 <option value="Fertilizer">Fertilizer</option>
                 <option value="Feeds">Feeds</option>
                 <option value="Others">Others</option>
               </select>
               {errors.resourceType && (
-                <p className="text-red-500">{errors.resourceType}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.resourceType}
+                </p>
               )}
             </div>
             <div>
-              <label>Resource Name</label>
+              <label className="block text-gray-700 mb-1">Resource Name</label>
               <input
                 type="text"
                 value={formData.resourceName || ""}
                 onChange={(e) =>
                   handleInputChange("resourceName", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.resourceName && (
-                <p className="text-red-500">{errors.resourceName}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.resourceName}
+                </p>
               )}
             </div>
             <div>
-              <label>Unique ID</label>
-              <input
-                type="text"
-                value={formData.uniqueId || ""}
-                onChange={(e) => handleInputChange("uniqueId", e.target.value)}
-                className="p-2 border rounded-lg"
-                required
-              />
-              {errors.uniqueId && (
-                <p className="text-red-500">{errors.uniqueId}</p>
-              )}
-            </div>
-            <div>
-              <label>Quantity</label>
+              <label className="block text-gray-700 mb-1">Quantity</label>
               <input
                 type="number"
+                min="1"
+                step="0.01"
                 value={formData.quantity || ""}
                 onChange={(e) => handleInputChange("quantity", e.target.value)}
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.quantity && (
-                <p className="text-red-500">{errors.quantity}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>
               )}
             </div>
             <div>
-              <label>Unit</label>
+              <label className="block text-gray-700 mb-1">Unit</label>
               <select
                 value={formData.unit || ""}
                 onChange={(e) => handleInputChange("unit", e.target.value)}
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               >
-                <option value="" disabled>
-                  Select Unit
-                </option>
+                <option value="">Select Unit</option>
                 <option value="kg">Kilograms (kg)</option>
                 <option value="g">Grams (g)</option>
                 <option value="liters">Liters</option>
                 <option value="units">Units</option>
               </select>
-              {errors.unit && <p className="text-red-500">{errors.unit}</p>}
+              {errors.unit && (
+                <p className="text-red-500 text-sm mt-1">{errors.unit}</p>
+              )}
             </div>
             <div>
-              <label>Cost Per Unit</label>
+              <label className="block text-gray-700 mb-1">Cost Per Unit</label>
               <input
                 type="number"
+                min="0"
+                step="0.01"
                 value={formData.costPerUnit || ""}
                 onChange={(e) =>
                   handleInputChange("costPerUnit", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.costPerUnit && (
-                <p className="text-red-500">{errors.costPerUnit}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.costPerUnit}
+                </p>
               )}
             </div>
             <div>
-              <label>Total Cost</label>
+              <label className="block text-gray-700 mb-1">Total Cost</label>
               <input
                 type="number"
                 value={formData.totalCost || ""}
-                onChange={(e) => handleInputChange("totalCost", e.target.value)}
-                className="p-2 border rounded-lg"
-                required
+                disabled
+                className="w-full p-2 border rounded-lg bg-gray-100 text-gray-600"
               />
-              {errors.totalCost && (
-                <p className="text-red-500">{errors.totalCost}</p>
-              )}
             </div>
             <div>
-              <label>Date Added</label>
+              <label className="block text-gray-700 mb-1">Date Added</label>
               <input
                 type="date"
                 value={formData.dateAdded || ""}
                 onChange={(e) => handleInputChange("dateAdded", e.target.value)}
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.dateAdded && (
-                <p className="text-red-500">{errors.dateAdded}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.dateAdded}</p>
               )}
             </div>
-            <div>
-              <label>Notes (Optional)</label>
+            <div className="col-span-2">
+              <label className="block text-gray-700 mb-1">Notes</label>
               <textarea
                 value={formData.notes || ""}
                 onChange={(e) => handleInputChange("notes", e.target.value)}
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
+                rows="3"
               />
             </div>
-            <button
-              type="button"
-              onClick={handleSave}
-              className="mt-4 py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            >
-              Save Resource
-            </button>
+            <div className="col-span-2 flex justify-end">
+              <button
+                type="button"
+                onClick={handleSave}
+                className="bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700 transition duration-200"
+              >
+                Save Resource
+              </button>
+            </div>
           </form>
         </div>
       )}
@@ -321,82 +379,104 @@ const UnitResourceForm = ({ storeId }) => {
           <h2 className="text-xl font-bold text-blue-600 mb-4">
             Track Resource Usage
           </h2>
+          {successMessage && (
+            <div className="bg-green-100 text-green-800 px-4 py-2 rounded mb-4 text-center shadow-md">
+              {successMessage}
+            </div>
+          )}
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label>Resource ID</label>
-              <input
-                type="text"
+              <label className="block text-gray-700 mb-1">Resource</label>
+              <select
                 value={formData.resourceId || ""}
                 onChange={(e) =>
                   handleInputChange("resourceId", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
-              />
+              >
+                <option value="">Select Resource</option>
+                {resources.map((resource) => (
+                  <option key={resource._id} value={resource.uniqueId}>
+                    {resource.uniqueId} - {resource.resourceName}
+                  </option>
+                ))}
+              </select>
               {errors.resourceId && (
-                <p className="text-red-500">{errors.resourceId}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.resourceId}</p>
               )}
             </div>
             <div>
-              <label>Quantity Used</label>
+              <label className="block text-gray-700 mb-1">Quantity Used</label>
               <input
                 type="number"
+                min="0.01"
+                step="0.01"
                 value={formData.quantityUsed || ""}
                 onChange={(e) =>
                   handleInputChange("quantityUsed", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.quantityUsed && (
-                <p className="text-red-500">{errors.quantityUsed}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.quantityUsed}
+                </p>
               )}
             </div>
             <div>
-              <label>Usage Purpose</label>
+              <label className="block text-gray-700 mb-1">Usage Purpose</label>
               <input
                 type="text"
                 value={formData.usagePurpose || ""}
                 onChange={(e) =>
                   handleInputChange("usagePurpose", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.usagePurpose && (
-                <p className="text-red-500">{errors.usagePurpose}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.usagePurpose}
+                </p>
               )}
             </div>
             <div>
-              <label>Date of Usage</label>
+              <label className="block text-gray-700 mb-1">Date of Usage</label>
               <input
                 type="date"
                 value={formData.dateOfUsage || ""}
                 onChange={(e) =>
                   handleInputChange("dateOfUsage", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.dateOfUsage && (
-                <p className="text-red-500">{errors.dateOfUsage}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.dateOfUsage}
+                </p>
               )}
             </div>
-            <div>
-              <label>Notes (Optional)</label>
+            <div className="col-span-2">
+              <label className="block text-gray-700 mb-1">Notes</label>
               <textarea
                 value={formData.notes || ""}
                 onChange={(e) => handleInputChange("notes", e.target.value)}
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
+                rows="3"
               />
             </div>
-            <button
-              type="button"
-              onClick={handleSave}
-              className="mt-4 py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            >
-              Save Usage
-            </button>
+            <div className="col-span-2 flex justify-end">
+              <button
+                type="button"
+                onClick={handleSave}
+                className="bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700 transition duration-200"
+              >
+                Save Usage
+              </button>
+            </div>
           </form>
         </div>
       )}
