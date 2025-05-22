@@ -2,6 +2,7 @@ const express = require("express");
 const ItemResource = require("../models/ItemResource");
 const RepairTracking = require("../models/RepairTracking");
 const SaleTracking = require("../models/SaleTracking");
+const Store = require("../models/Store");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
@@ -68,6 +69,56 @@ router.get("/:storeId", authMiddleware, async (req, res) => {
     res.status(200).json(resources);
   } catch (error) {
     res.status(500).json({ message: "Error fetching item-based resources", error });
+  }
+});
+
+// Generate unique ID for item resources
+router.get("/generate-id/:storeId", authMiddleware, async (req, res) => {
+  try {
+    const { storeId } = req.params;
+    const userId = req.user.id;
+
+    // Get store details
+    const store = await Store.findOne({ _id: storeId, userId });
+    if (!store) {
+      return res.status(404).json({ message: "Store not found" });
+    }
+
+    // Create prefix based on store name
+    const prefix = `FMS-${store.name}-Item-`;
+
+    // Find all existing item resources for this store
+    const existingResources = await ItemResource.find({ storeId, userId });
+    
+    // Track used numbers
+    const usedNumbers = new Set();
+    
+    existingResources.forEach(resource => {
+      if (resource.uniqueId.startsWith(prefix)) {
+        const numStr = resource.uniqueId.replace(prefix, '');
+        const num = parseInt(numStr);
+        if (!isNaN(num)) {
+          usedNumbers.add(num);
+        }
+      }
+    });
+
+    // Find the first available number starting from 1
+    let nextNumber = 1;
+    while (usedNumbers.has(nextNumber)) {
+      nextNumber++;
+    }
+
+    // Generate the new ID
+    const newId = `${prefix}${nextNumber}`;
+
+    res.status(200).json({ id: newId });
+  } catch (error) {
+    console.error("Error generating ID:", error);
+    res.status(500).json({ 
+      message: "Error generating ID", 
+      error: error.message 
+    });
   }
 });
 
