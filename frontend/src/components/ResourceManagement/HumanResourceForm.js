@@ -5,8 +5,9 @@ const HumanResourceForm = ({ storeId }) => {
   const [activeForm, setActiveForm] = useState("");
   const [formData, setFormData] = useState({});
   const [resources, setResources] = useState([]);
-  const [errors, setErrors] = useState({}); // State to hold error messages
+  const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [generatedId, setGeneratedId] = useState("");
 
   useEffect(() => {
     const fetchResources = async () => {
@@ -26,17 +27,42 @@ const HumanResourceForm = ({ storeId }) => {
     };
 
     fetchResources();
-  }, [storeId]);
+  }, [storeId, successMessage]);
 
   const handleFormSwitch = (form) => {
     setActiveForm(form === activeForm ? "" : form);
     setFormData({});
-    setErrors({}); // Reset errors when switching forms
+    setErrors({});
+    setGeneratedId("");
+    if (form === "add") {
+      generateUniqueId();
+    }
+  };
+
+  const generateUniqueId = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/human-resources/generate-id/${storeId}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      setGeneratedId(res.data.id);
+      setFormData((prev) => ({ ...prev, id: res.data.id }));
+    } catch (error) {
+      console.error("Error generating ID:", error);
+      setErrors((prev) => ({
+        ...prev,
+        general: error.response?.data?.message || "Failed to generate ID"
+      }));
+    }
   };
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: "" })); // Clear error for the field being edited
+    setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
   const validateFields = () => {
@@ -51,7 +77,6 @@ const HumanResourceForm = ({ storeId }) => {
       if (!formData.paymentDate)
         newErrors.paymentDate = "Payment Date is required.";
     } else if (activeForm === "add") {
-      if (!formData.id) newErrors.id = "ID is required.";
       if (!formData.workerName)
         newErrors.workerName = "Worker Name is required.";
       if (!formData.role) newErrors.role = "Role/Position is required.";
@@ -83,9 +108,9 @@ const HumanResourceForm = ({ storeId }) => {
           }
         );
         setSuccessMessage("Human Resource Added Successfully!");
-        setTimeout(() => setSuccessMessage(""), 2000); // <-- clear after 2 seconds
-
+        setTimeout(() => setSuccessMessage(""), 2000);
         setFormData({});
+        generateUniqueId();
       } catch (error) {
         if (error.response && error.response.status === 400) {
           setErrors((prev) => ({ ...prev, id: error.response.data.message }));
@@ -94,17 +119,6 @@ const HumanResourceForm = ({ storeId }) => {
         }
       }
     } else if (activeForm === "payment") {
-      const workerExists = resources.some(
-        (resource) => resource.id === formData.workerId
-      );
-      if (!workerExists) {
-        setErrors((prev) => ({
-          ...prev,
-          workerId: "Worker ID does not exist.",
-        }));
-        return;
-      }
-
       try {
         await axios.post(
           `http://localhost:5000/human-resources/${storeId}/${encodeURIComponent(
@@ -124,7 +138,7 @@ const HumanResourceForm = ({ storeId }) => {
           }
         );
         setSuccessMessage("Payment Recorded Successfully!");
-        setTimeout(() => setSuccessMessage(""), 2000); // <-- clear after 2 seconds
+        setTimeout(() => setSuccessMessage(""), 2000);
         setFormData({});
       } catch (error) {
         console.error("Error recording payment:", error);
@@ -148,7 +162,7 @@ const HumanResourceForm = ({ storeId }) => {
               : "bg-gray-200 text-gray-800"
           } hover:bg-green-700`}
         >
-          Add New
+          Add New Resource
         </button>
         <button
           onClick={() => handleFormSwitch("payment")}
@@ -158,9 +172,15 @@ const HumanResourceForm = ({ storeId }) => {
               : "bg-gray-200 text-gray-800"
           } hover:bg-green-700`}
         >
-          Make Payment
+          Record Payment
         </button>
       </div>
+
+      {errors.general && (
+        <div className="bg-red-100 text-red-800 px-4 py-2 rounded mb-4 text-center shadow-md">
+          {errors.general}
+        </div>
+      )}
 
       {/* Add New Resource Form */}
       {activeForm === "add" && (
@@ -176,19 +196,17 @@ const HumanResourceForm = ({ storeId }) => {
 
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label>ID (Unique)</label>
+              <label className="block text-gray-700 mb-1">ID (Auto-generated)</label>
               <input
                 type="text"
-                placeholder="ID (Unique)"
-                value={formData.id || ""}
-                onChange={(e) => handleInputChange("id", e.target.value)}
-                className="p-2 border rounded-lg"
-                required
+                value={generatedId}
+                disabled
+                className="w-full p-2 border rounded-lg bg-gray-100 text-gray-600"
               />
-              {errors.id && <p className="text-red-500">{errors.id}</p>}
+              {errors.id && <p className="text-red-500 text-sm mt-1">{errors.id}</p>}
             </div>
             <div>
-              <label>Worker Name</label>
+              <label className="block text-gray-700 mb-1">Worker Name</label>
               <input
                 type="text"
                 placeholder="Worker Name"
@@ -196,27 +214,27 @@ const HumanResourceForm = ({ storeId }) => {
                 onChange={(e) =>
                   handleInputChange("workerName", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.workerName && (
-                <p className="text-red-500">{errors.workerName}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.workerName}</p>
               )}
             </div>
             <div>
-              <label>Role/Position</label>
+              <label className="block text-gray-700 mb-1">Role/Position</label>
               <input
                 type="text"
                 placeholder="Role/Position"
                 value={formData.role || ""}
                 onChange={(e) => handleInputChange("role", e.target.value)}
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
-              {errors.role && <p className="text-red-500">{errors.role}</p>}
+              {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role}</p>}
             </div>
             <div>
-              <label>Date Enrolled</label>
+              <label className="block text-gray-700 mb-1">Date Enrolled</label>
               <input
                 type="date"
                 placeholder="Date Enrolled"
@@ -224,29 +242,32 @@ const HumanResourceForm = ({ storeId }) => {
                 onChange={(e) =>
                   handleInputChange("dateEnrolled", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.dateEnrolled && (
-                <p className="text-red-500">{errors.dateEnrolled}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.dateEnrolled}</p>
               )}
             </div>
             <div className="col-span-2">
-              <label>Notes</label>
+              <label className="block text-gray-700 mb-1">Notes</label>
               <textarea
                 placeholder="Notes"
                 value={formData.notes || ""}
                 onChange={(e) => handleInputChange("notes", e.target.value)}
-                className="p-2 border rounded-lg col-span-2"
+                className="w-full p-2 border rounded-lg"
+                rows="3"
               />
             </div>
-            <button
-              type="button"
-              onClick={handleSave}
-              className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 col-span-2"
-            >
-              Save
-            </button>
+            <div className="col-span-2 flex justify-end">
+              <button
+                type="button"
+                onClick={handleSave}
+                className="bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700 transition duration-200"
+              >
+                Save Resource
+              </button>
+            </div>
           </form>
         </div>
       )}
@@ -257,99 +278,111 @@ const HumanResourceForm = ({ storeId }) => {
           <h2 className="text-xl font-bold text-blue-600 mb-4">
             Record Payment
           </h2>
+          {successMessage && (
+            <div className="bg-green-100 text-green-800 px-4 py-2 rounded mb-4 text-center shadow-md">
+              {successMessage}
+            </div>
+          )}
           <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label>Worker ID</label>
-              <input
-                type="text"
-                placeholder="Worker ID"
+              <label className="block text-gray-700 mb-1">Select Worker</label>
+              <select
                 value={formData.workerId || ""}
                 onChange={(e) => handleInputChange("workerId", e.target.value)}
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
-              />
+              >
+                <option value="">-- Select Worker --</option>
+                {resources.map((resource) => (
+                  <option key={resource._id} value={resource.id}>
+                    {resource.id} - {resource.workerName} ({resource.role})
+                  </option>
+                ))}
+              </select>
               {errors.workerId && (
-                <p className="text-red-500">{errors.workerId}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.workerId}</p>
               )}
             </div>
             <div>
-              <label>Payment Amount</label>
+              <label className="block text-gray-700 mb-1">Payment Amount</label>
               <input
                 type="number"
-                placeholder="Payment Amount"
+                placeholder="0.00"
                 value={formData.payment || ""}
                 onChange={(e) => handleInputChange("payment", e.target.value)}
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
+                min="0"
+                step="0.01"
               />
               {errors.payment && (
-                <p className="text-red-500">{errors.payment}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.payment}</p>
               )}
             </div>
             <div>
-              <label>Work Start Date</label>
+              <label className="block text-gray-700 mb-1">Work Start Date</label>
               <input
                 type="date"
-                placeholder="Work Start Date"
                 value={formData.workStartDate || ""}
                 onChange={(e) =>
                   handleInputChange("workStartDate", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.workStartDate && (
-                <p className="text-red-500">{errors.workStartDate}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.workStartDate}</p>
               )}
             </div>
             <div>
-              <label>Work End Date</label>
+              <label className="block text-gray-700 mb-1">Work End Date</label>
               <input
                 type="date"
-                placeholder="Work End Date"
                 value={formData.workEndDate || ""}
                 onChange={(e) =>
                   handleInputChange("workEndDate", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.workEndDate && (
-                <p className="text-red-500">{errors.workEndDate}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.workEndDate}</p>
               )}
             </div>
             <div>
-              <label>Payment Date</label>
+              <label className="block text-gray-700 mb-1">Payment Date</label>
               <input
                 type="date"
-                placeholder="Payment Date"
                 value={formData.paymentDate || ""}
                 onChange={(e) =>
                   handleInputChange("paymentDate", e.target.value)
                 }
-                className="p-2 border rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 required
               />
               {errors.paymentDate && (
-                <p className="text-red-500">{errors.paymentDate}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.paymentDate}</p>
               )}
             </div>
             <div className="col-span-2">
-              <label>Notes</label>
+              <label className="block text-gray-700 mb-1">Payment Notes</label>
               <textarea
-                placeholder="Notes"
+                placeholder="Additional payment details"
                 value={formData.notes || ""}
                 onChange={(e) => handleInputChange("notes", e.target.value)}
-                className="p-2 border rounded-lg col-span-2"
+                className="w-full p-2 border rounded-lg"
+                rows="3"
               />
             </div>
-            <button
-              type="button"
-              onClick={handleSave}
-              className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 col-span-2"
-            >
-              Save
-            </button>
+            <div className="col-span-2 flex justify-end">
+              <button
+                type="button"
+                onClick={handleSave}
+                className="bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700 transition duration-200"
+              >
+                Record Payment
+              </button>
+            </div>
           </form>
         </div>
       )}

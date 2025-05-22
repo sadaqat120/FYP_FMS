@@ -2,7 +2,9 @@
 const express = require("express");
 const HumanResource = require("../models/HumanResource");
 const Payment = require("../models/Payment");
+const Store = require("../models/Store");
 const authMiddleware = require("../middlewares/authMiddleware");
+const mongoose = require("mongoose");
 
 const router = express.Router();
 
@@ -53,6 +55,54 @@ router.post("/:storeId/:workerId/payments", authMiddleware, async (req, res) => 
     res.status(201).json(newPayment);
   } catch (error) {
     res.status(500).json({ message: "Error recording payment", error });
+  }
+});
+
+// Generate unique ID for new human resource
+router.get("/generate-id/:storeId", authMiddleware, async (req, res) => {
+  try {
+    const { storeId } = req.params;
+    const userId = req.user.id;
+
+    // Get store name
+    const store = await Store.findOne({ _id: storeId, userId });
+    if (!store) {
+      return res.status(404).json({ message: "Store not found" });
+    }
+
+    const prefix = `FMS-${store.name}-Human-`;
+
+    // Find all existing IDs for this store
+    const existingResources = await HumanResource.find({ storeId, userId });
+    
+    // Find the next available number
+    let nextNumber = 1;
+    const usedNumbers = new Set();
+    
+    existingResources.forEach(resource => {
+      if (resource.id.startsWith(prefix)) {
+        const numStr = resource.id.replace(prefix, '');
+        const num = parseInt(numStr);
+        if (!isNaN(num)) {
+          usedNumbers.add(num);
+        }
+      }
+    });
+
+    // Find the first available number starting from 1
+    while (usedNumbers.has(nextNumber)) {
+      nextNumber++;
+    }
+
+    const newId = `${prefix}${nextNumber}`;
+
+    res.status(200).json({ id: newId });
+  } catch (error) {
+    console.error("Error generating ID:", error);
+    res.status(500).json({ 
+      message: "Error generating ID", 
+      error: error.message 
+    });
   }
 });
 
