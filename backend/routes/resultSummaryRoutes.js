@@ -15,7 +15,6 @@ router.post("/", authMiddleware, async (req, res) => {
       unit,
       satisfaction,
       yieldNotes,
-      totalCost,
       sellRevenue,
       revenueNotes,
     } = req.body;
@@ -27,7 +26,6 @@ router.post("/", authMiddleware, async (req, res) => {
       expectedYield === undefined ||
       !unit ||
       !satisfaction ||
-      totalCost === undefined ||
       sellRevenue === undefined
     ) {
       return res
@@ -44,7 +42,6 @@ router.post("/", authMiddleware, async (req, res) => {
       unit,
       satisfaction,
       yieldNotes,
-      totalCost,
       sellRevenue,
       revenueNotes,
     });
@@ -67,7 +64,6 @@ router.put("/:id", authMiddleware, async (req, res) => {
       unit,
       satisfaction,
       yieldNotes,
-      totalCost,
       sellRevenue,
       revenueNotes,
     } = req.body;

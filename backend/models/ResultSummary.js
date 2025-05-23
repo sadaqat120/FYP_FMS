@@ -10,7 +10,6 @@ const ResultSummarySchema = new mongoose.Schema({
   unit: { type: String, enum: ["kg", "tons"], required: true },
   satisfaction: { type: Number, enum: [1, 2, 3, 4, 5], required: true },
   yieldNotes: { type: String },
-  totalCost: { type: Number, required: true },
   sellRevenue: { type: Number, required: true },
   revenueNotes: { type: String }
 }, { timestamps: true });
