@@ -82,7 +82,3 @@ cd frontend
 npm install
 npm start
 ```
-
-## 📃 License
-
-This project was developed as Final Year Project at Namal University and is intended for academic and demonstration purposes.
